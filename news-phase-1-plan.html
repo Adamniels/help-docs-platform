@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 1 — Real Ingestion Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0f;
+    --ink-2: #3a3a3a;
+    --ink-3: #6b6b6b;
+    --ink-4: #9b9b9b;
+    --surface: #fafaf8;
+    --surface-2: #f2f1ed;
+    --surface-3: #e8e6e0;
+    --border: #dddad2;
+    --accent-blue: #1a4f9e;
+    --accent-blue-light: #e8eef9;
+    --accent-teal: #0f6e56;
+    --accent-teal-light: #e1f5ee;
+    --accent-amber: #8a4e0a;
+    --accent-amber-light: #faeeda;
+    --accent-coral: #993c1d;
+    --accent-coral-light: #faece7;
+    --accent-purple: #3c3489;
+    --accent-purple-light: #eeedfe;
+    --accent-green: #3b6d11;
+    --accent-green-light: #eaf3de;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--surface);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+    font-weight: 300;
+  }
+
+  .masthead {
+    background: var(--ink);
+    color: var(--surface);
+    padding: 5rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px);
+  }
+  .masthead-inner { max-width: 900px; margin: 0 auto; padding: 0 2.5rem; position: relative; }
+  .masthead-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 1.5rem; }
+  .masthead h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 400; line-height: 1.1; letter-spacing: -0.02em; color: #fff; margin-bottom: 1.25rem; }
+  .masthead h1 em { font-style: italic; color: rgba(255,255,255,0.5); }
+  .masthead-subtitle { font-size: 1rem; color: rgba(255,255,255,0.5); font-weight: 300; max-width: 560px; line-height: 1.65; }
+  .masthead-meta { margin-top: 2.5rem; display: flex; gap: 2.5rem; flex-wrap: wrap; }
+  .masthead-stat { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 0.05em; }
+  .masthead-stat strong { display: block; font-size: 1.3rem; font-family: 'DM Sans', sans-serif; font-weight: 400; color: rgba(255,255,255,0.8); letter-spacing: -0.02em; }
+
+  .toc-strip { background: var(--surface-2); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .toc-inner { max-width: 900px; margin: 0 auto; padding: 0 2.5rem; display: flex; overflow-x: auto; scrollbar-width: none; }
+  .toc-inner::-webkit-scrollbar { display: none; }
+  .toc-link { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); text-decoration: none; padding: 0.9rem 0; margin-right: 2rem; border-bottom: 2px solid transparent; white-space: nowrap; transition: color 0.15s, border-color 0.15s; }
+  .toc-link:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+  .content { max-width: 900px; margin: 0 auto; padding: 0 2.5rem 6rem; }
+  .section { padding: 4rem 0 0; }
+  .section-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+  .section-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-4); letter-spacing: 0.1em; flex-shrink: 0; padding-top: 4px; }
+  .section-header h2 { font-family: 'DM Serif Display', serif; font-size: 1.75rem; font-weight: 400; letter-spacing: -0.01em; }
+  .section-intro { font-size: 1rem; color: var(--ink-2); line-height: 1.75; margin-bottom: 2rem; max-width: 700px; }
+
+  /* CALLOUT */
+  .callout { padding: 1.25rem 1.5rem; border-radius: 10px; margin-bottom: 1.5rem; }
+  .callout-blue { background: var(--accent-blue-light); border-left: 3px solid var(--accent-blue); }
+  .callout-teal { background: var(--accent-teal-light); border-left: 3px solid var(--accent-teal); }
+  .callout-amber { background: var(--accent-amber-light); border-left: 3px solid var(--accent-amber); }
+  .callout-purple { background: var(--accent-purple-light); border-left: 3px solid var(--accent-purple); }
+  .callout-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .callout-blue .callout-label { color: var(--accent-blue); }
+  .callout-teal .callout-label { color: var(--accent-teal); }
+  .callout-amber .callout-label { color: var(--accent-amber); }
+  .callout-purple .callout-label { color: var(--accent-purple); }
+  .callout-body { font-size: 0.925rem; color: var(--ink-2); line-height: 1.7; }
+
+  /* PIPELINE */
+  .pipeline-dark { background: var(--ink); border-radius: 12px; padding: 2rem; margin-bottom: 2.5rem; }
+  .pipeline-dark-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 1.5rem; }
+  .pipeline-row { display: flex; align-items: stretch; gap: 0; }
+  .pipeline-node { flex: 1; position: relative; }
+  .pipeline-node:not(:last-child)::after { content: '→'; position: absolute; right: -12px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.18); font-size: 16px; z-index: 2; }
+  .p-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.9rem 1rem; height: 100%; }
+  .p-box-label { font-family: 'DM Mono', monospace; font-size: 9px; color: rgba(255,255,255,0.25); margin-bottom: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .p-box-name { font-size: 0.82rem; font-weight: 500; color: rgba(255,255,255,0.82); line-height: 1.3; margin-bottom: 3px; }
+  .p-box-detail { font-size: 0.72rem; color: rgba(255,255,255,0.3); line-height: 1.4; }
+
+  /* CODE BLOCKS */
+  .code-block { background: #1a1a18; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; overflow-x: auto; }
+  .code-block-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 1rem; }
+  .code-block pre { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: #c8c8c0; line-height: 1.75; white-space: pre; }
+  .cc { color: rgba(255,255,255,0.22); }
+  .ck { color: #9fb4e0; }
+  .cs { color: #9ecbaa; }
+  .cn { color: #f8cc78; }
+  .ct { color: #c792ea; }
+  .cd { color: #82aaff; }
+
+  /* ACTIVITY CARDS */
+  .activity-grid { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 2.5rem; }
+  .activity-card { background: var(--surface); }
+  .activity-header { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 1rem; padding: 1.25rem 1.5rem; cursor: pointer; transition: background 0.12s; }
+  .activity-header:hover { background: var(--surface-2); }
+  .act-num { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--ink-4); }
+  .act-tag { display: inline-block; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; margin-bottom: 3px; }
+  .tag-py { background: #fef3cd; color: #7a5c00; }
+  .tag-net { background: var(--accent-purple-light); color: var(--accent-purple); }
+  .tag-fe { background: var(--accent-blue-light); color: var(--accent-blue); }
+  .act-name { font-weight: 500; font-size: 0.95rem; color: var(--ink); line-height: 1.25; }
+  .act-sub { font-size: 0.82rem; color: var(--ink-3); margin-top: 2px; }
+  .act-chevron { color: var(--ink-4); font-size: 13px; transition: transform 0.2s; }
+  .activity-card.open .act-chevron { transform: rotate(180deg); }
+  .activity-body { display: none; padding: 0 1.5rem 1.5rem; border-top: 1px solid var(--border); }
+  .activity-card.open .activity-body { display: block; }
+  .activity-body-inner { padding-top: 1.25rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+  /* FIELD TABLE */
+  .field-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 1rem; }
+  .field-table th { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-4); font-weight: 400; padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+  .field-table td { padding: 0.5rem 0.75rem; color: var(--ink-2); border-bottom: 1px solid var(--surface-3); vertical-align: top; line-height: 1.4; }
+  .field-table tr:last-child td { border-bottom: none; }
+  .field-name { font-family: 'DM Mono', monospace; font-size: 0.8em; color: var(--ink); }
+  .field-type { font-family: 'DM Mono', monospace; font-size: 0.75em; color: var(--accent-purple); }
+  .field-opt { font-family: 'DM Mono', monospace; font-size: 0.7em; background: var(--surface-3); padding: 1px 5px; border-radius: 3px; color: var(--ink-4); }
+
+  /* DETAIL LIST */
+  .detail-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .detail-item { display: flex; align-items: flex-start; gap: 10px; font-size: 0.875rem; color: var(--ink-2); line-height: 1.5; }
+  .di { width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; font-size: 10px; font-weight: 500; }
+  .di-py { background: #fef3cd; color: #7a5c00; }
+  .di-net { background: var(--accent-purple-light); color: var(--accent-purple); }
+  .di-fe { background: var(--accent-blue-light); color: var(--accent-blue); }
+  .di-note { background: var(--surface-3); color: var(--ink-3); }
+
+  /* SOURCE CARDS */
+  .source-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 2.5rem; }
+  .source-cell { background: var(--surface); padding: 1.5rem; }
+  .source-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 8px; }
+  .source-badge { font-size: 9px; padding: 1px 6px; border-radius: 3px; }
+  .sb-free { background: var(--accent-teal-light); color: var(--accent-teal); }
+  .sb-key { background: var(--accent-amber-light); color: var(--accent-amber); }
+  .source-title { font-weight: 500; font-size: 0.95rem; color: var(--ink); margin-bottom: 0.5rem; }
+  .source-body { font-size: 0.875rem; color: var(--ink-2); line-height: 1.6; }
+  .source-config { margin-top: 0.75rem; font-family: 'DM Mono', monospace; font-size: 0.76rem; color: var(--ink-3); background: var(--surface-2); padding: 0.6rem 0.75rem; border-radius: 6px; line-height: 1.6; }
+
+  /* FILE LIST */
+  .file-section-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 0.6rem; }
+  .file-list { list-style: none; display: flex; flex-direction: column; gap: 5px; margin-bottom: 1.5rem; }
+  .file-item { font-family: 'DM Mono', monospace; font-size: 0.74rem; color: var(--ink-3); padding: 5px 10px; background: var(--surface-2); border-radius: 5px; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .fs { font-size: 9px; padding: 1px 5px; border-radius: 3px; flex-shrink: 0; }
+  .fs-new { background: var(--accent-blue-light); color: var(--accent-blue); }
+  .fs-ext { background: var(--accent-amber-light); color: var(--accent-amber); }
+
+  /* SCHEDULE BOX */
+  .schedule-box { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; margin-bottom: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .schedule-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 0.5rem; }
+  .schedule-value { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--ink); }
+  .schedule-note { font-size: 0.85rem; color: var(--ink-2); line-height: 1.6; }
+
+  code { font-family: 'DM Mono', monospace; font-size: 0.82em; background: var(--surface-3); padding: 1px 5px; border-radius: 3px; color: var(--ink-2); }
+  strong { font-weight: 500; color: var(--ink); }
+  .divider { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+  @media (max-width: 680px) {
+    .source-grid { grid-template-columns: 1fr; }
+    .activity-body-inner { grid-template-columns: 1fr; }
+    .pipeline-row { flex-direction: column; gap: 8px; }
+    .pipeline-node::after { display: none !important; }
+    .schedule-box { grid-template-columns: 1fr; }
+    .activity-header { grid-template-columns: 36px 1fr auto; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <p class="masthead-label">Deep Dive · Phase 1 of 5 · News Intelligence Feature · May 2026</p>
+    <h1>Phase 1 — <em>Real ingestion</em> pipeline</h1>
+    <p class="masthead-subtitle">Replace the placeholder worker with four real source connectors, store article bodies, and set up a scheduled Temporal workflow that runs once a week every Sunday without intervention.</p>
+    <div class="masthead-meta">
+      <div class="masthead-stat"><strong>4</strong> sources</div>
+      <div class="masthead-stat"><strong>6</strong> new activities</div>
+      <div class="masthead-stat"><strong>RSS summary</strong> body strategy</div>
+      <div class="masthead-stat"><strong>weekly</strong> schedule</div>
+    </div>
+  </div>
+</header>
+
+<nav class="toc-strip">
+  <div class="toc-inner">
+    <a href="#overview" class="toc-link">Overview</a>
+    <a href="#contract" class="toc-link">Data contract</a>
+    <a href="#sources" class="toc-link">Sources</a>
+    <a href="#activities" class="toc-link">Activities</a>
+    <a href="#workflow" class="toc-link">Workflow</a>
+    <a href="#backend" class="toc-link">Backend</a>
+    <a href="#schedule" class="toc-link">Scheduling</a>
+    <a href="#frontend" class="toc-link">Frontend</a>
+  </div>
+</nav>
+
+<div class="content">
+
+  <!-- SECTION 1: OVERVIEW -->
+  <section class="section" id="overview">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>What Phase 1 delivers</h2>
+    </div>
+    <p class="section-intro">Today the <code>NewsIntelligenceWorkflow</code> returns a hardcoded placeholder string. After Phase 1, it fetches real articles from four technical sources every six hours, deduplicates them, stores title and summary in PostgreSQL, and makes them available via the existing feed endpoint. The frontend detail view shows real content instead of the placeholder message.</p>
+
+    <div class="pipeline-dark">
+      <p class="pipeline-dark-title">Phase 1 ingestion pipeline</p>
+      <div class="pipeline-row">
+        <div class="pipeline-node">
+          <div class="p-box">
+            <p class="p-box-label">Fetch</p>
+            <p class="p-box-name">4 source activities run in parallel</p>
+            <p class="p-box-detail">RSS, GNews, HN, arXiv each return a list of ArticleCandidate</p>
+          </div>
+        </div>
+        <div class="pipeline-node">
+          <div class="p-box">
+            <p class="p-box-label">Merge</p>
+            <p class="p-box-name">Candidates combined and deduplicated</p>
+            <p class="p-box-detail">SHA-256 of URL used as dedup key. Already-known URLs skipped.</p>
+          </div>
+        </div>
+        <div class="pipeline-node">
+          <div class="p-box">
+            <p class="p-box-label">Ingest</p>
+            <p class="p-box-name">POST to internal .NET endpoint</p>
+            <p class="p-box-detail">Bearer auth. Backend persists new items, skips duplicates.</p>
+          </div>
+        </div>
+        <div class="pipeline-node">
+          <div class="p-box">
+            <p class="p-box-label">Serve</p>
+            <p class="p-box-name">GET /api/v1/news/feed</p>
+            <p class="p-box-detail">Existing endpoint returns real articles ordered by date.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-teal">
+      <p class="callout-label">What stays the same</p>
+      <p class="callout-body">The public feed endpoint, the <code>NewsV1Routes</code>, the <code>ListNewsFeedQueryHandler</code>, and the <code>NewsReadRepository</code> are all untouched. Phase 1 only adds an ingestion path and extends the domain model. The feed gets better because the database gets real data — not because the read path changes.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 2: DATA CONTRACT -->
+  <section class="section" id="contract">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Data contract — the shape of an article</h2>
+    </div>
+    <p class="section-intro">The <code>ArticleCandidate</code> Pydantic model is the single shared shape that every source activity returns. The workflow merges these lists and hands them to the ingest activity, which maps them to the <code>IngestNewsItemV1Request</code> the backend expects. Keeping one canonical shape across all sources means the workflow never needs source-specific logic.</p>
+
+    <div class="code-block">
+      <p class="code-block-title">workers-platform / app / workflows / news_intelligence / contracts.py</p>
+      <pre><span class="ck">from</span> __future__ <span class="ck">import</span> annotations
+<span class="ck">from</span> datetime <span class="ck">import</span> datetime
+<span class="ck">from</span> typing <span class="ck">import</span> Literal
+<span class="ck">from</span> pydantic <span class="ck">import</span> BaseModel, Field
+
+
+<span class="ct">class</span> <span class="cd">ArticleCandidate</span>(BaseModel):
+    <span class="cc">"""Normalised article shape returned by every source activity."""</span>
+    title: <span class="ct">str</span>
+    url: <span class="ct">str</span>                          <span class="cc"># canonical URL — used as dedup key</span>
+    source: <span class="ct">str</span>                        <span class="cc"># human label e.g. "Hacker News", "arXiv"</span>
+    published_at: datetime | <span class="ct">None</span> = <span class="ct">None</span>
+    summary: <span class="ct">str</span> = <span class="cs">""</span>                  <span class="cc"># RSS description / API snippet</span>
+    author: <span class="ct">str</span> | <span class="ct">None</span> = <span class="ct">None</span>
+    source_feed_url: <span class="ct">str</span> | <span class="ct">None</span> = <span class="ct">None</span>  <span class="cc"># which RSS feed it came from</span>
+
+
+<span class="ct">class</span> <span class="cd">IngestNewsItemV1Request</span>(BaseModel):
+    <span class="cc">"""Mirrors the C# IngestNewsItemV1Request contract."""</span>
+    title: <span class="ct">str</span>
+    url: <span class="ct">str</span>
+    source: <span class="ct">str</span>
+    body: <span class="ct">str</span> = <span class="cs">""</span>
+    author: <span class="ct">str</span> | <span class="ct">None</span> = <span class="ct">None</span>
+    published_at: <span class="ct">str</span> | <span class="ct">None</span> = <span class="ct">None</span>  <span class="cc"># ISO 8601</span>
+    source_feed_url: <span class="ct">str</span> | <span class="ct">None</span> = <span class="ct">None</span>
+
+
+<span class="ct">class</span> <span class="cd">IngestNewsItemV1Response</span>(BaseModel):
+    status: Literal[<span class="cs">"created"</span>, <span class="cs">"duplicate"</span>]
+    id: <span class="ct">str</span> | <span class="ct">None</span> = <span class="ct">None</span>
+
+
+<span class="ct">class</span> <span class="cd">NewsIngestResult</span>(BaseModel):
+    created: <span class="ct">int</span> = <span class="cn">0</span>
+    duplicates: <span class="ct">int</span> = <span class="cn">0</span>
+    errors: <span class="ct">int</span> = <span class="cn">0</span></pre>
+    </div>
+
+    <div class="code-block">
+      <p class="code-block-title">Platform.Contracts / V1 / News / IngestNewsItemV1Contracts.cs</p>
+      <pre><span class="ck">namespace</span> Platform.Contracts.V1.News;
+
+<span class="ck">public sealed record</span> <span class="cd">IngestNewsItemV1Request</span>(
+    <span class="ct">string</span> Title,
+    <span class="ct">string</span> Url,
+    <span class="ct">string</span> Source,
+    <span class="ct">string</span> Body,
+    <span class="ct">string</span>? Author,
+    <span class="ct">string</span>? PublishedAt,       <span class="cc">// ISO 8601 — parsed server-side</span>
+    <span class="ct">string</span>? SourceFeedUrl);
+
+<span class="ck">public sealed record</span> <span class="cd">IngestNewsItemV1Response</span>(
+    <span class="ct">string</span> Status,            <span class="cc">// "created" | "duplicate"</span>
+    <span class="ct">string</span>? Id);</pre>
+    </div>
+
+    <div class="callout callout-blue">
+      <p class="callout-label">Body strategy</p>
+      <p class="callout-body">For Phase 1, <code>summary</code> is used as the article body — whatever the RSS feed or API provides (description, snippet, abstract). This is enough for Phase 2's embedding to work well. Full article scraping can be added later as a follow-up activity without changing any of the contracts defined here.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 3: SOURCES -->
+  <section class="section" id="sources">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>The four sources</h2>
+    </div>
+    <p class="section-intro">All four are technical-only. Two require no API key. Two need one. The configuration for feed URLs and topic keywords lives in the worker settings so you can adjust it without touching code.</p>
+
+    <div class="source-grid">
+      <div class="source-cell">
+        <p class="source-label">RSS feeds <span class="source-badge sb-free">no key</span></p>
+        <p class="source-title">feedparser — custom feed list</p>
+        <p class="source-body">Fetches any RSS or Atom feed and normalises entries into <code>ArticleCandidate</code>. The list of feeds is configured in settings — add or remove URLs without code changes. Published date comes from the feed entry; summary from <code>entry.summary</code> or <code>entry.description</code>.</p>
+        <p class="source-config">RSS_FEED_URLS = [
+  "https://hnrss.org/frontpage",
+  "https://feeds.feedburner.com/ThePragmaticEngineer",
+  "https://martinfowler.com/feed.atom",
+  "https://blog.bytebytego.com/feed",
+  "https://newsletter.pragmaticengineer.com/feed",
+  # add your own…
+]</p>
+      </div>
+      <div class="source-cell">
+        <p class="source-label">Hacker News <span class="source-badge sb-free">no key</span></p>
+        <p class="source-title">HN Algolia API</p>
+        <p class="source-body">Free public API — no key needed. Queries top stories filtered by a minimum score threshold (default 100 points) and number of comments. Returns title, URL, author, and creation timestamp. Summary is set to an empty string for now since HN doesn't provide article text — the title alone is enough for dedup and display.</p>
+        <p class="source-config">HN_API_URL = "https://hn.algolia.com/api/v1/search"
+HN_MIN_SCORE = 100
+HN_MAX_RESULTS = 30
+# params: tags=story, numericFilters=points>{score}</p>
+      </div>
+      <div class="source-cell">
+        <p class="source-label">GNews / NewsAPI <span class="source-badge sb-key">API key</span></p>
+        <p class="source-title">GNews API — topic queries</p>
+        <p class="source-body">Queries GNews by a set of technical topic keywords. Returns articles with title, description (used as summary), source name, and published date. Free tier gives 100 requests/day — well within the 4x/day schedule. Falls back gracefully if the key is not set, logging a warning and returning an empty list.</p>
+        <p class="source-config">GNEWS_API_KEY = env("GNEWS_API_KEY", default=None)
+GNEWS_TOPICS = [
+  "artificial intelligence",
+  "machine learning",
+  "software engineering",
+  "developer tools",
+  "startup technology",
+]
+GNEWS_MAX_PER_TOPIC = 5</p>
+      </div>
+      <div class="source-cell">
+        <p class="source-label">arXiv <span class="source-badge sb-free">no key</span></p>
+        <p class="source-title">arXiv API — CS categories</p>
+        <p class="source-body">arXiv exposes a free Atom feed per category. Fetches recent papers from the categories you care about. Abstract is used as the summary — rich text, great for Phase 2 embeddings. Author is the first listed author. Results are filtered to the last 7 days to match the weekly run cadence.</p>
+        <p class="source-config">ARXIV_CATEGORIES = [
+  "cs.AI",   # Artificial Intelligence
+  "cs.LG",   # Machine Learning
+  "cs.SE",   # Software Engineering
+  "cs.DC",   # Distributed Computing
+  "cs.AR",   # Computer Architecture
+]
+ARXIV_MAX_PER_CATEGORY = 10</p>
+      </div>
+    </div>
+
+    <div class="callout callout-amber">
+      <p class="callout-label">Configuration approach</p>
+      <p class="callout-body">All source configuration (feed URLs, topic keywords, thresholds) should live in the existing <code>Settings</code> class in <code>app/runtime/config/settings.py</code> — the same pattern used for <code>PLATFORM_INTERNAL_SERVICE_TOKEN</code> and <code>PLATFORM_API_BASE_URL</code>. Feed lists can be environment variables as JSON strings, or a simple Python list in a config module. No database configuration needed for Phase 1.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 4: ACTIVITIES -->
+  <section class="section" id="activities">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Activities in detail</h2>
+    </div>
+    <p class="section-intro">Six Temporal activities in total — four source fetchers, one deduplicator, and one ingest caller. Each is decorated with <code>@activity.defn</code> and registered in <code>definitions.py</code>. They follow the same error handling pattern as the existing <code>run_nightly_memory_consolidation_activity</code>: log, raise on unexpected errors, return structured data on success.</p>
+
+    <div class="activity-grid">
+
+      <!-- ACT 1 -->
+      <div class="activity-card open">
+        <div class="activity-header">
+          <span class="act-num">act 1</span>
+          <div>
+            <div><span class="act-tag tag-py">Python</span></div>
+            <div class="act-name">fetch_rss_articles</div>
+            <div class="act-sub">activities.py · timeout 60s</div>
+          </div>
+          <span class="act-chevron">▲</span>
+        </div>
+        <div class="activity-body">
+          <div class="activity-body-inner">
+            <div>
+              <p class="file-section-title" style="margin-bottom: 0.75rem;">Behaviour</p>
+              <ul class="detail-list">
+                <li class="detail-item"><span class="di di-py">→</span><span>Accepts <code>feed_urls: list[str]</code>. Loops over each URL and calls <code>feedparser.parse(url)</code>. Uses <code>asyncio.to_thread</code> since feedparser is synchronous.</span></li>
+                <li class="detail-item"><span class="di di-py">→</span><span>For each entry: maps <code>entry.title</code>, <code>entry.link</code>, <code>entry.summary or entry.description</code>, <code>entry.author</code>, and <code>entry.published_parsed</code> to <code>ArticleCandidate</code>.</span></li>
+                <li class="detail-item"><span class="di di-py">→</span><span>Skips entries with no URL or no title. Logs a warning per skipped entry but never raises — a broken feed should not abort the whole workflow.</span></li>
+                <li class="detail-item"><span class="di di-note">!</span><span>Per-feed errors are caught individually. If one feed URL fails (timeout, 404), that feed is skipped and the others continue.</span></li>
+              </ul>
+              <p class="file-section-title" style="margin-top: 1rem; margin-bottom: 0.5rem;">Signature</p>
+              <div class="code-block" style="margin-bottom: 0;">
+                <pre style="font-size: 0.74rem;"><span class="ct">@activity.defn</span>
+<span class="ck">async def</span> <span class="cd">fetch_rss_articles</span>(
+    feed_urls: list[<span class="ct">str</span>],
+) -> list[ArticleCandidate]: ...</pre>
+              </div>
+            </div>
+            <div>
+              <p class="file-section-title" style="margin-bottom: 0.75rem;">Dependencies</p>
+              <ul class="detail-list">
+                <li class="detail-item"><span class="di di-py">P</span><span><code>feedparser</code> — add to <code>pyproject.toml</code> or <code>requirements.txt</code></span></li>
+                <li class="detail-item"><span class="di di-py">P</span><span><code>asyncio.to_thread</code> — built-in, no new dep</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACT 2 -->
+      <div class="activity-card">
+        <div class="activity-header">
+          <span class="act-num">act 2</span>
+          <div>
+            <div><span class="act-tag tag-py">Python</span></div>
+            <div class="act-name">fetch_hacker_news_articles</div>
+            <div class="act-sub">activities.py · timeout 30s</div>
+          </div>
+          <span class="act-chevron">▼</span>
+        </div>
+        <div class="activity-body">
+          <div class="activity-body-inner">
+            <div>
+              <p class="file-section-title" style="margin-bottom: 0.75rem;">Behaviour</p>
+              <ul class="detail-list">
+                <li class="detail-item"><span class="di di-py">→</span><span>Calls the HN Algolia API: <code>GET https://hn.algolia.com/api/v1/search?tags=story&numericFilters=points>{min_score}&hitsPerPage={max_results}</code>. No API key needed.</span></li>
+                <li class="detail-item"><span class="di di-py">→</span><span>Maps each hit: <code>title</code>, <code>url</code> (skips Ask HN / Show HN posts with no URL), source set to <code>"Hacker News"</code>, <code>points</code> appended to summary as context.</span></li>
+                <li class="detail-item"><span class="di di-py">→</span><span>Filters out entries where <code>url</code> is None — these are self-posts. Returns <code>list[ArticleCandidate]</code>.</span></li>
+                <li class="detail-item"><span class="di di-note">!</span><span>Uses <code>httpx.AsyncClient</code> with a 20s timeout — the same library already in use for the memory HTTP client.</span></li>
+              </ul>
+              <p class="file-section-title" style="margin-top: 1rem; margin-bottom: 0.5rem;">Signature</p>
+              <div class="code-block" style="margin-bottom: 0;">
+                <pre style="font-size: 0.74rem;"><span class="ct">@activity.defn</span>
+<span class="ck">async def</span> <span class="cd">fetch_hacker_news_articles</span>(
+    min_score: <span class="ct">int</span> = <span class="cn">100</span>,
+    max_results: <span class="ct">int</span> = <span class="cn">30</span>,
+) -> list[ArticleCandidate]: ...</pre>
+              </div>
+            </div>
+            <div>
+              <p class="file-section-title" style="margin-bottom: 0.75rem;">Dependencies</p>
+              <ul class="detail-list">
+                <li class="detail-item"><span class="di di-py">P</span><span><code>httpx</code> — already a dependency</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACT 3 -->
+      <div class="activity-card">
+        <div class="activity-header">
+          <span class="act-num">act 3</span>
+          <div>
+            <div><span class="act-tag tag-py">Python</span></div>
+            <div class="act-name">fetch_gnews_articles</div>
+            <div class="act-sub">activities.py · timeout 60s</div>
+          </div>
+          <span class="act-chevron">▼</span>
+        </div>
+        <div class="activity-body">
+          <div class="activity-body-inner">
+            <div>
+              <p class="file-section-title" style="margin-bottom: 0.75rem;">Behaviour</p>
+              <ul class="detail-list">
+                <li class="detail-item"><span class="di di-py">→</span><span>Accepts <code>topics: list[str]</code> and <code>max_per_topic: int</code>. Loops topics sequentially (to stay within rate limits) and calls <code>GET https://gnews.io/api/v4/search?q={topic}&max={n}&token={key}&lang=en</code>.</span></li>
+                <li class="detail-item"><span class="di di-py">→</span><span>Maps each article: <code>title</code>, <code>url</code>, source name from <code>article.source.name</code>, <code>description</code> as summary, <code>publishedAt</code> as published date.</span></li>
+                <li class="detail-item"><span class="di di-note">!</span><span>If <code>GNEWS_API_KEY</code> is not set in settings, logs a warning and returns <code>[]</code> immediately. Never raises — the workflow continues without GNews.</span></li>
+                <li class="detail-item"><span class="di di-note">!</span><span>A short <code>asyncio.sleep(0.5)</code> between topic requests avoids hammering the rate limit on the free tier.</span></li>
+              </ul>
+            </div>
+            <div>
+              <p class="file-section-title" style="margin-bottom: 0.75rem;">Error handling</p>
+              <ul class="detail-list">
+                <li class="detail-item"><span class="di di-py">→</span><span>HTTP 429 (rate limit) is caught and logged. Returns whatever was collected before the limit was hit, rather than failing the whole activity.</span></li>
+                <li class="detail-item"><span class="di di-py">→</span><span>HTTP 4xx other than 429: logged and re-raised — indicates a config problem worth surfacing.</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACT 4 -->
+      <div class="activity-card">
+        <div class="activity-header">
+          <span class="act-num">act 4</span>
+          <div>
+            <div><span class="act-tag tag-py">Python</span></div>
+            <div class="act-name">fetch_arxiv_articles</div>
+            <div class="act-sub">activities.py · timeout 60s</div>
+          </div>
+          <span class="act-chevron">▼</span>
+        </div>
+        <div class="activity-body">
+          <div class="activity-body-inner">
+            <div>
+              <p class="file-section-title" style="margin-bottom: 0.75rem;">Behaviour</p>
+              <ul class="detail-list">
+                <li class="detail-item"><span class="di di-py">→</span><span>Fetches each category's RSS feed: <code>https://rss.arxiv.org/rss/{category}</code> — this is the simplest stable arXiv feed, no API key, no pagination needed.</span></li>
+                <li class="detail-item"><span class="di di-py">→</span><span>Uses feedparser (same as act 1). Maps: <code>title</code> (cleaned of LaTeX), <code>link</code> as URL, <code>summary</code> as abstract body, <code>author</code> as first author, source set to <code>"arXiv · {category}"</code>.</span></li>
+                <li class="detail-item"><span class="di di-py">→</span><span>Filters to entries published in the last 7 days (using <code>published_parsed</code>) to match the weekly run cadence and avoid re-fetching old papers.</span></li>
+                <li class="detail-item"><span class="di di-note">!</span><span>arXiv abstracts are the richest body text of any source — they are full paragraphs, ideal for Phase 2 embeddings. Worth favouring in ranking later.</span></li>
+              </ul>
+            </div>
+            <div>
+              <p class="file-section-title" style="margin-bottom: 0.75rem;">Dependencies</p>
+              <ul class="detail-list">
+                <li class="detail-item"><span class="di di-py">P</span><span><code>feedparser</code> — already added for act 1</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACT 5 -->
+      <div class="activity-card">
+        <div class="activity-header">
+          <span class="act-num">act 5</span>
+          <div>
+            <div><span class="act-tag tag-py">Python</span></div>
+            <div class="act-name">ingest_articles</div>
+            <div class="act-sub">activities.py · timeout 120s</div>
+          </div>
+          <span class="act-chevron">▼</span>
+        </div>
+        <div class="activity-body">
+          <div class="activity-body-inner">
+            <div>
+              <p class="file-section-title" style="margin-bottom: 0.75rem;">Behaviour</p>
+              <ul class="detail-list">
+                <li class="detail-item"><span class="di di-py">→</span><span>Accepts <code>articles: list[ArticleCandidate]</code>. For each article, builds an <code>IngestNewsItemV1Request</code> and POSTs to <code>POST /api/internal/v1/news/items</code> using Bearer auth from settings. Follows the exact pattern of <code>run_nightly_memory_consolidation_activity</code>.</span></li>
+                <li class="detail-item"><span class="di di-py">→</span><span>Sends requests concurrently using <code>asyncio.gather</code> with a concurrency cap (e.g. 10 at a time via a semaphore) to avoid overwhelming the backend with 50+ simultaneous POSTs.</span></li>
+                <li class="detail-item"><span class="di di-py">→</span><span>The backend responds with <code>{"status": "created", "id": "..."}}</code> or <code>{"status": "duplicate"}</code>. Tallies both into a <code>NewsIngestResult</code> and returns it.</span></li>
+                <li class="detail-item"><span class="di di-note">!</span><span>Per-article errors are logged and counted in <code>result.errors</code> but never raise. If 40 out of 50 articles succeed, the workflow still completes successfully.</span></li>
+              </ul>
+            </div>
+            <div>
+              <p class="file-section-title" style="margin-bottom: 0.75rem;">Concurrency</p>
+              <ul class="detail-list">
+                <li class="detail-item"><span class="di di-py">→</span><span>Use <code>asyncio.Semaphore(10)</code> to cap concurrent HTTP calls. This makes the activity safe regardless of how many candidates come in.</span></li>
+                <li class="detail-item"><span class="di di-note">!</span><span>A single <code>httpx.AsyncClient</code> instance is shared across all requests within the activity — avoids connection churn.</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECTION 5: WORKFLOW -->
+  <section class="section" id="workflow">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Workflow orchestration</h2>
+    </div>
+    <p class="section-intro">The rewritten <code>NewsIntelligenceWorkflow</code> runs the four fetch activities in parallel, merges and deduplicates the results inside workflow code (no activity needed for this — it's just a Python set operation), then calls the ingest activity. Deduplication inside the workflow is safe because workflows in Temporal are deterministic — the set operation on URLs is pure Python with no side effects.</p>
+
+    <div class="code-block">
+      <p class="code-block-title">workers-platform / app / workflows / news_intelligence / workflow.py</p>
+      <pre><span class="ck">from</span> datetime <span class="ck">import</span> timedelta
+<span class="ck">from</span> temporalio <span class="ck">import</span> workflow
+<span class="ck">from</span> .contracts <span class="ck">import</span> ArticleCandidate, NewsIngestResult
+<span class="ck">from</span> .activities <span class="ck">import</span> (
+    fetch_rss_articles, fetch_hacker_news_articles,
+    fetch_gnews_articles, fetch_arxiv_articles,
+    ingest_articles,
+)
+
+<span class="ct">@workflow.defn</span>
+<span class="ck">class</span> <span class="cd">NewsIntelligenceWorkflow</span>:
+
+    <span class="ct">@workflow.run</span>
+    <span class="ck">async def</span> <span class="cd">run</span>(self) -> NewsIngestResult:
+        settings = workflow.unsafe.imports_passed_through()
+
+        <span class="cc"># Run all four source fetches in parallel</span>
+        results = <span class="ck">await</span> workflow.gather(
+            workflow.execute_activity(
+                fetch_rss_articles,
+                settings.rss_feed_urls,
+                start_to_close_timeout=timedelta(seconds=<span class="cn">60</span>)),
+            workflow.execute_activity(
+                fetch_hacker_news_articles,
+                start_to_close_timeout=timedelta(seconds=<span class="cn">30</span>)),
+            workflow.execute_activity(
+                fetch_gnews_articles,
+                settings.gnews_topics,
+                start_to_close_timeout=timedelta(seconds=<span class="cn">60</span>)),
+            workflow.execute_activity(
+                fetch_arxiv_articles,
+                settings.arxiv_categories,
+                start_to_close_timeout=timedelta(seconds=<span class="cn">60</span>)),
+            return_exceptions=<span class="ct">True</span>,  <span class="cc"># one failed source doesn't abort all</span>
+        )
+
+        <span class="cc"># Merge + deduplicate by URL in workflow code (pure, no I/O)</span>
+        seen_urls: set[str] = set()
+        unique: list[ArticleCandidate] = []
+        <span class="ck">for</span> batch <span class="ck">in</span> results:
+            <span class="ck">if</span> isinstance(batch, BaseException):
+                <span class="ck">continue</span>  <span class="cc"># source activity failed — skip</span>
+            <span class="ck">for</span> article <span class="ck">in</span> batch:
+                <span class="ck">if</span> article.url <span class="ck">not in</span> seen_urls:
+                    seen_urls.add(article.url)
+                    unique.append(article)
+
+        <span class="cc"># Ingest into .NET backend</span>
+        <span class="ck">return await</span> workflow.execute_activity(
+            ingest_articles,
+            unique,
+            start_to_close_timeout=timedelta(seconds=<span class="cn">120</span>),
+        )</pre>
+    </div>
+
+    <div class="callout callout-purple">
+      <p class="callout-label">return_exceptions=True</p>
+      <p class="callout-body">Passing <code>return_exceptions=True</code> to <code>workflow.gather</code> means a failed fetch activity (network error, bad API response) returns an exception object instead of raising. The workflow checks for <code>isinstance(batch, BaseException)</code> and skips that source. This means GNews being down never blocks HN or arXiv from coming through.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 6: BACKEND -->
+  <section class="section" id="backend">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2>Backend changes</h2>
+    </div>
+    <p class="section-intro">Three things change in the .NET backend: the <code>NewsItem</code> domain entity gets body and URL fields, a new internal endpoint accepts ingest requests from the worker, and a migration adds the columns plus a unique index on URL hash for fast deduplication.</p>
+
+    <div class="code-block">
+      <p class="code-block-title">Platform.Domain / Features / News / NewsItem.cs — extended</p>
+      <pre><span class="ck">namespace</span> Platform.Domain.Features.News;
+
+<span class="ck">public sealed class</span> <span class="cd">NewsItem</span>
+{
+    <span class="ck">public string</span> Id { <span class="ck">get</span>; <span class="ck">set</span>; } = <span class="cs">""</span>;
+    <span class="ck">public string</span> Title { <span class="ck">get</span>; <span class="ck">set</span>; } = <span class="cs">""</span>;
+    <span class="ck">public string</span> Source { <span class="ck">get</span>; <span class="ck">set</span>; } = <span class="cs">""</span>;
+    <span class="ck">public DateTimeOffset</span> PublishedAt { <span class="ck">get</span>; <span class="ck">set</span>; }
+
+    <span class="cc">// — new in Phase 1 —</span>
+    <span class="ck">public string</span> Url { <span class="ck">get</span>; <span class="ck">set</span>; } = <span class="cs">""</span>;
+    <span class="ck">public string</span> UrlHash { <span class="ck">get</span>; <span class="ck">set</span>; } = <span class="cs">""</span>;  <span class="cc">// SHA-256 of Url — unique index</span>
+    <span class="ck">public string</span> Body { <span class="ck">get</span>; <span class="ck">set</span>; } = <span class="cs">""</span>;   <span class="cc">// summary / abstract</span>
+    <span class="ck">public string</span>? Author { <span class="ck">get</span>; <span class="ck">set</span>; }
+    <span class="ck">public string</span>? SourceFeedUrl { <span class="ck">get</span>; <span class="ck">set</span>; }
+}</pre>
+    </div>
+
+    <div class="code-block">
+      <p class="code-block-title">Platform.Api / Features / News / Internal / InternalNewsV1Routes.cs</p>
+      <pre><span class="ck">using</span> Platform.Application.Features.News.Ingest;
+<span class="ck">using</span> Platform.Contracts.V1.News;
+<span class="ck">using</span> Platform.Api.Middleware;
+
+<span class="ck">namespace</span> Platform.Api.Features.News.Internal;
+
+<span class="ck">public static class</span> <span class="cd">InternalNewsV1Routes</span>
+{
+    <span class="ck">public static void</span> <span class="cd">Map</span>(WebApplication app)
+    {
+        <span class="ck">var</span> group = app.MapGroup(<span class="cs">"/api/internal/v1/news"</span>)
+            .WithTags(<span class="cs">"Internal News Worker"</span>);
+
+        group.MapPost(<span class="cs">"items"</span>,
+            <span class="ck">async</span> (
+                IngestNewsItemV1Request body,
+                IngestNewsItemCommandHandler handler,
+                CancellationToken ct) =>
+            {
+                <span class="ck">var</span> result = <span class="ck">await</span> handler
+                    .HandleAsync(<span class="ck">new</span> IngestNewsItemCommand(
+                        body.Title, body.Url, body.Source,
+                        body.Body, body.Author,
+                        body.PublishedAt, body.SourceFeedUrl), ct)
+                    .ConfigureAwait(<span class="ck">false</span>);
+                <span class="ck">return</span> Results.Ok(result);
+            })
+            .DisableAntiforgery();
+    }
+}</pre>
+    </div>
+
+    <div class="callout callout-teal">
+      <p class="callout-label">Deduplication strategy</p>
+      <p class="callout-body">The <code>IngestNewsItemCommandHandler</code> computes <code>SHA-256(url.ToLowerInvariant())</code>, then checks if a row with that hash already exists using a fast index lookup. If found, it returns <code>{"status": "duplicate"}</code> without inserting. This is cheaper and more reliable than comparing URLs as strings (handles trailing slash differences, etc.). The unique index on <code>UrlHash</code> also prevents duplicates even under concurrent ingestion runs.</p>
+    </div>
+
+    <p class="file-section-title">Files</p>
+    <ul class="file-list">
+      <li class="file-item"><span class="fs fs-ext">extend</span>Platform.Domain/Features/News/NewsItem.cs</li>
+      <li class="file-item"><span class="fs fs-new">new</span>Platform.Contracts/V1/News/IngestNewsItemV1Contracts.cs</li>
+      <li class="file-item"><span class="fs fs-new">new</span>Platform.Application/Features/News/Ingest/IngestNewsItemCommand.cs</li>
+      <li class="file-item"><span class="fs fs-new">new</span>Platform.Application/Features/News/Ingest/IngestNewsItemCommandHandler.cs</li>
+      <li class="file-item"><span class="fs fs-new">new</span>Platform.Api/Features/News/Internal/InternalNewsV1Routes.cs</li>
+      <li class="file-item"><span class="fs fs-ext">extend</span>Platform.Api/Program.cs (register InternalNewsV1Routes)</li>
+      <li class="file-item"><span class="fs fs-new">new</span>Platform.Infrastructure/Persistence/Migrations/[timestamp]_NewsItemBodyV1.cs</li>
+      <li class="file-item"><span class="fs fs-ext">extend</span>Platform.Contracts/V1/NewsItemSummaryDto.cs (add Url, Body fields for frontend)</li>
+    </ul>
+  </section>
+
+  <!-- SECTION 7: SCHEDULING -->
+  <section class="section" id="schedule">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>Scheduling</h2>
+    </div>
+    <p class="section-intro">A Temporal schedule runs <code>NewsIntelligenceWorkflow</code> once a week, every Sunday at 22:00 UTC. Temporal schedules are persistent — they survive worker restarts and track missed runs. The schedule is <strong>registered automatically in code</strong> at worker startup via <code>_ensure_schedules()</code> in <code>main.py</code> — no CLI command needed.</p>
+
+    <div class="schedule-box">
+      <div>
+        <p class="schedule-label">Schedule</p>
+        <p class="schedule-value">0 22 * * 0</p>
+        <p class="schedule-note" style="margin-top: 0.4rem;">Every Sunday at 22:00 UTC. All sources apply a 7-day age filter, so articles older than one week are discarded on ingest — matching the run cadence. The schedule ID is <code>news-intelligence-weekly</code>.</p>
+      </div>
+      <div>
+        <p class="schedule-label">Code location</p>
+        <div class="code-block" style="margin: 0.5rem 0 0;">
+          <pre style="font-size: 0.72rem; white-space: pre-wrap;">workers-platform/app/runtime/worker/main.py
+→ _ensure_schedules()
+→ _NEWS_SCHEDULE_ID = "news-intelligence-weekly"
+→ _NEWS_CRON       = "0 22 * * 0"</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      <p class="callout-label">overlap-policy Skip</p>
+      <p class="callout-body"><code>Skip</code> means if a scheduled run is still in progress when the next one is due, the new run is skipped rather than queued. The schedule is upserted on every worker restart — changing the cron in code and redeploying is all that is needed to update the schedule. The run is also triggerable manually from the Temporal UI without waiting for Sunday.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 8: FRONTEND -->
+  <section class="section" id="frontend">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2>Frontend — one small change</h2>
+    </div>
+    <p class="section-intro">The only frontend change in Phase 1 is removing the placeholder message from the article detail view and rendering the actual body text that the backend now provides. The list view and source filter are already working correctly.</p>
+
+    <div class="code-block">
+      <p class="code-block-title">frontend-platform / src / modules / news / NewsView.tsx — detail view update</p>
+      <pre><span class="cc">// Before — placeholder text</span>
+&lt;<span class="cd">JarvisCard</span> className={`${styles.block} ${styles.relevanceBlock}`} hover={false}&gt;
+  &lt;<span class="cd">div</span> className={styles.relevanceLabel}&gt;Article body&lt;/<span class="cd">div</span>&gt;
+  &lt;<span class="cd">p</span> className={styles.body}&gt;
+    Full article text is not stored in the platform API yet...
+  &lt;/<span class="cd">p</span>&gt;
+&lt;/<span class="cd">JarvisCard</span>&gt;
+
+<span class="cc">// After — real content</span>
+{selected.body ? (
+  &lt;<span class="cd">JarvisCard</span> className={`${styles.block} ${styles.relevanceBlock}`} hover={false}&gt;
+    &lt;<span class="cd">div</span> className={styles.relevanceLabel}&gt;Summary&lt;/<span class="cd">div</span>&gt;
+    &lt;<span class="cd">p</span> className={styles.body}&gt;{selected.body}&lt;/<span class="cd">p</span>&gt;
+    &lt;<span class="cd">a</span> href={selected.url} target=<span class="cs">"_blank"</span> rel=<span class="cs">"noopener noreferrer"</span>
+       className={styles.readLink}&gt;
+      Read full article →
+    &lt;/<span class="cd">a</span>&gt;
+  &lt;/<span class="cd">JarvisCard</span>&gt;
+) : <span class="ct">null</span>}</pre>
+    </div>
+
+    <div class="callout callout-amber">
+      <p class="callout-label">Type update needed</p>
+      <p class="callout-body">Add <code>body?: string</code> and <code>url?: string</code> to the <code>NewsItemSummary</code> TypeScript type in <code>src/types/content.ts</code> (or wherever it's defined), and update the <code>get-news-feed.ts</code> API adapter to map the new fields from the backend response. Both are one-line additions.</p>
+    </div>
+
+    <p class="file-section-title">Files</p>
+    <ul class="file-list">
+      <li class="file-item"><span class="fs fs-ext">extend</span>frontend-platform/src/modules/news/NewsView.tsx</li>
+      <li class="file-item"><span class="fs fs-ext">extend</span>frontend-platform/src/lib/api/adapters/news.ts</li>
+      <li class="file-item"><span class="fs fs-ext">extend</span>frontend-platform/src/types/content.ts (or equivalent type file)</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; padding-bottom: 2rem;">
+      <div>
+        <p class="file-section-title">All new worker files</p>
+        <ul class="file-list">
+          <li class="file-item"><span class="fs fs-new">new</span>app/workflows/news_intelligence/contracts.py</li>
+          <li class="file-item"><span class="fs fs-ext">extend</span>app/workflows/news_intelligence/activities.py</li>
+          <li class="file-item"><span class="fs fs-ext">extend</span>app/workflows/news_intelligence/workflow.py</li>
+          <li class="file-item"><span class="fs fs-ext">extend</span>app/runtime/registry/definitions.py (register 5 new activities)</li>
+          <li class="file-item"><span class="fs fs-ext">extend</span>app/runtime/config/settings.py (RSS URLs, HN threshold, GNews key, arXiv categories)</li>
+        </ul>
+      </div>
+      <div>
+        <p class="file-section-title">New Python dependencies</p>
+        <ul class="file-list">
+          <li class="file-item"><span class="fs fs-new">add</span>feedparser — RSS/Atom parsing</li>
+          <li class="file-item" style="color: var(--accent-teal);">httpx — already present</li>
+          <li class="file-item" style="color: var(--accent-teal);">pydantic — already present</li>
+          <li class="file-item" style="color: var(--accent-teal);">temporalio — already present</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer style="border-top: 1px solid var(--border); padding: 2.5rem; max-width: 900px; margin: 0 auto;">
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <div>
+      <p style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 0.6rem;">Done when</p>
+      <p style="font-size: 0.875rem; color: var(--ink-2); line-height: 1.65;">The Temporal schedule is running, the feed endpoint returns real articles from at least 3 sources, the detail view shows a real summary, and the dashboard/Temporal UI shows completed workflow runs with non-zero <code>created</code> counts.</p>
+    </div>
+    <div>
+      <p style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 0.6rem;">What unlocks Phase 2</p>
+      <p style="font-size: 0.875rem; color: var(--ink-2); line-height: 1.65;">Once articles have a <code>Body</code> field with real text, the embedding activity in Phase 2 can embed <code>title + body</code> into a 1536-dim vector immediately. Phase 1 is the prerequisite for everything semantic that follows.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.activity-header').forEach(header => {
+    header.addEventListener('click', () => {
+      header.parentElement.classList.toggle('open');
+    });
+  });
+</script>
+
+</body>
+</html>

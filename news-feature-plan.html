@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News Feature — Build Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0f;
+    --ink-2: #3a3a3a;
+    --ink-3: #6b6b6b;
+    --ink-4: #9b9b9b;
+    --surface: #fafaf8;
+    --surface-2: #f2f1ed;
+    --surface-3: #e8e6e0;
+    --border: #dddad2;
+    --accent-blue: #1a4f9e;
+    --accent-blue-light: #e8eef9;
+    --accent-teal: #0f6e56;
+    --accent-teal-light: #e1f5ee;
+    --accent-amber: #8a4e0a;
+    --accent-amber-light: #faeeda;
+    --accent-coral: #993c1d;
+    --accent-coral-light: #faece7;
+    --accent-purple: #3c3489;
+    --accent-purple-light: #eeedfe;
+    --accent-green: #3b6d11;
+    --accent-green-light: #eaf3de;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--surface);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+    font-weight: 300;
+  }
+
+  /* HEADER */
+  .masthead {
+    background: var(--ink);
+    color: var(--surface);
+    padding: 5rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 59px,
+      rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px
+    );
+  }
+  .masthead-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+    position: relative;
+  }
+  .masthead-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 1.5rem;
+  }
+  .masthead h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: #fff;
+    margin-bottom: 1.5rem;
+  }
+  .masthead h1 em {
+    font-style: italic;
+    color: rgba(255,255,255,0.55);
+  }
+  .masthead-subtitle {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.55);
+    font-weight: 300;
+    max-width: 580px;
+    line-height: 1.65;
+  }
+  .masthead-meta {
+    margin-top: 3rem;
+    display: flex;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+  }
+  .masthead-stat {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0.05em;
+  }
+  .masthead-stat strong {
+    display: block;
+    font-size: 1.4rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    color: rgba(255,255,255,0.8);
+    letter-spacing: -0.02em;
+  }
+
+  /* NAV */
+  .toc-strip {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .toc-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .toc-inner::-webkit-scrollbar { display: none; }
+  .toc-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-decoration: none;
+    padding: 0.9rem 0;
+    margin-right: 2rem;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .toc-link:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+  /* LAYOUT */
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2.5rem 6rem;
+  }
+
+  .section { padding: 4rem 0 0; }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-4);
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+    padding-top: 4px;
+  }
+  .section-header h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .section-intro {
+    font-size: 1.02rem;
+    color: var(--ink-2);
+    line-height: 1.75;
+    margin-bottom: 2rem;
+    max-width: 700px;
+  }
+
+  /* FOUNDATION GRID */
+  .found-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+  }
+  .found-cell {
+    background: var(--surface);
+    padding: 1.5rem 1.75rem;
+  }
+  .found-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    margin-bottom: 0.75rem;
+  }
+  .found-items {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .found-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: var(--ink-2);
+    line-height: 1.4;
+  }
+  .found-item .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+  .dot-done { background: var(--accent-teal); }
+  .dot-partial { background: var(--accent-amber); }
+  .dot-empty { background: var(--border); border: 1px solid var(--ink-4); }
+  .found-item code {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78em;
+    background: var(--surface-3);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--ink-3);
+  }
+
+  /* CALLOUT */
+  .callout {
+    padding: 1.25rem 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+  }
+  .callout-blue { background: var(--accent-blue-light); border-left: 3px solid var(--accent-blue); }
+  .callout-teal { background: var(--accent-teal-light); border-left: 3px solid var(--accent-teal); }
+  .callout-amber { background: var(--accent-amber-light); border-left: 3px solid var(--accent-amber); }
+  .callout-purple { background: var(--accent-purple-light); border-left: 3px solid var(--accent-purple); }
+  .callout-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .callout-blue .callout-label { color: var(--accent-blue); }
+  .callout-teal .callout-label { color: var(--accent-teal); }
+  .callout-amber .callout-label { color: var(--accent-amber); }
+  .callout-purple .callout-label { color: var(--accent-purple); }
+  .callout-body { font-size: 0.925rem; color: var(--ink-2); line-height: 1.7; }
+
+  /* PHASE CARDS */
+  .phases { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 2.5rem; }
+  .phase-card { background: var(--surface); }
+  .phase-header {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem 1.75rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.12s;
+  }
+  .phase-header:hover { background: var(--surface-2); }
+  .phase-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.6rem;
+    color: var(--ink-4);
+    font-weight: 400;
+    line-height: 1;
+  }
+  .phase-title-group { }
+  .phase-tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+  }
+  .tag-ready { background: var(--accent-teal-light); color: var(--accent-teal); }
+  .tag-next { background: var(--accent-blue-light); color: var(--accent-blue); }
+  .tag-later { background: var(--surface-3); color: var(--ink-3); }
+  .tag-advanced { background: var(--accent-purple-light); color: var(--accent-purple); }
+  .phase-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .phase-summary {
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    margin-top: 2px;
+  }
+  .phase-chevron {
+    color: var(--ink-4);
+    font-size: 14px;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .phase-card.open .phase-chevron { transform: rotate(180deg); }
+  .phase-body {
+    display: none;
+    padding: 0 1.75rem 1.75rem;
+    border-top: 1px solid var(--border);
+  }
+  .phase-card.open .phase-body { display: block; }
+
+  .phase-body-inner {
+    padding-top: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .deliverables-block, .files-block { }
+
+  .block-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    margin-bottom: 0.75rem;
+  }
+
+  .deliverable-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .deliverable-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.875rem;
+    color: var(--ink-2);
+    line-height: 1.45;
+  }
+  .d-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-size: 11px;
+  }
+  .d-blue { background: var(--accent-blue-light); color: var(--accent-blue); }
+  .d-teal { background: var(--accent-teal-light); color: var(--accent-teal); }
+  .d-amber { background: var(--accent-amber-light); color: var(--accent-amber); }
+  .d-purple { background: var(--accent-purple-light); color: var(--accent-purple); }
+  .d-green { background: var(--accent-green-light); color: var(--accent-green); }
+
+  .file-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .file-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--ink-3);
+    padding: 6px 10px;
+    background: var(--surface-2);
+    border-radius: 6px;
+    line-height: 1.4;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .file-item .file-status {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .fs-new { background: var(--accent-blue-light); color: var(--accent-blue); }
+  .fs-extend { background: var(--accent-amber-light); color: var(--accent-amber); }
+  .fs-reuse { background: var(--accent-teal-light); color: var(--accent-teal); }
+
+  /* PIPELINE DARK */
+  .pipeline-dark {
+    background: var(--ink);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+  }
+  .pipeline-dark-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 1.5rem;
+  }
+  .pipeline-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+  .pipeline-node {
+    flex: 1;
+    position: relative;
+  }
+  .pipeline-node:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.18);
+    font-size: 16px;
+    z-index: 2;
+  }
+  .p-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+    height: 100%;
+  }
+  .p-box-phase {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.22);
+    margin-bottom: 4px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .p-box-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 3px;
+    line-height: 1.3;
+  }
+  .p-box-detail {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.3);
+    line-height: 1.4;
+  }
+  .p-box.active {
+    background: rgba(255,255,255,0.09);
+    border-color: rgba(255,255,255,0.18);
+  }
+  .p-box.active .p-box-name { color: #fff; }
+
+  /* STACK TABLE */
+  .stack-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 2.5rem;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  thead tr { background: var(--surface-2); }
+  th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 400;
+    padding: 0.9rem 1.2rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 0.8rem 1.2rem;
+    color: var(--ink-2);
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.45;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface-2); }
+  td strong { font-weight: 500; color: var(--ink); }
+  .badge {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+  }
+  .badge-done { background: var(--accent-teal-light); color: var(--accent-teal); }
+  .badge-partial { background: var(--accent-amber-light); color: var(--accent-amber); }
+  .badge-todo { background: var(--surface-3); color: var(--ink-3); }
+
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82em;
+    background: var(--surface-3);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--ink-2);
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+  .pull-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink-2);
+    line-height: 1.55;
+    padding: 1.5rem 0 1.5rem 2rem;
+    border-left: 3px solid var(--border);
+    margin: 2rem 0;
+  }
+
+  strong { font-weight: 500; color: var(--ink); }
+
+  @media (max-width: 680px) {
+    .found-grid { grid-template-columns: 1fr; }
+    .phase-body-inner { grid-template-columns: 1fr; }
+    .phase-header { grid-template-columns: 40px 1fr auto; }
+    .pipeline-row { flex-direction: column; gap: 8px; }
+    .pipeline-node::after { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <p class="masthead-label">Build Plan · Platform · News Intelligence Feature · May 2026</p>
+    <h1>News feature <em>build plan</em></h1>
+    <p class="masthead-subtitle">A phased plan for evolving the news feed from its current scaffolding into a fully personalized intelligence layer — built on top of what's already in place.</p>
+    <div class="masthead-meta">
+      <div class="masthead-stat"><strong>5</strong> phases + prereq</div>
+      <div class="masthead-stat"><strong>3</strong> layers already done</div>
+      <div class="masthead-stat"><strong>.NET + Python</strong> stack</div>
+      <div class="masthead-stat"><strong>pgvector</strong> already running</div>
+    </div>
+  </div>
+</header>
+
+<nav class="toc-strip">
+  <div class="toc-inner">
+    <a href="#foundation" class="toc-link">Foundation</a>
+    <a href="#pipeline" class="toc-link">Pipeline overview</a>
+    <a href="#prereq" class="toc-link">Prerequisite</a>
+    <a href="#phases" class="toc-link">Phases 1–5</a>
+    <a href="#stack" class="toc-link">Stack</a>
+  </div>
+</nav>
+
+<div class="content">
+
+  <!-- SECTION 1: FOUNDATION -->
+  <section class="section" id="foundation">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>What's already in place</h2>
+    </div>
+    <p class="section-intro">You have more than a blank slate. The backend, worker infrastructure, and frontend skeleton are all live. The key insight is that the embedding and vector search infrastructure from your memory system is directly reusable — you don't have to rebuild that from scratch.</p>
+
+    <div class="found-grid">
+      <div class="found-cell">
+        <p class="found-label">Backend (C# · .NET 10)</p>
+        <ul class="found-items">
+          <li class="found-item"><span class="dot dot-done"></span><span><code>NewsItem</code> domain entity (Id, Title, Source, PublishedAt)</span></li>
+          <li class="found-item"><span class="dot dot-done"></span><span><code>GET /api/v1/news/feed</code> endpoint wired up</span></li>
+          <li class="found-item"><span class="dot dot-done"></span><span><code>NewsReadRepository</code> reading from PostgreSQL via EF Core</span></li>
+          <li class="found-item"><span class="dot dot-done"></span><span>pgvector already installed and used by memory embeddings</span></li>
+          <li class="found-item"><span class="dot dot-done"></span><span><code>IMemoryEmbeddingGenerator</code> and <code>IMemoryVectorRecallSearch</code> — reusable patterns</span></li>
+          <li class="found-item"><span class="dot dot-empty"></span><span>No article body / content stored yet</span></li>
+          <li class="found-item"><span class="dot dot-empty"></span><span>No embeddings or ranking on news items</span></li>
+          <li class="found-item"><span class="dot dot-empty"></span><span>No user interest profile</span></li>
+        </ul>
+      </div>
+      <div class="found-cell">
+        <p class="found-label">Workers (Python · Temporal)</p>
+        <ul class="found-items">
+          <li class="found-item"><span class="dot dot-done"></span><span><code>NewsIntelligenceWorkflow</code> registered in Temporal</span></li>
+          <li class="found-item"><span class="dot dot-done"></span><span>Worker runtime, task queues, and Temporal client all set up</span></li>
+          <li class="found-item"><span class="dot dot-partial"></span><span><code>fetch_news_sources</code> activity exists but returns placeholder data only</span></li>
+          <li class="found-item"><span class="dot dot-done"></span><span><code>memory_consolidation</code> workflow as a mature pattern to follow</span></li>
+          <li class="found-item"><span class="dot dot-empty"></span><span>No real RSS or API ingestion yet</span></li>
+          <li class="found-item"><span class="dot dot-empty"></span><span>No embedding activity for news</span></li>
+        </ul>
+      </div>
+      <div class="found-cell">
+        <p class="found-label">Frontend (Next.js · TypeScript)</p>
+        <ul class="found-items">
+          <li class="found-item"><span class="dot dot-done"></span><span><code>/news</code> route and page live</span></li>
+          <li class="found-item"><span class="dot dot-done"></span><span><code>NewsView.tsx</code> with list, source filter, and detail view</span></li>
+          <li class="found-item"><span class="dot dot-partial"></span><span>Detail view shows a placeholder — "article body not stored yet" note already in the code</span></li>
+          <li class="found-item"><span class="dot dot-empty"></span><span>No relevance score or explanation shown</span></li>
+          <li class="found-item"><span class="dot dot-empty"></span><span>No interaction tracking (dwell time, saves)</span></li>
+        </ul>
+      </div>
+      <div class="found-cell">
+        <p class="found-label">Legend</p>
+        <ul class="found-items" style="margin-top: 0.25rem;">
+          <li class="found-item"><span class="dot dot-done"></span><span>Done and working</span></li>
+          <li class="found-item"><span class="dot dot-partial"></span><span>Scaffolded, needs real implementation</span></li>
+          <li class="found-item"><span class="dot dot-empty"></span><span>Not started yet</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-teal">
+      <p class="callout-label">Key reuse opportunity</p>
+      <p class="callout-body">Your memory system already has a full pgvector embedding pipeline: <code>IMemoryEmbeddingGenerator</code>, <code>IMemoryVectorRecallSearch</code>, and the <code>MemoryEmbedding</code> entity with its migration. The news embedding layer follows the exact same pattern — you're adding a <code>NewsItemEmbedding</code> entity, not starting from scratch on the vector infrastructure.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 2: PIPELINE OVERVIEW -->
+  <section class="section" id="pipeline">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Pipeline overview</h2>
+    </div>
+    <p class="section-intro">Five phases, each one adding a distinct capability to the feed. Every phase delivers something tangible you can use immediately — you won't be waiting until Phase 5 to see results.</p>
+
+    <div class="pipeline-dark">
+      <p class="pipeline-dark-title">End-to-end pipeline — all five phases</p>
+      <div class="pipeline-row">
+        <div class="pipeline-node">
+          <div class="p-box">
+            <p class="p-box-phase">Phase 1</p>
+            <p class="p-box-name">Real ingestion</p>
+            <p class="p-box-detail">RSS feeds, NewsAPI, arXiv. Temporal activities fetch and store articles with full body text.</p>
+          </div>
+        </div>
+        <div class="pipeline-node">
+          <div class="p-box">
+            <p class="p-box-phase">Phase 2</p>
+            <p class="p-box-name">Semantic scoring</p>
+            <p class="p-box-detail">Articles get embedded on ingest. User profile is a vector. Feed is ranked by cosine similarity.</p>
+          </div>
+        </div>
+        <div class="pipeline-node">
+          <div class="p-box">
+            <p class="p-box-phase">Phase 3</p>
+            <p class="p-box-name">Feedback loop</p>
+            <p class="p-box-detail">Dwell time and saves update the interest profile. System starts learning from your behavior.</p>
+          </div>
+        </div>
+        <div class="pipeline-node">
+          <div class="p-box">
+            <p class="p-box-phase">Phase 4</p>
+            <p class="p-box-name">Dual interest model</p>
+            <p class="p-box-detail">Long-term and short-term profiles. Active project contexts boosted. Hierarchical interest tree.</p>
+          </div>
+        </div>
+        <div class="pipeline-node">
+          <div class="p-box">
+            <p class="p-box-phase">Phase 5</p>
+            <p class="p-box-name">LLM re-ranking</p>
+            <p class="p-box-detail">Claude Sonnet re-ranks the top candidates. Each article gets a "why this matters" explanation.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      <p class="callout-label">Build philosophy</p>
+      <p class="callout-body">Each phase is independently shippable. After Phase 1 you have a real news feed. After Phase 2 it's already personalized. The later phases make it significantly smarter, but you're not blocked on them to see value. Build in order, validate each phase before moving to the next.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 3: PREREQUISITE -->
+  <section class="section" id="prereq">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Prerequisite — two small things before Phase 1</h2>
+    </div>
+    <p class="section-intro"><code>ExplicitUserProfile</code> stays exactly where it is. It <em>is</em> explicit memory — the user declaring who they are and what they care about, with an authority weight and conflict resolution built around it. Moving the data would be risk for no real gain. The two actual problems are much smaller: the news feature needs a clean way to read interests without depending on Memory internals, and the frontend should expose interests editing under Profile rather than buried in a memory sub-route.</p>
+
+    <div class="found-grid" style="margin-bottom: 2rem;">
+      <div class="found-cell">
+        <p class="found-label">Backend — abstraction layer</p>
+        <ul class="found-items">
+          <li class="found-item"><span class="dot dot-empty"></span><span>Add <code>IUserInterestProvider</code> interface in <code>Platform.Application.Abstractions.News</code> with a single method: <code>GetInterestsAsync()</code> returning a plain DTO with core interests, secondary interests, goals, and active projects</span></li>
+          <li class="found-item"><span class="dot dot-empty"></span><span>Implement it in Infrastructure by reading from the existing <code>IExplicitUserProfileRepository</code> — no schema change, no migration, no domain move</span></li>
+          <li class="found-item"><span class="dot dot-empty"></span><span>The news feature (Phase 2 onwards) depends only on <code>IUserInterestProvider</code> — it never touches the Memory module directly</span></li>
+          <li class="found-item"><span class="dot dot-done"></span><span><code>ExplicitUserProfile</code> unchanged — memory consumers keep reading it the same way they do today</span></li>
+        </ul>
+      </div>
+      <div class="found-cell">
+        <p class="found-label">Frontend — surface interests under Profile</p>
+        <ul class="found-items">
+          <li class="found-item"><span class="dot dot-empty"></span><span>Add a Profile page (or section) in the frontend where interests, goals, and active projects can be viewed and edited</span></li>
+          <li class="found-item"><span class="dot dot-empty"></span><span>The API call underneath stays the same — it still hits the existing memory/profile endpoint. Only the navigation and page placement changes</span></li>
+          <li class="found-item"><span class="dot dot-done"></span><span>No backend route changes, no migration, no data moved</span></li>
+          <li class="found-item"><span class="dot dot-done"></span><span>The memory/profile route can stay alive for as long as needed — nothing breaks</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phases" style="margin-bottom: 2rem;">
+      <div class="phase-card open">
+        <div class="phase-header">
+          <span class="phase-num">P0</span>
+          <div class="phase-title-group">
+            <div><span class="phase-tag" style="background: var(--accent-coral-light); color: var(--accent-coral);">Do first</span></div>
+            <div class="phase-name">Abstraction layer + frontend profile surface</div>
+            <div class="phase-summary">Two files on the backend, one new page on the frontend. No migrations, no domain changes.</div>
+          </div>
+          <span class="phase-chevron">▲</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-body-inner">
+            <div class="deliverables-block">
+              <p class="block-title">What gets built</p>
+              <ul class="deliverable-list">
+                <li class="deliverable-item">
+                  <span class="d-icon d-teal">B</span>
+                  <span>Create <code>IUserInterestProvider</code> in <code>Platform.Application.Abstractions.News</code>. Returns a simple <code>UserInterestSnapshot</code> record: <code>CoreInterests</code>, <code>SecondaryInterests</code>, <code>Goals</code>, <code>ActiveProjects</code>. This is the interface all news ranking code will call — it hides where the data actually lives.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-teal">B</span>
+                  <span>Implement <code>ExplicitProfileUserInterestProvider</code> in <code>Platform.Infrastructure.Features.News</code>. It injects <code>IExplicitUserProfileRepository</code>, reads the row, and maps it to the snapshot. Register in DI. That's it — two files, done.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-amber">F</span>
+                  <span>Add a <code>/profile</code> page (or a Profile tab in the nav) that renders your interests, goals, and active projects in an editable form. Wire the save button to the existing <code>PUT /api/v1/memory/profile</code> endpoint — no backend change needed.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-amber">F</span>
+                  <span>The new profile page is also where Phase 4's active contexts editor will live — so building it now means Phase 4 just adds fields to an existing page rather than creating a new one.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="files-block">
+              <p class="block-title">Files touched</p>
+              <ul class="file-list">
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Application/Abstractions/News/IUserInterestProvider.cs</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Infrastructure/Features/News/ExplicitProfileUserInterestProvider.cs</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>frontend-platform/src/app/profile/page.tsx</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>frontend-platform/src/modules/profile/ProfileView.tsx</li>
+                <li class="file-item"><span class="file-status fs-reuse">reuse</span>existing PUT /api/v1/memory/profile endpoint (no changes needed)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      <p class="callout-label">Why keep it in Memory</p>
+      <p class="callout-body"><code>ExplicitUserProfile</code> is genuinely explicit memory — it's the highest-authority, user-declared source of truth that the conflict detector and context provider both rely on. The authority weight, the contradiction resolution, the structured validation — all of that belongs in memory because it's memory infrastructure. What the news feature needs is not ownership of this data, just a clean read path to it. The <code>IUserInterestProvider</code> abstraction gives you that without touching anything that's already working.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 4: PHASES -->
+  <section class="section" id="phases">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Phases 1–5 in detail</h2>
+    </div>
+    <p class="section-intro">Click any phase to expand its deliverables and the specific files you'll be creating or modifying. File statuses show whether something is new, an extension of existing code, or a reuse of existing infrastructure.</p>
+
+    <div class="phases">
+
+      <!-- PHASE 1 -->
+      <div class="phase-card open">
+        <div class="phase-header">
+          <span class="phase-num">01</span>
+          <div class="phase-title-group">
+            <div><span class="phase-tag tag-next">Start here</span></div>
+            <div class="phase-name">Real ingestion pipeline</div>
+            <div class="phase-summary">Replace the placeholder worker with actual RSS and API ingestion. Store article bodies.</div>
+          </div>
+          <span class="phase-chevron">▲</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-body-inner">
+            <div class="deliverables-block">
+              <p class="block-title">What gets built</p>
+              <ul class="deliverable-list">
+                <li class="deliverable-item">
+                  <span class="d-icon d-blue">W</span>
+                  <span>Replace <code>fetch_news_sources</code> with real Temporal activities: one per source type (RSS via feedparser, GNews API, arXiv). Each activity returns structured article objects, not placeholder strings.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-blue">W</span>
+                  <span>Expand <code>NewsIntelligenceWorkflow</code> to orchestrate ingestion, deduplication, and storage by calling the backend API.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-teal">B</span>
+                  <span>Expand <code>NewsItem</code> domain entity to add <code>Body</code>, <code>Url</code>, <code>Author</code>, and <code>ImageUrl</code>. Add EF Core migration.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-teal">B</span>
+                  <span>Add <code>POST /api/v1/news/items</code> internal ingestion endpoint (worker-auth only, following existing <code>InternalWorkerAuthenticationMiddleware</code> pattern).</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-teal">B</span>
+                  <span>Add deduplication by URL hash so re-running the workflow doesn't create duplicates.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-amber">F</span>
+                  <span>Update the detail view in <code>NewsView.tsx</code> to render article body text — the "not stored yet" comment can be removed.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="files-block">
+              <p class="block-title">Files touched</p>
+              <ul class="file-list">
+                <li class="file-item"><span class="file-status fs-extend">extend</span>workers-platform/app/workflows/news_intelligence/activities.py</li>
+                <li class="file-item"><span class="file-status fs-extend">extend</span>workers-platform/app/workflows/news_intelligence/workflow.py</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>workers-platform/app/workflows/news_intelligence/contracts.py</li>
+                <li class="file-item"><span class="file-status fs-extend">extend</span>Platform.Domain/Features/News/NewsItem.cs</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Application/Features/News/Ingest/IngestNewsItemCommand.cs</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Api/Features/News/Internal/InternalNewsV1Routes.cs</li>
+                <li class="file-item"><span class="file-status fs-extend">extend</span>Platform.Contracts/V1/NewsItemSummaryDto.cs</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Infrastructure/Persistence/Migrations/[timestamp]_NewsItemBodyV1.cs</li>
+                <li class="file-item"><span class="file-status fs-extend">extend</span>frontend-platform/src/modules/news/NewsView.tsx</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 2 -->
+      <div class="phase-card">
+        <div class="phase-header">
+          <span class="phase-num">02</span>
+          <div class="phase-title-group">
+            <div><span class="phase-tag tag-next">Phase 2</span></div>
+            <div class="phase-name">Semantic embeddings + interest profile</div>
+            <div class="phase-summary">Articles get embedded on ingest. A user interest profile vector is created. Feed gets ranked by relevance.</div>
+          </div>
+          <span class="phase-chevron">▼</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-body-inner">
+            <div class="deliverables-block">
+              <p class="block-title">What gets built</p>
+              <ul class="deliverable-list">
+                <li class="deliverable-item">
+                  <span class="d-icon d-blue">W</span>
+                  <span>Add an <code>embed_news_article</code> Temporal activity that calls OpenAI / Voyage embeddings and returns a 1536-dim vector for each article.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-teal">B</span>
+                  <span>Create <code>NewsItemEmbedding</code> entity (mirrors existing <code>MemoryEmbedding</code>) and add it to the EF Core context with pgvector column.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-teal">B</span>
+                  <span>Seed the initial interest embedding by calling <code>IUserInterestProvider.GetInterestsAsync()</code> (wired up in P0): concatenate core interests, secondary interests, and goals into structured text, embed it, and store as the starting <code>LongTermEmbedding</code> on the new <code>NewsUserProfile</code> entity in the News domain.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-teal">B</span>
+                  <span>Add <code>INewsVectorSearch</code> and implement ranked feed retrieval: ANN search against <code>NewsItemEmbedding</code> using cosine similarity, return top 30 results with scores.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-teal">B</span>
+                  <span>Update <code>GET /api/v1/news/feed</code> to return ranked results ordered by relevance score instead of just date.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-amber">F</span>
+                  <span>Show relevance score as a subtle indicator in the news card (e.g. a coloured bar or percentage). Nothing heavy — just a signal that ranking is working.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="files-block">
+              <p class="block-title">Files touched</p>
+              <ul class="file-list">
+                <li class="file-item"><span class="file-status fs-new">new</span>workers-platform/app/workflows/news_intelligence/embedding_activity.py</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Domain/Features/News/NewsItemEmbedding.cs</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Domain/Features/News/NewsUserProfile.cs (LongTermEmbedding, ShortTermEmbedding)</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Application/Abstractions/News/INewsVectorSearch.cs</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Infrastructure/Features/News/NewsVectorSearch.cs</li>
+                <li class="file-item"><span class="file-status fs-extend">extend</span>Platform.Infrastructure/Persistence/PlatformDbContext.cs</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Infrastructure/Persistence/Migrations/[timestamp]_NewsEmbeddingsV1.cs</li>
+                <li class="file-item"><span class="file-status fs-extend">extend</span>Platform.Application/Features/News/ListFeed/ListNewsFeedQueryHandler.cs</li>
+                <li class="file-item"><span class="file-status fs-extend">extend</span>Platform.Contracts/V1/NewsItemSummaryDto.cs (add RelevanceScore)</li>
+                <li class="file-item"><span class="file-status fs-reuse">reuse</span>Pattern from Platform.Infrastructure/Features/Memory/Embeddings/EfMemoryVectorRecallSearch.cs</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 3 -->
+      <div class="phase-card">
+        <div class="phase-header">
+          <span class="phase-num">03</span>
+          <div class="phase-title-group">
+            <div><span class="phase-tag tag-later">Phase 3</span></div>
+            <div class="phase-name">Behavioral feedback loop</div>
+            <div class="phase-summary">Track how you interact with articles. Update your interest profile automatically. The system starts learning.</div>
+          </div>
+          <span class="phase-chevron">▼</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-body-inner">
+            <div class="deliverables-block">
+              <p class="block-title">What gets built</p>
+              <ul class="deliverable-list">
+                <li class="deliverable-item">
+                  <span class="d-icon d-amber">F</span>
+                  <span>Track dwell time in <code>NewsView.tsx</code>: start a timer when an article opens, stop when closed. Track saves (a save button in the detail view). Send these as interaction events to the backend.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-teal">B</span>
+                  <span>Add <code>POST /api/v1/news/interactions</code> endpoint. Accepts interaction type (read, save, dismiss) and dwell seconds.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-teal">B</span>
+                  <span>Create <code>NewsInteraction</code> entity to store each event: article ID, type, dwell seconds, timestamp.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-teal">B</span>
+                  <span>Add a scheduled Temporal workflow (daily or on-demand) that reads recent interactions, computes a weighted average of the article embeddings (strong signal = full weight, dismiss = negative weight), and updates the <code>UserInterestProfile</code> embedding.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-teal">B</span>
+                  <span>Normalize dwell time against your personal reading baseline (average across all your reads) before applying weight — so absolute time doesn't distort signals.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="files-block">
+              <p class="block-title">Files touched</p>
+              <ul class="file-list">
+                <li class="file-item"><span class="file-status fs-extend">extend</span>frontend-platform/src/modules/news/NewsView.tsx</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>frontend-platform/src/modules/news/api/post-news-interaction.ts</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Domain/Features/News/NewsInteraction.cs</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Application/Features/News/RecordInteraction/RecordNewsInteractionCommand.cs</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Api/Features/News/NewsInteractionV1Routes.cs</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Infrastructure/Persistence/Migrations/[timestamp]_NewsInteractionsV1.cs</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>workers-platform/app/workflows/news_intelligence/profile_update_workflow.py</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 4 -->
+      <div class="phase-card">
+        <div class="phase-header">
+          <span class="phase-num">04</span>
+          <div class="phase-title-group">
+            <div><span class="phase-tag tag-later">Phase 4</span></div>
+            <div class="phase-name">Dual interest model + active contexts</div>
+            <div class="phase-summary">Split long-term and short-term interest profiles. Inject your active projects as context boosters.</div>
+          </div>
+          <span class="phase-chevron">▼</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-body-inner">
+            <div class="deliverables-block">
+              <p class="block-title">What gets built</p>
+              <ul class="deliverable-list">
+                <li class="deliverable-item">
+                  <span class="d-icon d-purple">B</span>
+                  <span>Split <code>UserInterestProfile</code> into two embeddings: <code>LongTermEmbedding</code> (updated weekly, exponential decay over time) and <code>ShortTermEmbedding</code> (sliding window of last 14 days, no decay). The ranking layer blends both with configurable weights.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-purple">B</span>
+                  <span>The <code>ActiveProjects</code> already moved to <code>UserInterestProfile</code> in the prerequisite step. Phase 4 extends this into a richer active-context model: each project gets an associated topic list for ranking boosts. Example: <code>[{ "label": "news feature", "topics": ["recommendation systems", "embeddings", "temporal"] }]</code>. Update <code>UserInterestV1Routes</code> with a dedicated active-contexts endpoint.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-purple">B</span>
+                  <span>Implement hierarchical interest tree: coarse domains (AI, software architecture, Swedish tech) each with sub-interest weights. Stored as JSON in the profile. Used in the ranking score as a secondary dimension alongside the embedding similarity.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-amber">F</span>
+                  <span>Add a simple settings panel to edit active contexts — just a text field or tag input. When a new project starts, you add it here and the feed immediately starts surfacing relevant articles.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="files-block">
+              <p class="block-title">Files touched</p>
+              <ul class="file-list">
+                <li class="file-item"><span class="file-status fs-extend">extend</span>Platform.Domain/Features/News/UserInterestProfile.cs</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Application/Features/News/Profile/UpdateActiveContextsCommand.cs</li>
+                <li class="file-item"><span class="file-status fs-extend">extend</span>Platform.Api/Features/News/NewsV1Routes.cs (add profile endpoints)</li>
+                <li class="file-item"><span class="file-status fs-extend">extend</span>Platform.Infrastructure/Features/News/NewsVectorSearch.cs (blend ST/LT)</li>
+                <li class="file-item"><span class="file-status fs-extend">extend</span>workers-platform/app/workflows/news_intelligence/profile_update_workflow.py</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>frontend-platform/src/modules/news/NewsSettings.tsx</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Infrastructure/Persistence/Migrations/[timestamp]_NewsProfileDualV1.cs</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 5 -->
+      <div class="phase-card">
+        <div class="phase-header">
+          <span class="phase-num">05</span>
+          <div class="phase-title-group">
+            <div><span class="phase-tag tag-advanced">Advanced</span></div>
+            <div class="phase-name">LLM re-ranking + explanations</div>
+            <div class="phase-summary">Claude Sonnet re-ranks the top candidates and generates a "why this matters to you" note per article.</div>
+          </div>
+          <span class="phase-chevron">▼</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-body-inner">
+            <div class="deliverables-block">
+              <p class="block-title">What gets built</p>
+              <ul class="deliverable-list">
+                <li class="deliverable-item">
+                  <span class="d-icon d-green">W</span>
+                  <span>Add an <code>llm_rerank</code> Temporal activity. It receives the top 30 candidates from the vector search, your current interest profile and active contexts, and calls Claude Sonnet via the Anthropic API. The LLM returns a ranked list with a 1–2 sentence relevance explanation per article.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-teal">B</span>
+                  <span>Add <code>RelevanceExplanation</code> (string) to <code>NewsItemSummaryDto</code>. The explanation is generated fresh on each feed refresh and is not stored permanently.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-teal">B</span>
+                  <span>The prompt to Claude should include: your interest tree, active contexts, recent saves, and the article's title and summary. Keep it under ~800 tokens to control cost. Use <code>claude-sonnet-4-6</code>.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-amber">F</span>
+                  <span>Show the relevance explanation in the article detail view — a clearly labelled "Why this matters" block. This is the moment the feed stops feeling like an aggregator and starts feeling like an intelligence layer.</span>
+                </li>
+                <li class="deliverable-item">
+                  <span class="d-icon d-green">W</span>
+                  <span>Make re-ranking optional and cacheable: run it as part of the scheduled ingest workflow (not per-request) and store the explanation alongside the ranked order. This avoids per-request LLM latency.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="files-block">
+              <p class="block-title">Files touched</p>
+              <ul class="file-list">
+                <li class="file-item"><span class="file-status fs-new">new</span>workers-platform/app/workflows/news_intelligence/llm_rerank_activity.py</li>
+                <li class="file-item"><span class="file-status fs-extend">extend</span>workers-platform/app/workflows/news_intelligence/workflow.py</li>
+                <li class="file-item"><span class="file-status fs-new">new</span>Platform.Domain/Features/News/NewsItemRanking.cs (cached ranking + explanation)</li>
+                <li class="file-item"><span class="file-status fs-extend">extend</span>Platform.Contracts/V1/NewsItemSummaryDto.cs (add RelevanceExplanation)</li>
+                <li class="file-item"><span class="file-status fs-extend">extend</span>Platform.Application/Features/News/ListFeed/ListNewsFeedQueryHandler.cs</li>
+                <li class="file-item"><span class="file-status fs-extend">extend</span>frontend-platform/src/modules/news/NewsView.tsx (Why this matters block)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 5: STACK -->
+  <section class="section" id="stack">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Stack — what you're using and why</h2>
+    </div>
+    <p class="section-intro">This plan stays within your existing stack throughout. No new databases or runtimes are introduced until Phase 4 and 5 optionally consider a graph layer — and even then it's additive, not a replacement.</p>
+
+    <div class="stack-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Technology</th>
+            <th>Status</th>
+            <th>Used for in news</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Backend API</strong></td>
+            <td>.NET 10, C#, EF Core</td>
+            <td><span class="badge badge-done">Running</span></td>
+            <td>Feed endpoint, ingestion endpoint, interaction recording, profile management</td>
+          </tr>
+          <tr>
+            <td><strong>Database</strong></td>
+            <td>PostgreSQL + pgvector</td>
+            <td><span class="badge badge-done">Running</span></td>
+            <td>Article storage, embedding vectors, interest profile, interaction events</td>
+          </tr>
+          <tr>
+            <td><strong>Worker runtime</strong></td>
+            <td>Python, Temporal</td>
+            <td><span class="badge badge-done">Running</span></td>
+            <td>Ingestion activities, embedding activity, profile update workflow, LLM re-ranking</td>
+          </tr>
+          <tr>
+            <td><strong>Embeddings</strong></td>
+            <td>OpenAI text-embedding-3-large or Voyage-3</td>
+            <td><span class="badge badge-partial">Phase 2</span></td>
+            <td>Embedding articles and the user interest profile. Same embedding model for both so cosine similarity is meaningful.</td>
+          </tr>
+          <tr>
+            <td><strong>LLM re-ranking</strong></td>
+            <td>Claude Sonnet 4 (<code>claude-sonnet-4-6</code>)</td>
+            <td><span class="badge badge-todo">Phase 5</span></td>
+            <td>Re-ranking top candidates, generating relevance explanations per article</td>
+          </tr>
+          <tr>
+            <td><strong>News sources</strong></td>
+            <td>RSS (feedparser), GNews API, arXiv</td>
+            <td><span class="badge badge-todo">Phase 1</span></td>
+            <td>Ingesting raw articles. feedparser for RSS, GNews for broad coverage, arXiv for research papers</td>
+          </tr>
+          <tr>
+            <td><strong>Frontend</strong></td>
+            <td>Next.js, TypeScript</td>
+            <td><span class="badge badge-done">Running</span></td>
+            <td>News feed UI, article detail view, interaction tracking, settings panel</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-amber">
+      <p class="callout-label">One thing to decide before Phase 2</p>
+      <p class="callout-body">You need to pick one embedding model and stick with it — articles and the user profile vector must be embedded with the same model or cosine similarity doesn't work. OpenAI's <code>text-embedding-3-large</code> (1536 dimensions) is the safe default. Voyage's <code>voyage-3</code> is reportedly better on retrieval benchmarks at a lower cost per token. Decide before Phase 2 starts, as changing models later requires re-embedding everything.</p>
+    </div>
+
+    <div class="pull-quote">
+      "After Phase 2 it's already personalized. After Phase 5 it stops feeling like a feed and starts feeling like a system that understands what you're working on."
+    </div>
+  </section>
+
+</div>
+
+<footer style="border-top: 1px solid var(--border); padding: 2.5rem; max-width: 900px; margin: 0 auto;">
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <div>
+      <p style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 0.75rem;">Next step</p>
+      <p style="font-size: 0.875rem; color: var(--ink-2); line-height: 1.6;">Start with Phase 1 — expand <code>NewsIntelligenceWorkflow</code> with real Temporal activities for RSS ingestion, and extend <code>NewsItem</code> to store article body. That's the foundation everything else is built on.</p>
+    </div>
+    <div>
+      <p style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 0.75rem;">Later add-ons (not in plan)</p>
+      <p style="font-size: 0.875rem; color: var(--ink-2); line-height: 1.6;">Personal knowledge graph (Neo4j + GraphRAG) for novelty scoring. Deduplication by semantic similarity (not just URL). Multi-armed bandit for source exploration. These are post-Phase-5 considerations.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.phase-header').forEach(header => {
+    header.style.cursor = 'pointer';
+    header.addEventListener('click', () => {
+      header.parentElement.classList.toggle('open');
+    });
+  });
+</script>
+</body>
+</html>

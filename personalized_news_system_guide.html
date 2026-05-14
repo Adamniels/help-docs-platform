@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personalized AI News System — Deep Dive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0f;
+    --ink-2: #3a3a3a;
+    --ink-3: #6b6b6b;
+    --ink-4: #9b9b9b;
+    --surface: #fafaf8;
+    --surface-2: #f2f1ed;
+    --surface-3: #e8e6e0;
+    --border: #dddad2;
+    --accent-blue: #1a4f9e;
+    --accent-blue-light: #e8eef9;
+    --accent-teal: #0f6e56;
+    --accent-teal-light: #e1f5ee;
+    --accent-amber: #8a4e0a;
+    --accent-amber-light: #faeeda;
+    --accent-coral: #993c1d;
+    --accent-coral-light: #faece7;
+    --accent-purple: #3c3489;
+    --accent-purple-light: #eeedfe;
+    --accent-green: #3b6d11;
+    --accent-green-light: #eaf3de;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--surface);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+    font-weight: 300;
+  }
+
+  /* HEADER */
+  .masthead {
+    background: var(--ink);
+    color: var(--surface);
+    padding: 5rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 59px,
+      rgba(255,255,255,0.03) 59px,
+      rgba(255,255,255,0.03) 60px
+    );
+  }
+  .masthead-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+    position: relative;
+  }
+  .masthead-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 1.5rem;
+  }
+  .masthead h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: #fff;
+    margin-bottom: 1.5rem;
+  }
+  .masthead h1 em {
+    font-style: italic;
+    color: rgba(255,255,255,0.6);
+  }
+  .masthead-subtitle {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.55);
+    font-weight: 300;
+    max-width: 560px;
+    line-height: 1.65;
+  }
+  .masthead-meta {
+    margin-top: 3rem;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .masthead-stat {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0.05em;
+  }
+  .masthead-stat strong {
+    display: block;
+    font-size: 1.4rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    color: rgba(255,255,255,0.8);
+    letter-spacing: -0.02em;
+  }
+
+  /* NAV / TOC */
+  .toc-strip {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .toc-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .toc-inner::-webkit-scrollbar { display: none; }
+  .toc-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-decoration: none;
+    padding: 0.9rem 0;
+    margin-right: 2rem;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .toc-link:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+  /* MAIN LAYOUT */
+  .content {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2.5rem 6rem;
+  }
+
+  /* SECTION */
+  .section {
+    padding: 4rem 0 0;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-4);
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+    padding-top: 4px;
+  }
+  .section-header h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .section-intro {
+    font-size: 1.05rem;
+    color: var(--ink-2);
+    line-height: 1.75;
+    margin-bottom: 2rem;
+    max-width: 680px;
+  }
+
+  /* APPROACH CARDS */
+  .approach-grid {
+    display: grid;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+  }
+  .approach-card {
+    background: var(--surface);
+    padding: 1.75rem 2rem;
+  }
+  .approach-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .approach-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+    margin-top: 2px;
+  }
+  .icon-blue { background: var(--accent-blue-light); color: var(--accent-blue); }
+  .icon-teal { background: var(--accent-teal-light); color: var(--accent-teal); }
+  .icon-amber { background: var(--accent-amber-light); color: var(--accent-amber); }
+  .icon-coral { background: var(--accent-coral-light); color: var(--accent-coral); }
+  .icon-purple { background: var(--accent-purple-light); color: var(--accent-purple); }
+  .icon-green { background: var(--accent-green-light); color: var(--accent-green); }
+
+  .approach-name {
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+  .approach-tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 4px;
+  }
+  .tag-foundational { background: var(--surface-3); color: var(--ink-3); }
+  .tag-modern { background: var(--accent-blue-light); color: var(--accent-blue); }
+  .tag-advanced { background: var(--accent-purple-light); color: var(--accent-purple); }
+  .tag-recommended { background: var(--accent-teal-light); color: var(--accent-teal); }
+
+  .approach-body {
+    font-size: 0.925rem;
+    color: var(--ink-2);
+    line-height: 1.7;
+  }
+  .approach-body p { margin-bottom: 0.6rem; }
+  .approach-body p:last-child { margin-bottom: 0; }
+
+  .approach-signals {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 1rem;
+  }
+  .signal-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    color: var(--ink-3);
+    background: var(--surface-2);
+  }
+
+  /* PIPELINE / ARCH */
+  .pipeline {
+    background: var(--ink);
+    color: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+  }
+  .pipeline-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 1.5rem;
+  }
+  .pipeline-steps {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+    overflow-x: auto;
+  }
+  .pipeline-step {
+    flex: 1;
+    min-width: 120px;
+    position: relative;
+  }
+  .pipeline-step:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.2);
+    font-size: 18px;
+    z-index: 2;
+  }
+  .step-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 1rem;
+    height: 100%;
+  }
+  .step-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.25);
+    margin-bottom: 6px;
+  }
+  .step-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .step-detail {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.35);
+    line-height: 1.5;
+  }
+
+  /* COMPARISON TABLE */
+  .comparison-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 2.5rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  thead tr {
+    background: var(--surface-2);
+  }
+  th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 400;
+    padding: 0.9rem 1.2rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 0.85rem 1.2rem;
+    color: var(--ink-2);
+    border-bottom: 1px solid var(--border);
+    line-height: 1.5;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface-2); }
+  .td-strong { color: var(--ink); font-weight: 500; }
+  .badge {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+  .badge-high { background: var(--accent-teal-light); color: var(--accent-teal); }
+  .badge-med { background: var(--accent-amber-light); color: var(--accent-amber); }
+  .badge-low { background: var(--surface-3); color: var(--ink-3); }
+  .badge-complex { background: var(--accent-coral-light); color: var(--accent-coral); }
+
+  /* CALLOUT BOXES */
+  .callout {
+    padding: 1.25rem 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+  }
+  .callout-blue {
+    background: var(--accent-blue-light);
+    border-left: 3px solid var(--accent-blue);
+  }
+  .callout-teal {
+    background: var(--accent-teal-light);
+    border-left: 3px solid var(--accent-teal);
+  }
+  .callout-amber {
+    background: var(--accent-amber-light);
+    border-left: 3px solid var(--accent-amber);
+  }
+  .callout-purple {
+    background: var(--accent-purple-light);
+    border-left: 3px solid var(--accent-purple);
+  }
+  .callout-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .callout-blue .callout-label { color: var(--accent-blue); }
+  .callout-teal .callout-label { color: var(--accent-teal); }
+  .callout-amber .callout-label { color: var(--accent-amber); }
+  .callout-purple .callout-label { color: var(--accent-purple); }
+  .callout-body {
+    font-size: 0.925rem;
+    color: var(--ink-2);
+    line-height: 1.7;
+  }
+
+  /* SIGNAL TAXONOMY */
+  .signal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+  }
+  .signal-cell {
+    background: var(--surface);
+    padding: 1.25rem 1.5rem;
+  }
+  .signal-type {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .signal-list {
+    list-style: none;
+  }
+  .signal-list li {
+    font-size: 0.875rem;
+    color: var(--ink-2);
+    padding: 3px 0;
+    padding-left: 1rem;
+    position: relative;
+  }
+  .signal-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--ink-4);
+    font-size: 0.8rem;
+  }
+
+  /* VIDEO CARDS */
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin-bottom: 2.5rem;
+  }
+  .video-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .video-card:hover {
+    border-color: var(--ink-3);
+    background: var(--surface-2);
+  }
+  .video-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 0.75rem;
+  }
+  .video-thumb {
+    width: 40px;
+    height: 40px;
+    background: var(--ink);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .video-thumb svg {
+    width: 16px;
+    height: 16px;
+    fill: rgba(255,255,255,0.7);
+  }
+  .video-meta {
+    flex: 1;
+  }
+  .video-channel {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    margin-bottom: 3px;
+  }
+  .video-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .video-desc {
+    font-size: 0.82rem;
+    color: var(--ink-3);
+    line-height: 1.55;
+  }
+  .video-tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 8px;
+    background: var(--surface-2);
+    color: var(--ink-3);
+    border: 1px solid var(--border);
+  }
+
+  /* ARCHITECTURE DIAGRAM */
+  .arch-diagram {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+  }
+  .arch-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    margin-bottom: 1.5rem;
+  }
+  .arch-layers {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .arch-layer {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+  .layer-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    padding-top: 10px;
+    text-align: right;
+  }
+  .layer-boxes {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .layer-box {
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 6px;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+  .lbox-blue { background: var(--accent-blue-light); color: var(--accent-blue); }
+  .lbox-teal { background: var(--accent-teal-light); color: var(--accent-teal); }
+  .lbox-amber { background: var(--accent-amber-light); color: var(--accent-amber); }
+  .lbox-purple { background: var(--accent-purple-light); color: var(--accent-purple); }
+  .lbox-coral { background: var(--accent-coral-light); color: var(--accent-coral); }
+  .lbox-green { background: var(--accent-green-light); color: var(--accent-green); }
+  .lbox-gray { background: var(--surface-3); color: var(--ink-2); }
+  .layer-connector {
+    grid-column: 2;
+    display: flex;
+    align-items: center;
+    margin: 0 0 0 6px;
+    color: var(--ink-4);
+    font-size: 14px;
+  }
+
+  /* RECOMMENDATION SECTION */
+  .rec-block {
+    background: var(--ink);
+    color: #fff;
+    border-radius: 12px;
+    padding: 2rem 2.25rem;
+    margin-bottom: 2.5rem;
+  }
+  .rec-block-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 1.25rem;
+  }
+  .rec-block h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: #fff;
+    margin-bottom: 1rem;
+    line-height: 1.3;
+  }
+  .rec-block p {
+    font-size: 0.925rem;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+  .rec-stages {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 8px;
+    margin-top: 1.5rem;
+  }
+  .rec-stage {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 1rem;
+  }
+  .stage-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 22px;
+    color: rgba(255,255,255,0.12);
+    margin-bottom: 4px;
+  }
+  .stage-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 4px;
+  }
+  .stage-detail {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.35);
+    line-height: 1.5;
+  }
+
+  /* CODE SNIPPET */
+  .code-block {
+    background: #1a1a18;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+  }
+  .code-block-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    margin-bottom: 1rem;
+  }
+  .code-block pre {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: #c8c8c0;
+    line-height: 1.7;
+    white-space: pre;
+  }
+  .code-comment { color: rgba(255,255,255,0.22); }
+  .code-key { color: #9fb4e0; }
+  .code-string { color: #9ecbaa; }
+  .code-num { color: #f8cc78; }
+
+  /* FOOTER */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 3rem 2.5rem;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  .footer-col-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    margin-bottom: 1rem;
+  }
+  .footer-list {
+    list-style: none;
+  }
+  .footer-list li {
+    font-size: 0.875rem;
+    color: var(--ink-2);
+    padding: 4px 0;
+    border-bottom: 1px solid var(--surface-3);
+  }
+  .footer-list li:last-child { border-bottom: none; }
+
+  /* INLINE EMPHASIS */
+  strong { font-weight: 500; color: var(--ink); }
+  em { font-style: italic; color: var(--ink-2); }
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85em;
+    background: var(--surface-3);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: var(--ink-2);
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  /* PULL QUOTE */
+  .pull-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.25rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink-2);
+    line-height: 1.55;
+    padding: 1.5rem 0 1.5rem 2rem;
+    border-left: 3px solid var(--border);
+    margin: 2rem 0;
+  }
+
+  @media (max-width: 640px) {
+    .masthead { padding: 3rem 0 2.5rem; }
+    .masthead h1 { font-size: 2rem; }
+    .pipeline-steps { gap: 6px; }
+    .pipeline-step:not(:last-child)::after { display: none; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .arch-layer { grid-template-columns: 1fr; }
+    .layer-label { text-align: left; padding-top: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-inner">
+    <p class="masthead-label">Research Brief · Adam's Intelligence Platform · May 2026</p>
+    <h1>Building a <em>truly</em> personalized<br>AI news system</h1>
+    <p class="masthead-subtitle">A deep technical guide covering every major approach — from classical filtering to LLM-native user modeling — for a platform that gets smarter the more you use it.</p>
+    <div class="masthead-meta">
+      <div class="masthead-stat"><strong>6</strong> core approaches</div>
+      <div class="masthead-stat"><strong>8</strong> behavioral signal types</div>
+      <div class="masthead-stat"><strong>7</strong> curated videos</div>
+      <div class="masthead-stat"><strong>1</strong> recommended architecture</div>
+    </div>
+  </div>
+</header>
+
+<!-- STICKY NAV -->
+<nav class="toc-strip" aria-label="Table of contents">
+  <div class="toc-inner">
+    <a href="#problem" class="toc-link">The problem</a>
+    <a href="#approaches" class="toc-link">Approaches</a>
+    <a href="#signals" class="toc-link">Behavioral signals</a>
+    <a href="#architecture" class="toc-link">Architecture</a>
+    <a href="#comparison" class="toc-link">Comparison</a>
+    <a href="#recommendation" class="toc-link">What to build</a>
+    <a href="#coldstart" class="toc-link">Cold start</a>
+    <a href="#pitfalls" class="toc-link">Pitfalls</a>
+    <a href="#videos" class="toc-link">Watch</a>
+  </div>
+</nav>
+
+<div class="content">
+
+  <!-- SECTION 1: THE PROBLEM -->
+  <section class="section" id="problem">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>What you are actually building</h2>
+    </div>
+    <p class="section-intro">Generic news aggregators maximize engagement for a mass audience. What you need is different: a system that acts as a personal intelligence layer — one that understands your specific domains, curates with taste, and improves continuously from how you actually engage with it.</p>
+
+    <div class="callout callout-blue">
+      <p class="callout-label">Core insight</p>
+      <p class="callout-body">The state of the art in 2025 is not a single algorithm. It is a pipeline of complementary layers: a fast content model to filter noise, a rich user model to represent your evolving interests, a ranking layer that reasons about relevance, and a feedback loop that keeps all three improving over time. Getting any one layer right is easy. Getting all four working together well is the actual hard problem.</p>
+    </div>
+
+    <p style="color: var(--ink-2); font-size: 0.95rem; line-height: 1.75; margin-bottom: 1.5rem;">The research literature distinguishes between three generations of approaches:</p>
+
+    <div class="pipeline">
+      <p class="pipeline-title">Three generations of personalized news</p>
+      <div class="pipeline-steps">
+        <div class="pipeline-step">
+          <div class="step-box">
+            <p class="step-num">Gen 1</p>
+            <p class="step-name">Keyword and category filtering</p>
+            <p class="step-detail">User subscribes to topics. System matches headlines. No learning. Still common in RSS readers.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-box">
+            <p class="step-num">Gen 2</p>
+            <p class="step-name">Collaborative + content-based hybrid</p>
+            <p class="step-detail">Click history feeds an embedding model. Similar users suggest new content. Google News, MIND dataset era.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-box">
+            <p class="step-num">Gen 3</p>
+            <p class="step-name">LLM-native user modeling</p>
+            <p class="step-detail">Language model reasons about WHY something is relevant to you. Explains its choices. Adapts to intent, not just history.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-box">
+            <p class="step-num">Gen 4</p>
+            <p class="step-name">Agentic intelligence layer</p>
+            <p class="step-detail">Proactive retrieval. Connects news to your ongoing projects and goals. Emerging — where your platform should head.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: APPROACHES -->
+  <section class="section" id="approaches">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>The six major approaches</h2>
+    </div>
+    <p class="section-intro">These are not mutually exclusive. Production systems at scale always combine several. The question is which ones to prioritize for your use case, and in what order to build them.</p>
+
+    <div class="approach-grid">
+
+      <!-- 1 -->
+      <div class="approach-card">
+        <div class="approach-header">
+          <div class="approach-icon icon-blue">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+          </div>
+          <div>
+            <p class="approach-name">Content-based filtering with semantic embeddings</p>
+            <span class="approach-tag tag-foundational">Foundational</span>
+          </div>
+        </div>
+        <div class="approach-body">
+          <p>Each article is embedded into a high-dimensional vector that captures its semantic meaning — not just its keywords. Your interest profile is also a vector, constructed from the articles you have read, saved, or spent time on. Relevance is computed as cosine similarity between the article vector and your profile vector.</p>
+          <p>This is the most important layer to get right first. It works from day one without any other users, handles totally novel topics well, and gives you full explainability. Modern embedding models like <code>text-embedding-3-large</code> or open-source alternatives like <code>all-mpnet-base-v2</code> produce representations rich enough to capture nuanced domain interest.</p>
+          <p>The key improvement over simple keyword matching is that you can represent your interest in "autonomous systems safety" and it will surface articles about "drone regulation frameworks" that never use those words, because the embedding space understands the semantic relationship.</p>
+        </div>
+        <div class="approach-signals">
+          <span class="signal-pill">Vector DB (pgvector, Qdrant, Weaviate)</span>
+          <span class="signal-pill">Cosine similarity scoring</span>
+          <span class="signal-pill">User profile as average or weighted embedding</span>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="approach-card">
+        <div class="approach-header">
+          <div class="approach-icon icon-teal">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </div>
+          <div>
+            <p class="approach-name">Hierarchical user interest modeling</p>
+            <span class="approach-tag tag-modern">Modern</span>
+          </div>
+        </div>
+        <div class="approach-body">
+          <p>Rather than a single user embedding, this approach represents your interests as a tree. The root captures your overall reading identity. The second level holds coarse domains like "AI research," "Swedish tech industry," "software architecture." The third level holds fine-grained sub-interests like "transformer interpretability" or "monorepo tooling."</p>
+          <p>Research from Microsoft (HieRec, 2021) showed that multi-granularity interest representation significantly outperforms flat single-vector approaches. The practical benefit for you: the system can surface both articles deeply relevant to a specific narrow interest and broader articles that connect across domains, because it is matching at different levels of your hierarchy simultaneously.</p>
+          <p>This also naturally solves the problem of diverse interests. You care about both distributed systems and AI safety, and those should not collapse into a blurry average — they should be maintained as distinct sub-trees.</p>
+        </div>
+        <div class="approach-signals">
+          <span class="signal-pill">Multi-vector user representation</span>
+          <span class="signal-pill">Topic taxonomy</span>
+          <span class="signal-pill">Attention pooling across sub-interests</span>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="approach-card">
+        <div class="approach-header">
+          <div class="approach-icon icon-amber">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <p class="approach-name">LLM-powered relevance reasoning (RecPrompt / PBNR style)</p>
+            <span class="approach-tag tag-modern">Modern</span>
+          </div>
+        </div>
+        <div class="approach-body">
+          <p>Rather than just computing similarity scores, you prompt a language model with your interest profile and a candidate article and ask it to reason about relevance. This approach, formalized in papers like PBNR (Prompt-based News Recommender) and RecPrompt from CIKM 2024, treats news recommendation as a text-to-text generation task.</p>
+          <p>The critical advantage for your use case is that the model can explain <em>why</em> something is relevant to you: "This article about the EU AI Act connects to your interest in AI governance and will matter for your work on the Esatto platform." That is impossible with pure similarity scoring.</p>
+          <p>The trade-off is latency and cost. LLM reasoning is expensive per call. In practice you use it as a re-ranking layer on top of a cheaper first-stage retrieval — retrieve the top 50 candidates with embeddings, then use the LLM to re-rank and annotate the top 10.</p>
+        </div>
+        <div class="approach-signals">
+          <span class="signal-pill">Personalized prompt construction</span>
+          <span class="signal-pill">Two-stage retrieve then rerank</span>
+          <span class="signal-pill">LLM-generated explanation per article</span>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="approach-card">
+        <div class="approach-header">
+          <div class="approach-icon icon-coral">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <div>
+            <p class="approach-name">Personal knowledge graph modeling</p>
+            <span class="approach-tag tag-advanced">Advanced</span>
+          </div>
+        </div>
+        <div class="approach-body">
+          <p>This approach builds a structured graph of entities and their relationships specifically for you. Every article you read contributes entities (people, companies, technologies, events) and the relationships between them to your personal knowledge graph. A novelty score for new articles is computed based on how many new entities or relationships it adds to your existing graph.</p>
+          <p>A 2019 patent from IBM (US10546028) formalizes this: filter articles based on how much genuinely new information they contain relative to your personal knowledge graph. This naturally solves a common problem — you stop seeing the fifth article about the same event because the graph already contains that knowledge.</p>
+          <p>Building a proper knowledge graph is technically involved. A practical starting point is using an LLM to extract entities and relationships from articles as you read them, storing them in a graph database like Neo4j, and using GraphRAG for relevance scoring against new articles.</p>
+        </div>
+        <div class="approach-signals">
+          <span class="signal-pill">Entity extraction via LLM</span>
+          <span class="signal-pill">Neo4j or similar graph DB</span>
+          <span class="signal-pill">Novelty scoring against known graph</span>
+          <span class="signal-pill">GraphRAG retrieval</span>
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="approach-card">
+        <div class="approach-header">
+          <div class="approach-icon icon-purple">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div>
+            <p class="approach-name">Short-term and long-term interest separation</p>
+            <span class="approach-tag tag-modern">Modern</span>
+          </div>
+        </div>
+        <div class="approach-body">
+          <p>Research consistently shows that user interests operate at two distinct timescales. Your long-term interests are stable — software architecture, AI safety, Stockholm tech scene. Your short-term interests are transient — you are currently reading about NestJS because of the Lojalitetsprogram project, but that interest will fade after the presentation.</p>
+          <p>LSTUR (Microsoft, 2019) was an early influential model that fused long-term user embeddings with short-term sequential behavior. More recent work like the StageEvol model (2025) explicitly models stage-wise evolution: how your interests shift through distinct phases rather than continuously drifting.</p>
+          <p>The practical implementation: maintain two separate user profiles. The long-term profile updates slowly, weighted by recency decay. The short-term profile is a sliding window of your last 7 to 14 days. Blend them for ranking, with configurable weighting so you can boost recency when you are in a focused research sprint.</p>
+        </div>
+        <div class="approach-signals">
+          <span class="signal-pill">Dual user embedding</span>
+          <span class="signal-pill">Recency decay weighting</span>
+          <span class="signal-pill">Configurable blend ratio</span>
+          <span class="signal-pill">Session-aware context</span>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <div class="approach-card">
+        <div class="approach-header">
+          <div class="approach-icon icon-green">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>
+          </div>
+          <div>
+            <p class="approach-name">Reinforcement learning from behavioral signals</p>
+            <span class="approach-tag tag-recommended">Best for growth</span>
+          </div>
+        </div>
+        <div class="approach-body">
+          <p>The most powerful way to make the system improve over time is to treat your interaction behavior as a reward signal and use it to continuously update the ranking model. This is how large platforms like Google News and Onet operate at scale.</p>
+          <p>For a personal platform, a lightweight version works well: treat save, share, and long dwell time as strong positive rewards. Treat quick exit and scrolling past as weak negative signals. Use these rewards to update the weights in your user profile and ranking model, so articles similar to ones that generated strong rewards rank higher in future sessions.</p>
+          <p>The key insight from recent research is to use <em>multiple</em> behavioral signals rather than click-through rate alone, because CTR is noisy — you sometimes click things you end up not caring about. Dwell time weighted by personal reading speed is a much better signal of genuine interest.</p>
+        </div>
+        <div class="approach-signals">
+          <span class="signal-pill">Dwell time (personalized baseline)</span>
+          <span class="signal-pill">Save and share as strong reward</span>
+          <span class="signal-pill">Multi-armed bandit for exploration</span>
+          <span class="signal-pill">Iterative profile updates</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECTION 3: BEHAVIORAL SIGNALS -->
+  <section class="section" id="signals">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Behavioral signals — what to capture</h2>
+    </div>
+    <p class="section-intro">Not all signals are equally informative. The key insight from the research is that implicit signals need to be interpreted carefully — a quick click tells you very little, but a long dwell followed by a save tells you a lot.</p>
+
+    <div class="signal-grid">
+      <div class="signal-cell">
+        <p class="signal-type" style="color: var(--accent-teal);">Strong positive</p>
+        <ul class="signal-list">
+          <li>Save / bookmark</li>
+          <li>Share to external tool</li>
+          <li>Full read (>90% scroll)</li>
+          <li>Return visit to same article</li>
+          <li>Copy excerpt or link</li>
+        </ul>
+      </div>
+      <div class="signal-cell">
+        <p class="signal-type" style="color: var(--accent-blue);">Moderate positive</p>
+        <ul class="signal-list">
+          <li>Dwell time above personal baseline</li>
+          <li>Scroll past headline into body</li>
+          <li>Expand summary to full article</li>
+          <li>Tag or annotate</li>
+        </ul>
+      </div>
+      <div class="signal-cell">
+        <p class="signal-type" style="color: var(--accent-amber);">Ambiguous</p>
+        <ul class="signal-list">
+          <li>Click-through (many false positives)</li>
+          <li>Short dwell (interrupted or rejected?)</li>
+          <li>Pause mid-scroll</li>
+        </ul>
+      </div>
+      <div class="signal-cell">
+        <p class="signal-type" style="color: var(--accent-coral);">Negative</p>
+        <ul class="signal-list">
+          <li>Quick exit (&lt;10s)</li>
+          <li>Explicit dismiss</li>
+          <li>Scroll past without pause</li>
+          <li>Hide source / topic</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-amber">
+      <p class="callout-label">Research finding</p>
+      <p class="callout-body">A 2024 paper on dwell time injection (Arxiv 2405.12486) found that raw dwell time is unreliable as an absolute measure because people have different reading speeds and attention patterns. The better approach is to normalize dwell time against your own personal baseline — an article you read for twice your average dwell time is genuinely engaging, regardless of whether that baseline is 30 seconds or 3 minutes.</p>
+    </div>
+
+    <div class="callout callout-teal">
+      <p class="callout-label">For your platform specifically</p>
+      <p class="callout-body">Because you are the only user, you can also use explicit lightweight signals that would be annoying at scale but work well in a personal tool: a quick "this connected to something I am working on" tag, a "I already knew this" dismiss, or a "teach me more about this" prompt. These are far more informative than any implicit signal and cost you only a second each.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 4: ARCHITECTURE -->
+  <section class="section" id="architecture">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>System architecture</h2>
+    </div>
+    <p class="section-intro">A production-grade personalized news pipeline has four distinct layers. Each can be built and tested independently, which matters for a solo system where you want to iterate quickly.</p>
+
+    <div class="arch-diagram">
+      <p class="arch-title">Recommended pipeline architecture</p>
+      <div class="arch-layers">
+        <div class="arch-layer">
+          <p class="layer-label">Ingestion</p>
+          <div class="layer-boxes">
+            <span class="layer-box lbox-gray">RSS feeds</span>
+            <span class="layer-box lbox-gray">News APIs (GNews, NewsAPI)</span>
+            <span class="layer-box lbox-gray">Hacker News</span>
+            <span class="layer-box lbox-gray">arXiv + academic feeds</span>
+            <span class="layer-box lbox-gray">Reddit (filtered)</span>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <p class="layer-label" style="padding-top: 6px; font-size:18px; color: var(--ink-4);">↓</p>
+        </div>
+        <div class="arch-layer">
+          <p class="layer-label">Processing</p>
+          <div class="layer-boxes">
+            <span class="layer-box lbox-blue">Embedding (text-embedding-3-large)</span>
+            <span class="layer-box lbox-blue">Entity extraction via LLM</span>
+            <span class="layer-box lbox-blue">Deduplication</span>
+            <span class="layer-box lbox-blue">Freshness scoring</span>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <p class="layer-label" style="padding-top: 6px; font-size:18px; color: var(--ink-4);">↓</p>
+        </div>
+        <div class="arch-layer">
+          <p class="layer-label">Retrieval</p>
+          <div class="layer-boxes">
+            <span class="layer-box lbox-teal">pgvector / Qdrant ANN search</span>
+            <span class="layer-box lbox-teal">Top-K candidates (50–100)</span>
+            <span class="layer-box lbox-teal">Novelty filter vs. knowledge graph</span>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <p class="layer-label" style="padding-top: 6px; font-size:18px; color: var(--ink-4);">↓</p>
+        </div>
+        <div class="arch-layer">
+          <p class="layer-label">Ranking</p>
+          <div class="layer-boxes">
+            <span class="layer-box lbox-purple">LLM relevance reasoning</span>
+            <span class="layer-box lbox-purple">Short + long-term interest blend</span>
+            <span class="layer-box lbox-purple">Diversity injection</span>
+            <span class="layer-box lbox-purple">Relevance explanation generation</span>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <p class="layer-label" style="padding-top: 6px; font-size:18px; color: var(--ink-4);">↓</p>
+        </div>
+        <div class="arch-layer">
+          <p class="layer-label">Feedback</p>
+          <div class="layer-boxes">
+            <span class="layer-box lbox-amber">Behavioral signal capture</span>
+            <span class="layer-box lbox-amber">User profile update</span>
+            <span class="layer-box lbox-amber">Knowledge graph expansion</span>
+            <span class="layer-box lbox-amber">Ranking weight adjustment</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="section-intro">Here is a simplified example of what the user profile data structure might look like at the storage layer:</p>
+
+    <div class="code-block">
+      <p class="code-block-title">User profile schema (conceptual)</p>
+      <pre><span class="code-comment">// Stored in PostgreSQL + pgvector</span>
+<span class="code-key">user_profile</span> {
+  <span class="code-comment">// Long-term interest embedding (updated weekly with decay)</span>
+  <span class="code-key">lt_embedding</span>: <span class="code-string">vector(1536)</span>,
+
+  <span class="code-comment">// Short-term embedding (last 14 days, no decay)</span>
+  <span class="code-key">st_embedding</span>: <span class="code-string">vector(1536)</span>,
+
+  <span class="code-comment">// Hierarchical interest tree</span>
+  <span class="code-key">interest_tree</span>: {
+    <span class="code-string">"software_architecture"</span>: { weight: <span class="code-num">0.82</span>, subs: [<span class="code-string">"clean_arch"</span>, <span class="code-string">"monorepo"</span>] },
+    <span class="code-string">"ai_ml"</span>: { weight: <span class="code-num">0.91</span>, subs: [<span class="code-string">"llm_infra"</span>, <span class="code-string">"agents"</span>, <span class="code-string">"safety"</span>] },
+    <span class="code-string">"swedish_tech"</span>: { weight: <span class="code-num">0.65</span>, subs: [<span class="code-string">"startups"</span>, <span class="code-string">"policy"</span>] }
+  },
+
+  <span class="code-comment">// Behavioral signal weights (personalized)</span>
+  <span class="code-key">signal_weights</span>: {
+    <span class="code-key">avg_dwell_seconds</span>: <span class="code-num">147</span>,      <span class="code-comment">// personal reading baseline</span>
+    <span class="code-key">dwell_threshold</span>: <span class="code-num">1.4</span>,        <span class="code-comment">// 1.4x baseline = strong positive</span>
+    <span class="code-key">save_reward</span>: <span class="code-num">1.0</span>,
+    <span class="code-key">full_read_reward</span>: <span class="code-num">0.6</span>,
+    <span class="code-key">quick_exit_penalty</span>: <span class="code-num">-0.3</span>
+  },
+
+  <span class="code-comment">// Active contexts (boosts relevance while project is live)</span>
+  <span class="code-key">active_contexts</span>: [
+    { label: <span class="code-string">"Lojalitetsprogram"</span>, topics: [<span class="code-string">"loyalty_programs"</span>, <span class="code-string">"nestjs"</span>, <span class="code-string">"expo"</span>] },
+    { label: <span class="code-string">"Esatto outreach"</span>, topics: [<span class="code-string">"crm"</span>, <span class="code-string">"dotnet"</span>, <span class="code-string">"b2b_sales"</span>] }
+  ]
+}</pre>
+    </div>
+  </section>
+
+  <!-- SECTION 5: COMPARISON -->
+  <section class="section" id="comparison">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Approach comparison</h2>
+    </div>
+    <p class="section-intro">Use this table to understand the trade-offs. For a personal platform with one user, the calculus is different from a consumer product at scale — you can afford more compute per request, and you have no cold-start problem from new users, only from new topic areas.</p>
+
+    <div class="comparison-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Approach</th>
+            <th>Relevance quality</th>
+            <th>Latency</th>
+            <th>Explainability</th>
+            <th>Build complexity</th>
+            <th>Improves over time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-strong">Keyword/category filtering</td>
+            <td><span class="badge badge-low">Low</span></td>
+            <td><span class="badge badge-high">Near-zero</span></td>
+            <td><span class="badge badge-high">High</span></td>
+            <td><span class="badge badge-low">Trivial</span></td>
+            <td>Never</td>
+          </tr>
+          <tr>
+            <td class="td-strong">Semantic embedding similarity</td>
+            <td><span class="badge badge-med">Good</span></td>
+            <td><span class="badge badge-high">&lt;50ms</span></td>
+            <td><span class="badge badge-med">Partial</span></td>
+            <td><span class="badge badge-med">Moderate</span></td>
+            <td>With more reads</td>
+          </tr>
+          <tr>
+            <td class="td-strong">Hierarchical interest model</td>
+            <td><span class="badge badge-high">Very good</span></td>
+            <td><span class="badge badge-high">&lt;100ms</span></td>
+            <td><span class="badge badge-med">Good</span></td>
+            <td><span class="badge badge-med">Moderate</span></td>
+            <td>Continuous</td>
+          </tr>
+          <tr>
+            <td class="td-strong">LLM re-ranking with explanation</td>
+            <td><span class="badge badge-high">Excellent</span></td>
+            <td><span class="badge badge-complex">1–5 seconds</span></td>
+            <td><span class="badge badge-high">Full</span></td>
+            <td><span class="badge badge-med">Moderate</span></td>
+            <td>With prompt tuning</td>
+          </tr>
+          <tr>
+            <td class="td-strong">Personal knowledge graph</td>
+            <td><span class="badge badge-high">Excellent</span></td>
+            <td><span class="badge badge-med">~200ms</span></td>
+            <td><span class="badge badge-high">High</span></td>
+            <td><span class="badge badge-complex">High</span></td>
+            <td>Continuous</td>
+          </tr>
+          <tr>
+            <td class="td-strong">RL from behavioral signals</td>
+            <td><span class="badge badge-high">Excellent (long-run)</span></td>
+            <td><span class="badge badge-high">No added latency</span></td>
+            <td><span class="badge badge-low">Low</span></td>
+            <td><span class="badge badge-complex">Complex</span></td>
+            <td>Rapidly</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SECTION 6: WHAT TO BUILD -->
+  <section class="section" id="recommendation">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2>What to actually build — the recommended path</h2>
+    </div>
+    <p class="section-intro">Given your use case — a professional personal platform, single user, goal of increasingly tailored intelligence — here is the recommended build sequence, ordered by highest return on investment.</p>
+
+    <div class="rec-block">
+      <p class="rec-block-label">Build sequence — phase by phase</p>
+      <h3>Start lean, layer depth as you go</h3>
+      <p>The most common mistake is trying to build the full system at once. The approach below gives you a genuinely useful system at each phase, so you get value immediately and can validate assumptions before investing in the harder parts.</p>
+      <div class="rec-stages">
+        <div class="rec-stage">
+          <p class="stage-number">01</p>
+          <p class="stage-name">RSS + embedding pipeline</p>
+          <p class="stage-detail">Ingest feeds, embed articles, score against a manually curated interest embedding. Ship in a week.</p>
+        </div>
+        <div class="rec-stage">
+          <p class="stage-number">02</p>
+          <p class="stage-name">Behavioral feedback loop</p>
+          <p class="stage-detail">Capture dwell time and saves. Update user profile embedding. System starts learning from you.</p>
+        </div>
+        <div class="rec-stage">
+          <p class="stage-number">03</p>
+          <p class="stage-name">Dual interest model</p>
+          <p class="stage-detail">Split long-term and short-term profiles. Add active project contexts. Quality jumps noticeably.</p>
+        </div>
+        <div class="rec-stage">
+          <p class="stage-number">04</p>
+          <p class="stage-name">LLM re-ranking + explanation</p>
+          <p class="stage-detail">Add an LLM re-ranking pass on the top 30 candidates. Each article gets a "why this matters to you" note.</p>
+        </div>
+        <div class="rec-stage">
+          <p class="stage-number">05</p>
+          <p class="stage-name">Knowledge graph</p>
+          <p class="stage-detail">Extract entities from reads. Build novelty scoring. Dramatically reduces duplicate coverage.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-purple">
+      <p class="callout-label">The key insight for your platform</p>
+      <p class="callout-body">The LLM explanation layer is especially valuable for you because it transforms the news feed from a list of articles into an intelligence layer. Instead of "here are relevant articles," you get "this development in AI regulation connects to a gap you flagged in the Esatto platform architecture three weeks ago." That kind of bridging — between incoming news and your ongoing work context — is what separates a genuinely personal intelligence layer from a smarter RSS reader.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 7: COLD START -->
+  <section class="section" id="coldstart">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>Cold start — how to handle it</h2>
+    </div>
+    <p class="section-intro">The cold start problem is less severe for a personal platform than for a consumer app, but it still applies to new topic areas you have never read about, or after a major shift in your interests.</p>
+
+    <div class="approach-grid">
+      <div class="approach-card">
+        <div class="approach-header">
+          <div class="approach-icon icon-blue"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+          <div><p class="approach-name">Explicit interest bootstrapping</p></div>
+        </div>
+        <div class="approach-body">
+          <p>On first run, prompt yourself to describe your interests in natural language. Use an LLM to convert that into a structured interest tree and an initial embedding. This gives you a usable profile from day one without any read history. Think of it as a one-time onboarding conversation: "I care about distributed systems, especially consistency and database internals. I follow the Swedish startup scene. I am currently building a loyalty platform on NestJS."</p>
+        </div>
+      </div>
+      <div class="approach-card">
+        <div class="approach-header">
+          <div class="approach-icon icon-teal"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div><p class="approach-name">Popularity blending for new topics</p></div>
+        </div>
+        <div class="approach-body">
+          <p>When you enter a new topic area (say, a new project technology), you have no behavioral history for it yet. PP-Rec (2021) showed that blending personalized scores with time-decayed popularity scores for that domain is the most effective cold-start mitigation. Practically: when you add "Expo" to your active contexts, initially surface the most-engaged Expo articles from the past 30 days, then let your own behavioral signals gradually override the popularity signal.</p>
+        </div>
+      </div>
+      <div class="approach-card">
+        <div class="approach-header">
+          <div class="approach-icon icon-amber"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div>
+          <div><p class="approach-name">Context injection from ongoing work</p></div>
+        </div>
+        <div class="approach-body">
+          <p>Your active projects and current learning goals are an underused source of context. Instead of waiting for behavioral signals to develop for a new area, directly inject your current project contexts into the ranking prompt. "I am building a vending machine loyalty platform for my thesis. Prioritize articles about behavioral economics of loyalty programs and mobile payment UX." This gives the LLM layer immediate context without requiring any read history.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 8: PITFALLS -->
+  <section class="section" id="pitfalls">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2>Pitfalls to design around</h2>
+    </div>
+    <p class="section-intro">Most personalization systems fail in predictable ways. Knowing these in advance lets you design defenses into the architecture from the start.</p>
+
+    <div class="callout callout-amber">
+      <p class="callout-label">Filter bubble reinforcement</p>
+      <p class="callout-body">A pure personalization system converges to showing you only what you already know you like, which eliminates serendipity and gradually impoverishes the feed. The fix is deliberate diversity injection: reserve 15 to 20 percent of feed slots for articles from your interest neighborhood but slightly outside your established reading patterns. Research calls this the "explore vs exploit" trade-off.</p>
+    </div>
+
+    <div class="callout callout-amber">
+      <p class="callout-label">Click-through rate bias</p>
+      <p class="callout-body">Clickbait and sensational headlines get high CTR even when the underlying content is low quality. If you optimize primarily on click signals, the feed degrades over time. Use full-read rate and save rate as the primary quality signals, and treat CTR as a weak soft signal only.</p>
+    </div>
+
+    <div class="callout callout-amber">
+      <p class="callout-label">Recency bias</p>
+      <p class="callout-body">Without a timeliness component, an embedding-based system will surface older highly-relevant articles repeatedly. Add a time-decay term: score = relevance × freshness_decay(age), where freshness decays more slowly for long-form analysis pieces than for breaking news.</p>
+    </div>
+
+    <div class="callout callout-amber">
+      <p class="callout-label">Interest drift without forgetting</p>
+      <p class="callout-body">Your interests evolve. If old reads are weighted equally to recent ones, the profile becomes a museum of past interests rather than a living representation of current ones. Use exponential recency decay on the long-term profile update, so a read from two years ago contributes much less to your current profile than a read from last week.</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 9: VIDEOS -->
+  <section class="section" id="videos">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2>Videos to watch</h2>
+    </div>
+    <p class="section-intro">These are selected for depth and direct relevance to what you are building — not surveys for beginners, but practical technical content that matches where you are.</p>
+
+    <div class="video-grid">
+
+      <a href="https://www.youtube.com/watch?v=w_sjlbTxp2g" target="_blank" class="video-card">
+        <div class="video-card-top">
+          <div class="video-thumb">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <div class="video-meta">
+            <p class="video-channel">Vizuara AI</p>
+            <p class="video-title">Building my own AI News Aggregator with an LLM Agent (Part 1)</p>
+          </div>
+        </div>
+        <p class="video-desc">Full walkthrough of building a news aggregator using Claude Code as an LLM agent. Covers ingestion, processing, and the agent loop. Most directly relevant to your build — start here.</p>
+        <span class="video-tag">Series of 4 parts · March 2026</span>
+      </a>
+
+      <a href="https://www.youtube.com/watch?v=4bZVv5X-BvU" target="_blank" class="video-card">
+        <div class="video-card-top">
+          <div class="video-thumb">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <div class="video-meta">
+            <p class="video-channel">Vizuara AI</p>
+            <p class="video-title">AI News Aggregator — Part 2: LLM scoring and ranking</p>
+          </div>
+        </div>
+        <p class="video-desc">Continuation covering the LLM scoring layer — how articles get evaluated for relevance and how the pipeline handles ranking and explanation generation.</p>
+        <span class="video-tag">Part 2 of series</span>
+      </a>
+
+      <a href="https://www.youtube.com/watch?v=gv6zK265OUE" target="_blank" class="video-card">
+        <div class="video-card-top">
+          <div class="video-thumb">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <div class="video-meta">
+            <p class="video-channel">Neo4j · Databases for AI</p>
+            <p class="video-title">Build your first GraphRAG powered agent</p>
+          </div>
+        </div>
+        <p class="video-desc">Practical guide to GraphRAG — combining knowledge graphs with RAG retrieval. Directly applicable to the personal knowledge graph approach in Phase 5 of the build sequence.</p>
+        <span class="video-tag">January 2026 · ~40 min</span>
+      </a>
+
+      <a href="https://www.youtube.com/watch?v=clhZES0M7no" target="_blank" class="video-card">
+        <div class="video-card-top">
+          <div class="video-thumb">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <div class="video-meta">
+            <p class="video-channel">AI Engineering</p>
+            <p class="video-title">Knowledge Graphs for AI Agents — a practical guide</p>
+          </div>
+        </div>
+        <p class="video-desc">Covers why vector-only RAG hits limits at scale, and how knowledge graphs solve context clash and hallucination in agent-based retrieval systems. Conceptually important.</p>
+        <span class="video-tag">May 2026 · Recent</span>
+      </a>
+
+      <a href="https://www.youtube.com/watch?v=Qy0cwbzfQ00" target="_blank" class="video-card">
+        <div class="video-card-top">
+          <div class="video-thumb">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <div class="video-meta">
+            <p class="video-channel">InfraNodus</p>
+            <p class="video-title">Create your own knowledge graph in minutes with LLM</p>
+          </div>
+        </div>
+        <p class="video-desc">Practical demo of building a knowledge graph from your own content using an LLM. Useful for understanding the entity extraction + graph construction step in the pipeline.</p>
+        <span class="video-tag">March 2025</span>
+      </a>
+
+      <a href="https://www.youtube.com/watch?v=4fIhbPPbYiU" target="_blank" class="video-card">
+        <div class="video-card-top">
+          <div class="video-thumb">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <div class="video-meta">
+            <p class="video-channel">Neo4j · NODES 2024</p>
+            <p class="video-title">Building knowledge graphs with LLMs — lessons learned</p>
+          </div>
+        </div>
+        <p class="video-desc">Conference talk from Neo4j's practitioner community on real-world lessons from building production knowledge graphs with LLMs. Covers chunk sizing, schema constraints, quality issues.</p>
+        <span class="video-tag">NODES 2024 Conference</span>
+      </a>
+
+      <a href="https://www.youtube.com/watch?v=B0ywYfVtYUQ" target="_blank" class="video-card">
+        <div class="video-card-top">
+          <div class="video-thumb">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <div class="video-meta">
+            <p class="video-channel">Vizuara AI</p>
+            <p class="video-title">AI News Aggregator — Part 3: User modeling and personalization</p>
+          </div>
+        </div>
+        <p class="video-desc">The third part of the series focusing specifically on user modeling — how the system builds and updates a profile from interactions. Directly covers the feedback loop architecture.</p>
+        <span class="video-tag">Part 3 of series</span>
+      </a>
+
+    </div>
+
+    <div class="pull-quote">
+      "The distinction between a smart aggregator and a genuine intelligence layer is not the quality of the retrieval algorithm. It is whether the system can connect what it surfaces to what you are actually trying to do."
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <p class="footer-col-title">Key papers referenced</p>
+      <ul class="footer-list">
+        <li>PBNR — Prompt-based News Recommender (2023)</li>
+        <li>RecPrompt — Self-tuning prompting for news rec (CIKM 2024)</li>
+        <li>HieRec — Hierarchical user interest modeling (2021)</li>
+        <li>LSTUR — Long/short-term user representations (2019)</li>
+        <li>PP-Rec — Popularity + personalization blending (2021)</li>
+        <li>StageEvol — Stage-wise interest evolution (2025/2026)</li>
+        <li>DweA — Dwell time injection for news rec (2024)</li>
+        <li>PerCoNet — Explicit persona contrastive learning (2023)</li>
+        <li>GLORY — Global-local graph-enhanced news rec (RecSys 2023)</li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-col-title">Recommended tech stack</p>
+      <ul class="footer-list">
+        <li>Ingestion: RSS Parser + NewsAPI + n8n scheduling</li>
+        <li>Embeddings: OpenAI text-embedding-3-large or Voyage-3</li>
+        <li>Vector DB: pgvector (PostgreSQL) or Qdrant</li>
+        <li>Graph DB: Neo4j (knowledge graph layer)</li>
+        <li>LLM: Claude Sonnet 4 for re-ranking + explanation</li>
+        <li>Backend: NestJS (already in your stack)</li>
+        <li>Framework: LangChain or LangGraph for pipeline orchestration</li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
