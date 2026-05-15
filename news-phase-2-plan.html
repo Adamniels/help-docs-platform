@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News Feature — Phase 2 Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0f;
+    --ink-2: #3a3a3a;
+    --ink-3: #6b6b6b;
+    --ink-4: #9b9b9b;
+    --surface: #fafaf8;
+    --surface-2: #f2f1ed;
+    --surface-3: #e8e6e0;
+    --border: #dddad2;
+    --accent-blue: #1a4f9e;
+    --accent-blue-light: #e8eef9;
+    --accent-teal: #0f6e56;
+    --accent-teal-light: #e1f5ee;
+    --accent-amber: #8a4e0a;
+    --accent-amber-light: #faeeda;
+    --accent-coral: #993c1d;
+    --accent-coral-light: #faece7;
+    --accent-purple: #3c3489;
+    --accent-purple-light: #eeedfe;
+    --accent-green: #3b6d11;
+    --accent-green-light: #eaf3de;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--surface);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+    font-weight: 300;
+  }
+
+  .masthead {
+    background: var(--ink);
+    color: var(--surface);
+    padding: 5rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 59px,
+      rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px
+    );
+  }
+  .masthead-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+    position: relative;
+  }
+  .masthead-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 1.5rem;
+  }
+  .masthead h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    line-height: 1.1;
+    font-weight: 400;
+    margin-bottom: 1.25rem;
+  }
+  .masthead h1 em {
+    font-style: italic;
+    color: rgba(255,255,255,0.6);
+  }
+  .masthead-sub {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.55);
+    max-width: 560px;
+    line-height: 1.6;
+  }
+  .masthead-stats {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    flex-wrap: wrap;
+  }
+  .stat { display: flex; flex-direction: column; gap: 0.2rem; }
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    line-height: 1;
+    color: #fff;
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem 2.5rem;
+  }
+
+  .section {
+    margin-bottom: 5rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--ink-4);
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.7rem;
+    font-weight: 400;
+  }
+
+  p { margin-bottom: 1rem; color: var(--ink-2); }
+  p:last-child { margin-bottom: 0; }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 1.75rem 0 0.6rem;
+    letter-spacing: -0.01em;
+  }
+  h4 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--ink-3);
+    margin: 1.25rem 0 0.4rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82em;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.1em 0.35em;
+    color: var(--ink);
+  }
+
+  pre {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    background: #0f0f0f;
+    color: #e8e6e0;
+    border-radius: 6px;
+    padding: 1.4rem 1.6rem;
+    overflow-x: auto;
+    line-height: 1.6;
+    margin: 1.25rem 0;
+  }
+  pre .comment { color: #6b7280; }
+  pre .kw { color: #93c5fd; }
+  pre .str { color: #86efac; }
+  pre .num { color: #fca5a5; }
+  pre .cls { color: #fde68a; }
+  pre .fn { color: #c4b5fd; }
+
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 2rem 0;
+  }
+  .pipeline-step {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 0 1.25rem;
+  }
+  .pipeline-spine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .pipeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--ink);
+    flex-shrink: 0;
+    margin-top: 0.35rem;
+  }
+  .pipeline-line {
+    width: 2px;
+    flex: 1;
+    background: var(--border);
+    min-height: 1.5rem;
+  }
+  .pipeline-body {
+    padding-bottom: 1.75rem;
+  }
+  .pipeline-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    margin-bottom: 0.2rem;
+  }
+  .pipeline-title {
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+  }
+  .pipeline-desc {
+    font-size: 0.9rem;
+    color: var(--ink-3);
+  }
+
+  .callout {
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+    font-size: 0.9rem;
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    gap: 0 0.75rem;
+    align-items: start;
+  }
+  .callout-icon { font-size: 0.85rem; padding-top: 0.05rem; }
+  .callout-text { color: var(--ink-2); line-height: 1.55; }
+  .callout-text strong { color: var(--ink); font-weight: 500; }
+  .callout.info { background: var(--accent-blue-light); border-left: 3px solid var(--accent-blue); }
+  .callout.warn { background: var(--accent-amber-light); border-left: 3px solid var(--accent-amber); }
+  .callout.key  { background: var(--accent-teal-light);  border-left: 3px solid var(--accent-teal); }
+  .callout.new  { background: var(--accent-purple-light); border-left: 3px solid var(--accent-purple); }
+
+  .file-list {
+    margin: 1.25rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .file-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--ink-2);
+  }
+  .badge {
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.1em 0.45em;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .badge.new     { background: var(--accent-purple-light); color: var(--accent-purple); }
+  .badge.extend  { background: var(--accent-blue-light);   color: var(--accent-blue); }
+  .badge.reuse   { background: var(--accent-teal-light);   color: var(--accent-teal); }
+  .badge.migrate { background: var(--accent-amber-light);  color: var(--accent-amber); }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.1rem 1.25rem;
+  }
+  .card-title {
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 0.35rem;
+    color: var(--ink);
+  }
+  .card-body {
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    line-height: 1.5;
+  }
+
+  .activity-block {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    overflow: hidden;
+  }
+  .activity-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .activity-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    background: var(--ink);
+    color: var(--surface);
+    padding: 0.2em 0.5em;
+    border-radius: 3px;
+    letter-spacing: 0.06em;
+  }
+  .activity-lang {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--ink-4);
+  }
+  .activity-name {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--ink);
+    flex: 1;
+  }
+  .activity-timeout {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--ink-4);
+  }
+  .activity-body {
+    padding: 1.25rem;
+  }
+  .activity-body p { font-size: 0.9rem; }
+  .activity-body ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 1rem;
+  }
+  .activity-body ul li {
+    font-size: 0.9rem;
+    color: var(--ink-2);
+    padding: 0.25rem 0 0.25rem 1.25rem;
+    position: relative;
+  }
+  .activity-body ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--ink-4);
+    font-size: 0.8rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    margin: 1.25rem 0;
+  }
+  th {
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    padding: 0.6rem 0.75rem;
+    border-bottom: 2px solid var(--border);
+    font-weight: 400;
+  }
+  td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--surface-3);
+    color: var(--ink-2);
+    vertical-align: top;
+  }
+  td code { font-size: 0.78em; }
+  tr:last-child td { border-bottom: none; }
+
+  .phase-complete {
+    background: var(--accent-green-light);
+    border: 1px solid #c3e6a3;
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .phase-complete-title {
+    font-weight: 500;
+    color: var(--accent-green);
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+  }
+  .phase-complete-body {
+    font-size: 0.875rem;
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-label">Deep Dive · Phase 2 of 5 · News Intelligence Feature · May 2026</div>
+    <h1>Phase 2 —<br><em>Semantic embeddings</em><br>+ interest profile</h1>
+    <p class="masthead-sub">Articles get embedded on ingest. A user interest profile is seeded from explicit memory. The feed is ranked by cosine similarity — from a chronological list to a relevance-ordered intelligence layer.</p>
+    <div class="masthead-stats">
+      <div class="stat"><span class="stat-num">2</span><span class="stat-label">new worker activities</span></div>
+      <div class="stat"><span class="stat-num">2</span><span class="stat-label">new domain entities</span></div>
+      <div class="stat"><span class="stat-num">1</span><span class="stat-label">shared OpenAI provider</span></div>
+      <div class="stat"><span class="stat-num">pgvector</span><span class="stat-label">already running</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="phase-complete">
+    <div class="phase-complete-title">✓ Phase 1 is complete</div>
+    <div class="phase-complete-body">
+      All four sources ingest with full body text (trafilatura). URL deduplication works at workflow and DB level. The internal ingest endpoint is live. <code>IUserInterestProvider</code> is already wired and implemented via <code>ExplicitProfileUserInterestProvider</code>. The feed serves real articles ordered by date. Phase 2 builds directly on top of this — no Phase 1 rework needed.
+    </div>
+  </div>
+
+  <!-- 01 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">What Phase 2 delivers</h2>
+    </div>
+    <p>Today the news feed is a chronological list — all sources contribute equally, no article is more relevant to you than any other. After Phase 2, every article is embedded on ingest and the feed is ranked by cosine similarity against your personal interest profile vector. The feed stops being a list and starts being a relevance-ordered view of what matters to you right now.</p>
+    <p>Phase 2 also establishes a critical piece of shared infrastructure: the OpenAI embedding provider. The memory system already defines <code>IMemoryEmbeddingGenerator</code> but only has a deterministic stub wired in. Phase 2 implements the real OpenAI provider once, designed to be registered for both memory and news so neither system duplicates the integration.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">Articles embedded on ingest</div>
+        <div class="card-body">Every newly ingested article gets embedded immediately as part of the workflow run. Embeddings are stored in pgvector alongside the article.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">User interest profile</div>
+        <div class="card-body">Seeded once from your explicit interest profile (core interests, secondary interests, goals, active projects). Stored as a 1536-dim vector.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Ranked feed</div>
+        <div class="card-body">The feed endpoint runs an ANN cosine similarity search against your profile vector and returns articles ordered by relevance, not date.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Relevance score visible</div>
+        <div class="card-body">Each article in the feed response now carries a relevance score (0–1). The frontend shows it as a subtle indicator on the news card.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Pipeline overview</h2>
+    </div>
+    <p>Phase 2 adds two steps to the existing workflow — embedding and profile seeding — and changes the read path to use vector search instead of a date sort.</p>
+
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">existing — phase 1</div>
+          <div class="pipeline-title">Fetch + ingest</div>
+          <div class="pipeline-desc">Four source activities run in parallel. Results are deduped and POSTed to the backend. <code>ingest_articles</code> returns a list of newly created article IDs.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot" style="background:var(--accent-purple)"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">new — phase 2</div>
+          <div class="pipeline-title">Embed new articles</div>
+          <div class="pipeline-desc"><code>embed_news_articles</code> receives only the newly created IDs (not duplicates). Calls OpenAI embeddings API, POSTs vectors to backend. Duplicates are skipped — they already have embeddings.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot" style="background:var(--accent-purple)"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">new — phase 2 (runs once)</div>
+          <div class="pipeline-title">Ensure user news profile</div>
+          <div class="pipeline-desc"><code>ensure_user_news_profile</code> checks if a profile vector exists for the user. If not, reads from <code>IUserInterestProvider</code>, embeds the interest text, and stores as the initial long-term profile. Idempotent — safe to call every run.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot" style="background:var(--accent-teal)"></div><div class="pipeline-line" style="background:transparent"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">updated read path</div>
+          <div class="pipeline-title">Ranked feed query</div>
+          <div class="pipeline-desc"><code>GET /api/v1/news/feed</code> now loads the user's profile vector and runs a pgvector cosine similarity search. Returns top 30 articles ordered by relevance with scores attached.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout key">
+      <span class="callout-icon">↻</span>
+      <span class="callout-text"><strong>Only new articles are embedded per run.</strong> The workflow passes the <code>created</code> IDs from <code>ingest_articles</code> directly to <code>embed_news_articles</code> — duplicates already have embeddings and are skipped entirely. This keeps each run cheap regardless of how many articles are already in the database.</span>
+    </div>
+  </div>
+
+  <!-- 03 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">New data model</h2>
+    </div>
+    <p>Two new entities are added. Both follow the same patterns as the memory system's <code>MemoryEmbedding</code> entity — same pgvector column type, same 1536-dimension constant, same EF Core configuration approach.</p>
+
+    <h3>NewsItemEmbedding</h3>
+    <p>Stores the embedding vector for a single news article. One row per article per embedding model. Cascade-deleted when the news item is deleted.</p>
+    <pre><span class="comment">// Platform.Domain/Features/News/NewsItemEmbedding.cs</span>
+<span class="kw">public sealed class</span> <span class="cls">NewsItemEmbedding</span>
+{
+    <span class="kw">public long</span>   Id                  { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public string</span> NewsItemId           { <span class="kw">get</span>; <span class="kw">set</span>; } = <span class="str">""</span>;  <span class="comment">// FK → NewsItems.Id</span>
+    <span class="kw">public string</span> EmbeddingModelKey    { <span class="kw">get</span>; <span class="kw">set</span>; } = <span class="str">""</span>;  <span class="comment">// e.g. "text-embedding-3-small"</span>
+    <span class="kw">public int</span>    Dimensions           { <span class="kw">get</span>; <span class="kw">set</span>; }          <span class="comment">// 1536</span>
+    <span class="kw">public</span> Vector Embedding            { <span class="kw">get</span>; <span class="kw">set</span>; } = <span class="kw">null</span>!; <span class="comment">// pgvector</span>
+    <span class="kw">public</span> DateTimeOffset EmbeddedAt   { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+<span class="comment">// EF configuration (in NewsItemEmbeddingConfiguration.cs)</span>
+<span class="comment">// Table: news_item_embeddings</span>
+<span class="comment">// Column: Embedding → HasColumnType("vector(1536)")</span>
+<span class="comment">// Index: HNSW on Embedding with vector_cosine_ops</span>
+<span class="comment">// Index: Unique on (NewsItemId, EmbeddingModelKey)</span></pre>
+
+    <h3>NewsUserProfile</h3>
+    <p>Stores the user's long-term interest embedding. Seeded once from <code>IUserInterestProvider</code>. Updated manually or via a future Phase 3 feedback loop. One row per user.</p>
+    <pre><span class="comment">// Platform.Domain/Features/News/NewsUserProfile.cs</span>
+<span class="kw">public sealed class</span> <span class="cls">NewsUserProfile</span>
+{
+    <span class="kw">public int</span>    UserId              { <span class="kw">get</span>; <span class="kw">set</span>; }          <span class="comment">// PK (one profile per user)</span>
+    <span class="kw">public</span> Vector LongTermEmbedding   { <span class="kw">get</span>; <span class="kw">set</span>; } = <span class="kw">null</span>!; <span class="comment">// pgvector 1536-dim</span>
+    <span class="kw">public string</span> SeedText            { <span class="kw">get</span>; <span class="kw">set</span>; } = <span class="str">""</span>;  <span class="comment">// what was embedded (for debug)</span>
+    <span class="kw">public</span> DateTimeOffset SeededAt    { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public</span> DateTimeOffset UpdatedAt   { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+<span class="comment">// EF configuration</span>
+<span class="comment">// Table: news_user_profiles</span>
+<span class="comment">// PK: UserId (not an auto-increment long)</span>
+<span class="comment">// Column: LongTermEmbedding → HasColumnType("vector(1536)")</span></pre>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ</span>
+      <span class="callout-text"><strong>Why store SeedText?</strong> When you look at why the ranking produces a certain result, knowing exactly what text was embedded as your profile is essential. It also makes re-seeding predictable — you can see if your interests have changed significantly since the last seed.</span>
+    </div>
+  </div>
+
+  <!-- 04 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">OpenAI embedding provider</h2>
+    </div>
+    <p>The memory system defines <code>IMemoryEmbeddingGenerator</code> but only has a deterministic stub wired in production. The real OpenAI implementation does not exist yet. Phase 2 adds it once, designed to serve both the news and memory embedding pipelines without duplication.</p>
+
+    <div class="callout new">
+      <span class="callout-icon">★</span>
+      <span class="callout-text"><strong>This is shared infrastructure.</strong> <code>OpenAiEmbeddingGenerator</code> is placed in <code>Platform.Infrastructure</code> and implements <code>IMemoryEmbeddingGenerator</code>. It is registered once and injected wherever embeddings are needed — news ranking in Phase 2, memory vector recall when that phase arrives. Do not create a separate news-specific embedding class.</span>
+    </div>
+
+    <pre><span class="comment">// Platform.Infrastructure/AI/OpenAiEmbeddingGenerator.cs</span>
+<span class="kw">public sealed class</span> <span class="cls">OpenAiEmbeddingGenerator</span> : <span class="cls">IMemoryEmbeddingGenerator</span>
+{
+    <span class="kw">public string</span> ModelKey    => _options.EmbeddingModel;   <span class="comment">// "text-embedding-3-small"</span>
+    <span class="kw">public int</span>    Dimensions  => <span class="num">1536</span>;
+
+    <span class="kw">public async</span> Task&lt;float[]?&gt; <span class="fn">TryEmbedRecallQueryAsync</span>(
+        <span class="kw">string</span>? text, CancellationToken ct = <span class="kw">default</span>)
+    {
+        <span class="kw">if</span> (<span class="kw">string</span>.IsNullOrWhiteSpace(text)) <span class="kw">return null</span>;
+        <span class="comment">// POST to OpenAI /v1/embeddings, parse float[] from response.data[0].embedding</span>
+        <span class="comment">// Return null on any failure — callers treat null as "skip embedding"</span>
+    }
+}</pre>
+
+    <h3>Configuration</h3>
+    <p>One new setting in <code>appsettings.json</code> (not in .env — this is a backend setting, not a worker setting):</p>
+    <pre><span class="comment">// appsettings.json</span>
+<span class="str">"OpenAi"</span>: {
+  <span class="str">"ApiKey"</span>:        <span class="str">"sk-..."</span>,           <span class="comment">// from environment / secrets</span>
+  <span class="str">"BaseUrl"</span>:       <span class="str">"https://api.openai.com/v1"</span>,
+  <span class="str">"EmbeddingModel"</span>:<span class="str">"text-embedding-3-small"</span>  <span class="comment">// 1536 dims, cheapest option</span>
+}</pre>
+
+    <div class="callout warn">
+      <span class="callout-icon">!</span>
+      <span class="callout-text"><strong>The worker already has OPENAI_API_KEY in its .env.</strong> The backend needs its own key because embedding generation moves to the backend in this design (the worker sends article text to the backend endpoint which generates and stores the embedding). This keeps all OpenAI calls in one place and avoids the worker needing to handle large float arrays over Temporal.</span>
+    </div>
+
+    <div class="file-list">
+      <div class="file-row"><span class="badge new">new</span> Platform.Infrastructure/AI/OpenAiEmbeddingGenerator.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Infrastructure/AI/OpenAiOptions.cs</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Infrastructure/DependencyInjection.cs — register OpenAiEmbeddingGenerator</div>
+      <div class="file-row"><span class="badge extend">extend</span> appsettings.json — add OpenAi section</div>
+    </div>
+  </div>
+
+  <!-- 05 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Worker — new activities and contracts</h2>
+    </div>
+    <p>Two new Temporal activities added to <code>activities.py</code>. Both are short — the heavy work (embedding generation, vector storage) happens in the backend. The worker's job is to pass the right data and handle errors gracefully.</p>
+
+    <div class="activity-block">
+      <div class="activity-header">
+        <span class="activity-num">act 1</span>
+        <span class="activity-lang">Python</span>
+        <span class="activity-name">embed_news_articles</span>
+        <span class="activity-timeout">timeout 120s</span>
+      </div>
+      <div class="activity-body">
+        <p>Receives the list of newly created article IDs from the workflow. POSTs each ID to the backend endpoint <code>POST /api/internal/v1/news/items/{id}/embed</code> concurrently. The backend fetches the article body, generates the embedding, and stores it — the worker never handles float arrays.</p>
+        <ul>
+          <li>Accepts <code>article_ids: list[str]</code> — only the <em>created</em> IDs, not duplicates</li>
+          <li>Concurrency capped at 5 simultaneous requests (embedding is slower than ingest)</li>
+          <li>Per-article errors are caught and counted — never abort the whole batch</li>
+          <li>Returns <code>NewsEmbedResult(embedded: int, skipped: int, errors: int)</code></li>
+        </ul>
+        <pre><span class="comment"># workers-platform/app/workflows/news_intelligence/activities.py</span>
+@activity.defn
+<span class="kw">async def</span> <span class="fn">embed_news_articles</span>(article_ids: list[<span class="kw">str</span>]) -> dict:
+    settings = get_settings()
+    base = settings.platform_api_base_url.rstrip(<span class="str">"/"</span>)
+    headers = {<span class="str">"Authorization"</span>: f<span class="str">"Bearer {settings.platform_internal_service_token}"</span>}
+    sem = asyncio.Semaphore(<span class="num">5</span>)
+    embedded = skipped = errors = <span class="num">0</span>
+
+    <span class="kw">async def</span> <span class="fn">embed_one</span>(client, article_id):
+        <span class="kw">async with</span> sem:
+            r = <span class="kw">await</span> client.post(
+                f<span class="str">"{base}/api/internal/v1/news/items/{article_id}/embed"</span>,
+                headers=headers,
+            )
+            <span class="kw">return</span> r.json().get(<span class="str">"status"</span>)  <span class="comment"># "embedded" | "skipped" | "error"</span>
+
+    <span class="kw">async with</span> httpx.AsyncClient(timeout=<span class="num">30.0</span>) <span class="kw">as</span> client:
+        results = <span class="kw">await</span> asyncio.gather(
+            *(embed_one(client, aid) <span class="kw">for</span> aid <span class="kw">in</span> article_ids),
+            return_exceptions=<span class="kw">True</span>,
+        )
+    <span class="comment"># tally results, return NewsEmbedResult</span></pre>
+      </div>
+    </div>
+
+    <div class="activity-block">
+      <div class="activity-header">
+        <span class="activity-num">act 2</span>
+        <span class="activity-lang">Python</span>
+        <span class="activity-name">ensure_user_news_profile</span>
+        <span class="activity-timeout">timeout 30s</span>
+      </div>
+      <div class="activity-body">
+        <p>Checks whether the user already has a news profile vector. If one exists, does nothing. If not, POSTs to the backend seed endpoint which reads from <code>IUserInterestProvider</code>, generates the embedding server-side, and stores it. Safe to call on every workflow run.</p>
+        <ul>
+          <li>Accepts <code>user_id: int</code> — passed from workflow config (the primary user, same as memory consolidation)</li>
+          <li>Calls <code>POST /api/internal/v1/news/profile/seed</code></li>
+          <li>Backend returns <code>"seeded"</code> (first time) or <code>"exists"</code> (already seeded)</li>
+          <li>Logs the outcome, never raises — a missing profile degrades gracefully to chronological feed</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>New contracts</h3>
+    <pre><span class="comment"># workers-platform/app/workflows/news_intelligence/contracts.py — additions</span>
+<span class="kw">class</span> <span class="cls">NewsEmbedResult</span>(BaseModel):
+    embedded: <span class="kw">int</span> = <span class="num">0</span>
+    skipped:  <span class="kw">int</span> = <span class="num">0</span>   <span class="comment"># already had an embedding</span>
+    errors:   <span class="kw">int</span> = <span class="num">0</span></pre>
+
+    <div class="file-list">
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/workflows/news_intelligence/activities.py</div>
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/workflows/news_intelligence/contracts.py</div>
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/runtime/registry/definitions.py — register 2 new activities</div>
+    </div>
+  </div>
+
+  <!-- 06 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Workflow changes</h2>
+    </div>
+    <p>The workflow gains two additional steps after the existing ingest activity. The key change is threading the list of newly created article IDs from <code>ingest_articles</code> into <code>embed_news_articles</code>.</p>
+
+    <pre><span class="comment"># workers-platform/app/workflows/news_intelligence/workflow.py</span>
+@workflow.defn
+<span class="kw">class</span> <span class="cls">NewsIntelligenceWorkflow</span>:
+    @workflow.run
+    <span class="kw">async def</span> <span class="fn">run</span>(self, payload: <span class="kw">str</span>) -> WorkflowRunResult:
+        request = WorkflowRunRequest.model_validate_json(payload)
+
+        <span class="comment"># ── existing Phase 1 steps ───────────────────────────────</span>
+        results = <span class="kw">await</span> workflow.asyncio.gather(
+            workflow.execute_activity(<span class="str">"fetch_rss_articles"</span>, ...),
+            workflow.execute_activity(<span class="str">"fetch_hacker_news_articles"</span>, ...),
+            workflow.execute_activity(<span class="str">"fetch_gnews_articles"</span>, ...),
+            workflow.execute_activity(<span class="str">"fetch_arxiv_articles"</span>, ...),
+            return_exceptions=<span class="kw">True</span>,
+        )
+        unique = <span class="comment"># ... dedupe logic unchanged ...</span>
+
+        ingest_raw = <span class="kw">await</span> workflow.execute_activity(<span class="str">"ingest_articles"</span>, unique, ...)
+        ingest_result = NewsIngestResult.model_validate(ingest_raw)
+
+        <span class="comment"># ── new Phase 2 steps ────────────────────────────────────</span>
+        <span class="comment"># Only embed articles that were actually created this run</span>
+        <span class="kw">if</span> ingest_result.created_ids:
+            <span class="kw">await</span> workflow.execute_activity(
+                <span class="str">"embed_news_articles"</span>,
+                ingest_result.created_ids,
+                start_to_close_timeout=timedelta(minutes=<span class="num">2</span>),
+            )
+
+        <span class="comment"># Ensure user profile exists (idempotent — fast no-op if already seeded)</span>
+        <span class="kw">await</span> workflow.execute_activity(
+            <span class="str">"ensure_user_news_profile"</span>,
+            request.user_id <span class="kw">or</span> <span class="num">1</span>,
+            start_to_close_timeout=timedelta(seconds=<span class="num">30</span>),
+        )</pre>
+
+    <div class="callout warn">
+      <span class="callout-icon">!</span>
+      <span class="callout-text"><strong>NewsIngestResult needs a <code>created_ids</code> field.</strong> Currently it only tracks counts (<code>created</code>, <code>duplicates</code>, <code>errors</code>). Add <code>created_ids: list[str]</code> to both the Python Pydantic model and the C# record. The <code>ingest_articles</code> activity already receives individual responses with <code>id</code> — just collect the IDs for <code>"created"</code> responses into this new field.</span>
+    </div>
+
+    <div class="file-list">
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/workflows/news_intelligence/workflow.py</div>
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/workflows/news_intelligence/contracts.py — add created_ids to NewsIngestResult</div>
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/runtime/config/settings.py — add news_primary_user_id (default 1)</div>
+    </div>
+  </div>
+
+  <!-- 07 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Backend changes</h2>
+    </div>
+    <p>The backend gains two new entities, a migration, two new internal endpoints, a vector search interface and implementation, and an updated read path. All follows the same patterns already established in the memory system.</p>
+
+    <h3>New internal endpoints</h3>
+    <table>
+      <thead>
+        <tr><th>Method + Path</th><th>What it does</th><th>Response</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>POST /api/internal/v1/news/items/{id}/embed</code></td>
+          <td>Fetches the NewsItem body, generates an embedding via <code>IMemoryEmbeddingGenerator</code>, upserts a <code>NewsItemEmbedding</code> row</td>
+          <td><code>{ "status": "embedded" | "skipped" | "error" }</code></td>
+        </tr>
+        <tr>
+          <td><code>POST /api/internal/v1/news/profile/seed</code></td>
+          <td>Loads user interests via <code>IUserInterestProvider</code>, builds seed text, generates embedding, upserts <code>NewsUserProfile</code> row</td>
+          <td><code>{ "status": "seeded" | "exists" }</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Interest profile seed text</h3>
+    <p>The seed text sent to the embedding API is built from the user's <code>UserInterestSnapshot</code>. Format it as structured natural language so the embedding model captures the right semantic meaning:</p>
+    <pre><span class="comment">// Platform.Application/Features/News/Profile/SeedNewsProfileCommandHandler.cs</span>
+<span class="kw">var</span> seedText = <span class="str">$"""
+  Core interests: {string.Join(", ", snapshot.CoreInterests)}
+  Secondary interests: {string.Join(", ", snapshot.SecondaryInterests)}
+  Goals: {string.Join(", ", snapshot.Goals)}
+  Active projects: {string.Join(", ", snapshot.ActiveProjects.Select(p => p.Name))}
+  """</span>;</pre>
+
+    <h3>Vector search interface and implementation</h3>
+    <pre><span class="comment">// Platform.Application/Abstractions/News/INewsVectorSearch.cs</span>
+<span class="kw">public interface</span> <span class="cls">INewsVectorSearch</span>
+{
+    Task&lt;IReadOnlyList&lt;<span class="cls">NewsVectorHit</span>&gt;&gt; <span class="fn">RankByRelevanceAsync</span>(
+        <span class="kw">int</span> userId,
+        <span class="kw">int</span> limit,
+        CancellationToken ct = <span class="kw">default</span>);
+}
+
+<span class="kw">public sealed record</span> <span class="cls">NewsVectorHit</span>(
+    <span class="kw">string</span> NewsItemId,
+    <span class="kw">double</span> CosineSimilarity);   <span class="comment">// 0–1, higher = more relevant</span></pre>
+
+    <pre><span class="comment">// Platform.Infrastructure/Features/News/NewsVectorSearch.cs</span>
+<span class="comment">// Mirrors EfMemoryVectorRecallSearch — same pgvector cosine distance pattern</span>
+<span class="kw">var</span> profile = <span class="kw">await</span> db.NewsUserProfiles
+    .FirstOrDefaultAsync(p => p.UserId == userId, ct);
+
+<span class="kw">if</span> (profile <span class="kw">is null</span>) <span class="kw">return</span> []; <span class="comment">// no profile → caller falls back to date sort</span>
+
+<span class="kw">var</span> qv = profile.LongTermEmbedding;
+<span class="kw">return await</span> db.NewsItemEmbeddings
+    .Where(e => e.EmbeddingModelKey == modelKey)
+    .OrderBy(e => e.Embedding!.CosineDistance(qv))
+    .Take(limit)
+    .Select(e => <span class="kw">new</span> NewsVectorHit(
+        e.NewsItemId,
+        <span class="num">1.0</span> - (double)e.Embedding!.CosineDistance(qv)))
+    .ToListAsync(ct);</pre>
+
+    <h3>Updated feed query handler</h3>
+    <p>The read path now has two branches: vector-ranked (when a profile exists) and chronological (fallback). The caller never knows which branch ran — the response shape is identical.</p>
+    <pre><span class="comment">// Platform.Application/Features/News/ListFeed/ListNewsFeedQueryHandler.cs</span>
+<span class="kw">var</span> hits = <span class="kw">await</span> _vectorSearch.<span class="fn">RankByRelevanceAsync</span>(userId, limit: <span class="num">30</span>, ct);
+
+<span class="kw">if</span> (hits.Count == <span class="num">0</span>)
+{
+    <span class="comment">// No profile yet — fall back to chronological</span>
+    <span class="kw">return await</span> _newsReadRepository.<span class="fn">ListFeedAsync</span>(limit: <span class="num">30</span>, ct);
+}
+
+<span class="kw">var</span> scoreMap = hits.ToDictionary(h => h.NewsItemId, h => h.CosineSimilarity);
+<span class="kw">var</span> items    = <span class="kw">await</span> _newsReadRepository.<span class="fn">GetByIdsAsync</span>(hits.Select(h => h.NewsItemId), ct);
+
+<span class="kw">return</span> items
+    .OrderByDescending(x => scoreMap.GetValueOrDefault(x.Id))
+    .Select(x => x.ToSummaryDto(relevanceScore: scoreMap.GetValueOrDefault(x.Id)))</pre>
+
+    <h3>Migration</h3>
+    <p>One migration adds both new tables and the HNSW index on the news item embeddings.</p>
+    <pre><span class="comment">// Key SQL produced by the migration</span>
+CREATE TABLE news_item_embeddings (
+    id               BIGSERIAL PRIMARY KEY,
+    news_item_id     TEXT NOT NULL REFERENCES "NewsItems"("Id") ON DELETE CASCADE,
+    embedding_model_key TEXT NOT NULL,
+    dimensions       INT NOT NULL,
+    embedding        vector(<span class="num">1536</span>) NOT NULL,
+    embedded_at      TIMESTAMPTZ NOT NULL
+);
+CREATE UNIQUE INDEX ON news_item_embeddings (news_item_id, embedding_model_key);
+CREATE INDEX ON news_item_embeddings USING hnsw (embedding vector_cosine_ops);
+
+CREATE TABLE news_user_profiles (
+    user_id          INT PRIMARY KEY,
+    long_term_embedding vector(<span class="num">1536</span>) NOT NULL,
+    seed_text        TEXT NOT NULL,
+    seeded_at        TIMESTAMPTZ NOT NULL,
+    updated_at       TIMESTAMPTZ NOT NULL
+);</pre>
+
+    <div class="file-list">
+      <div class="file-row"><span class="badge new">new</span> Platform.Domain/Features/News/NewsItemEmbedding.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Domain/Features/News/NewsUserProfile.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Abstractions/News/INewsVectorSearch.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/Embed/EmbedNewsItemCommand.cs + Handler</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/Profile/SeedNewsProfileCommand.cs + Handler</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Infrastructure/AI/OpenAiEmbeddingGenerator.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Infrastructure/AI/OpenAiOptions.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Infrastructure/Features/News/NewsVectorSearch.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Infrastructure/Features/News/EfNewsEmbeddingRepository.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Api/Features/News/Internal/InternalNewsEmbedV1Routes.cs</div>
+      <div class="file-row"><span class="badge migrate">migrate</span> [timestamp]_NewsEmbeddingsV1.cs</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Infrastructure/Persistence/PlatformDbContext.cs — add DbSets</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Infrastructure/DependencyInjection.cs — register new services</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Application/Features/News/ListFeed/ListNewsFeedQueryHandler.cs</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Application/Features/News/ListFeed/ListNewsFeedQuery.cs — add userId</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Application/Abstractions/News/INewsReadRepository.cs — add GetByIdsAsync, limit param</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Infrastructure/Features/News/NewsReadRepository.cs</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Contracts/V1/NewsItemSummaryDto.cs — add RelevanceScore</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Api/Features/News/NewsV1Routes.cs — pass userId to query</div>
+    </div>
+  </div>
+
+  <!-- 08 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">Frontend update</h2>
+    </div>
+    <p>One addition to the news card: a subtle relevance indicator. The goal is to make it clear ranking is working without making the score dominate the UI. A percentage or a small coloured bar in the corner of each card is enough for now.</p>
+
+    <pre><span class="comment">// frontend-platform/src/lib/api/adapters/news.ts — map new field</span>
+<span class="kw">export</span> <span class="kw">const</span> <span class="fn">adaptNewsItem</span> = (raw: <span class="cls">RawNewsItem</span>): <span class="cls">NewsItem</span> => ({
+  id:             raw.id,
+  title:          raw.title,
+  source:         raw.source,
+  publishedAt:    raw.publishedAt,
+  url:            raw.url ?? <span class="kw">null</span>,
+  body:           raw.body ?? <span class="kw">null</span>,
+  relevanceScore: raw.relevanceScore ?? <span class="kw">null</span>,  <span class="comment">// ← new</span>
+});</pre>
+
+    <pre><span class="comment">// frontend-platform/src/types/content.ts — extend type</span>
+<span class="kw">export interface</span> <span class="cls">NewsItem</span> {
+  id:             string;
+  title:          string;
+  source:         string;
+  publishedAt:    string;
+  url:            string | null;
+  body:           string | null;
+  relevanceScore: number | null;  <span class="comment">// 0–1, null when no profile exists yet</span>
+}</pre>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ</span>
+      <span class="callout-text"><strong>Show the score only when it exists.</strong> Until the user profile is seeded, <code>relevanceScore</code> will be null and the feed falls back to chronological order. The UI should handle null gracefully — no score indicator shown, feed still works normally.</span>
+    </div>
+
+    <div class="file-list">
+      <div class="file-row"><span class="badge extend">extend</span> frontend-platform/src/types/content.ts</div>
+      <div class="file-row"><span class="badge extend">extend</span> frontend-platform/src/lib/api/adapters/news.ts</div>
+      <div class="file-row"><span class="badge extend">extend</span> frontend-platform/src/modules/news/NewsView.tsx — add score indicator to card</div>
+    </div>
+  </div>
+
+  <!-- 09 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2 class="section-title">Done when</h2>
+    </div>
+    <p>Phase 2 is complete when all of the following are true:</p>
+    <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.6rem;margin-top:1rem">
+      <li style="display:grid;grid-template-columns:1.25rem 1fr;gap:0.5rem;font-size:0.9rem;color:var(--ink-2)"><span>□</span><span>A workflow run produces log lines: <code>embed_news_articles done embedded=X skipped=0 errors=0</code></span></li>
+      <li style="display:grid;grid-template-columns:1.25rem 1fr;gap:0.5rem;font-size:0.9rem;color:var(--ink-2)"><span>□</span><span>The <code>news_item_embeddings</code> table has rows with 1536-dim vectors</span></li>
+      <li style="display:grid;grid-template-columns:1.25rem 1fr;gap:0.5rem;font-size:0.9rem;color:var(--ink-2)"><span>□</span><span>The <code>news_user_profiles</code> table has one row with a non-null embedding</span></li>
+      <li style="display:grid;grid-template-columns:1.25rem 1fr;gap:0.5rem;font-size:0.9rem;color:var(--ink-2)"><span>□</span><span><code>GET /api/v1/news/feed</code> returns articles in relevance order (not purely chronological)</span></li>
+      <li style="display:grid;grid-template-columns:1.25rem 1fr;gap:0.5rem;font-size:0.9rem;color:var(--ink-2)"><span>□</span><span>Each article in the feed response has a non-null <code>relevanceScore</code> between 0 and 1</span></li>
+      <li style="display:grid;grid-template-columns:1.25rem 1fr;gap:0.5rem;font-size:0.9rem;color:var(--ink-2)"><span>□</span><span>The frontend shows the relevance score indicator on news cards</span></li>
+      <li style="display:grid;grid-template-columns:1.25rem 1fr;gap:0.5rem;font-size:0.9rem;color:var(--ink-2)"><span>□</span><span>A second workflow run skips already-embedded articles (<code>skipped=X</code> in the log)</span></li>
+    </ul>
+
+    <h3 style="margin-top:2rem">What Phase 3 unlocks</h3>
+    <p>Once the interest profile vector and article embeddings are in place, Phase 3 (behavioral feedback loop) can update the profile vector based on how you actually interact with articles — dwell time, saves, dismissals. The profile starts static (seeded from your declared interests) and becomes dynamic.</p>
+  </div>
+
+</div>
+</body>
+</html>
