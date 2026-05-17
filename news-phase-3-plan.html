@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News Feature — Phase 3 Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0f;
+    --ink-2: #3a3a3a;
+    --ink-3: #6b6b6b;
+    --ink-4: #9b9b9b;
+    --surface: #fafaf8;
+    --surface-2: #f2f1ed;
+    --surface-3: #e8e6e0;
+    --border: #dddad2;
+    --accent-blue: #1a4f9e;
+    --accent-blue-light: #e8eef9;
+    --accent-teal: #0f6e56;
+    --accent-teal-light: #e1f5ee;
+    --accent-amber: #8a4e0a;
+    --accent-amber-light: #faeeda;
+    --accent-coral: #993c1d;
+    --accent-coral-light: #faece7;
+    --accent-purple: #3c3489;
+    --accent-purple-light: #eeedfe;
+    --accent-green: #3b6d11;
+    --accent-green-light: #eaf3de;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--surface);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+    font-weight: 300;
+  }
+
+  .masthead {
+    background: var(--ink);
+    color: var(--surface);
+    padding: 5rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 59px,
+      rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px
+    );
+  }
+  .masthead-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+    position: relative;
+  }
+  .masthead-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 1.5rem;
+  }
+  .masthead h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    line-height: 1.1;
+    font-weight: 400;
+    margin-bottom: 1.25rem;
+  }
+  .masthead h1 em {
+    font-style: italic;
+    color: rgba(255,255,255,0.6);
+  }
+  .masthead-sub {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.55);
+    max-width: 560px;
+    line-height: 1.6;
+  }
+  .masthead-stats {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    flex-wrap: wrap;
+  }
+  .stat { display: flex; flex-direction: column; gap: 0.2rem; }
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    line-height: 1;
+    color: #fff;
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem 2.5rem;
+  }
+
+  .section {
+    margin-bottom: 5rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--ink-4);
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.7rem;
+    font-weight: 400;
+  }
+
+  p { margin-bottom: 1rem; color: var(--ink-2); }
+  p:last-child { margin-bottom: 0; }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 1.75rem 0 0.6rem;
+    letter-spacing: -0.01em;
+  }
+  h4 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--ink-3);
+    margin: 1.25rem 0 0.4rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82em;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.1em 0.35em;
+    color: var(--ink);
+  }
+
+  pre {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    background: #0f0f0f;
+    color: #e8e6e0;
+    border-radius: 6px;
+    padding: 1.4rem 1.6rem;
+    overflow-x: auto;
+    line-height: 1.6;
+    margin: 1.25rem 0;
+  }
+  pre .comment { color: #6b7280; }
+  pre .kw { color: #93c5fd; }
+  pre .str { color: #86efac; }
+  pre .num { color: #fca5a5; }
+  pre .cls { color: #fde68a; }
+  pre .fn { color: #c4b5fd; }
+  pre .op { color: #d1d5db; }
+
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 2rem 0;
+  }
+  .pipeline-step {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 0 1.25rem;
+  }
+  .pipeline-spine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .pipeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--ink);
+    flex-shrink: 0;
+    margin-top: 0.35rem;
+  }
+  .pipeline-line {
+    width: 2px;
+    flex: 1;
+    background: var(--border);
+    min-height: 1.5rem;
+  }
+  .pipeline-body {
+    padding-bottom: 1.75rem;
+  }
+  .pipeline-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    margin-bottom: 0.2rem;
+  }
+  .pipeline-title {
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+  }
+  .pipeline-desc {
+    font-size: 0.9rem;
+    color: var(--ink-3);
+  }
+
+  .callout {
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+    font-size: 0.9rem;
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    gap: 0 0.75rem;
+    align-items: start;
+  }
+  .callout-icon { font-size: 0.85rem; padding-top: 0.05rem; }
+  .callout-text { color: var(--ink-2); line-height: 1.55; }
+  .callout-text strong { color: var(--ink); font-weight: 500; }
+  .callout.info { background: var(--accent-blue-light); border-left: 3px solid var(--accent-blue); }
+  .callout.warn { background: var(--accent-amber-light); border-left: 3px solid var(--accent-amber); }
+  .callout.key  { background: var(--accent-teal-light);  border-left: 3px solid var(--accent-teal); }
+  .callout.new  { background: var(--accent-purple-light); border-left: 3px solid var(--accent-purple); }
+  .callout.danger { background: var(--accent-coral-light); border-left: 3px solid var(--accent-coral); }
+
+  .file-list {
+    margin: 1.25rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .file-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--ink-2);
+  }
+  .badge {
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.1em 0.45em;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .badge.new     { background: var(--accent-purple-light); color: var(--accent-purple); }
+  .badge.extend  { background: var(--accent-blue-light);   color: var(--accent-blue); }
+  .badge.reuse   { background: var(--accent-teal-light);   color: var(--accent-teal); }
+  .badge.migrate { background: var(--accent-amber-light);  color: var(--accent-amber); }
+  .badge.test    { background: var(--surface-3);           color: var(--ink-3); }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.1rem 1.25rem;
+  }
+  .card-title {
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 0.35rem;
+    color: var(--ink);
+  }
+  .card-body {
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    line-height: 1.5;
+    margin-bottom: 0;
+  }
+
+  .activity-block {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    overflow: hidden;
+  }
+  .activity-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .activity-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    background: var(--ink);
+    color: var(--surface);
+    padding: 0.2em 0.5em;
+    border-radius: 3px;
+    letter-spacing: 0.06em;
+  }
+  .activity-lang {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--ink-4);
+  }
+  .activity-name {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--ink);
+    flex: 1;
+  }
+  .activity-timeout {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--ink-4);
+  }
+  .activity-body {
+    padding: 1.25rem;
+  }
+  .activity-body p { font-size: 0.9rem; }
+  .activity-body ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 1rem;
+  }
+  .activity-body ul li {
+    font-size: 0.9rem;
+    color: var(--ink-2);
+    padding: 0.25rem 0 0.25rem 1.25rem;
+    position: relative;
+  }
+  .activity-body ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--ink-4);
+    font-size: 0.8rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    margin: 1.25rem 0;
+  }
+  th {
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    padding: 0.6rem 0.75rem;
+    border-bottom: 2px solid var(--border);
+    font-weight: 400;
+  }
+  td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--surface-3);
+    color: var(--ink-2);
+    vertical-align: top;
+  }
+  td code { font-size: 0.78em; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface-2); }
+
+  .phase-complete {
+    background: var(--accent-green-light);
+    border: 1px solid #c3e6a3;
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .phase-complete-title {
+    font-weight: 500;
+    color: var(--accent-green);
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+  }
+  .phase-complete-body {
+    font-size: 0.875rem;
+    color: var(--ink-2);
+    line-height: 1.55;
+    margin-bottom: 0;
+  }
+
+  .weight-table-wrap {
+    background: var(--ink);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+  }
+  .weight-table-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 1rem;
+  }
+  .weight-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
+    gap: 0 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    align-items: center;
+  }
+  .weight-row:last-child { border-bottom: none; }
+  .weight-row.header {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+  .weight-type {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.85);
+  }
+  .weight-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .weight-val.pos { color: #86efac; }
+  .weight-val.neg { color: #fca5a5; }
+  .weight-val.var { color: #fde68a; }
+  .weight-note {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.4);
+  }
+
+  @media (max-width: 640px) {
+    .card-grid { grid-template-columns: 1fr; }
+    .weight-row { grid-template-columns: 1fr 1fr; }
+    .weight-note { display: none; }
+    .masthead-stats { gap: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-label">Deep Dive · Phase 3 of 5 · News Intelligence Feature · May 2026</div>
+    <h1>Phase 3 —<br><em>Behavioral feedback</em><br>loop</h1>
+    <p class="masthead-sub">Track how you interact with articles. Feed that signal back into your interest profile. The system starts learning from your behavior — dwell time, saves, and dismissals all shift what gets surfaced next.</p>
+    <div class="masthead-stats">
+      <div class="stat"><span class="stat-num">1</span><span class="stat-label">new domain entity</span></div>
+      <div class="stat"><span class="stat-num">2</span><span class="stat-label">new backend commands</span></div>
+      <div class="stat"><span class="stat-num">1</span><span class="stat-label">new worker workflow</span></div>
+      <div class="stat"><span class="stat-num">3</span><span class="stat-label">interaction types</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="phase-complete">
+    <div class="phase-complete-title">✓ Phase 2 is complete</div>
+    <div class="phase-complete-body">
+      Articles are embedded on ingest using <code>text-embedding-3-small</code> via <code>OpenAiEmbeddingGenerator</code>. The user interest profile is seeded from <code>IUserInterestProvider</code> and stored as a 1536-dim vector in <code>NewsUserProfile</code>. The feed is ranked by cosine similarity via <code>NewsVectorSearch</code>. Relevance scores are returned in <code>NewsItemSummaryDto</code> and shown in the frontend as a "% match" pill on each article card. All integration tests pass. Phase 3 builds on top of this without touching any Phase 2 infrastructure.
+    </div>
+  </div>
+
+  <!-- 01 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">What Phase 3 delivers</h2>
+    </div>
+    <p>After Phase 2 the profile is static — it's seeded once from your declared interests and never changes. Phase 3 introduces behavioral signals: the system observes how you actually interact with articles and gradually moves your profile toward what you demonstrably read, save, and avoid. This is the difference between a feed that reflects who you said you are and one that reflects what you actually care about.</p>
+    <p>Three signals are captured: <strong>dwell time</strong> (how long you spend reading), <strong>saves</strong> (explicit positive signal), and <strong>dismissals</strong> (explicit negative signal). Each is weighted differently, combined into a weighted average of article embeddings, and used to nudge the long-term profile vector. A momentum factor (0.85 / 0.15 blend) ensures a single session can't hijack the profile — changes accumulate gradually.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">Interaction recording</div>
+        <div class="card-body">Frontend sends dwell time, saves, and dismissals to <code>POST /api/v1/news/interactions</code>. Each event is stored in <code>NewsInteraction</code>.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Behavioral profile update</div>
+        <div class="card-body">A backend command reads recent interactions, computes a weighted average of article embeddings, and blends the result into <code>NewsUserProfile.LongTermEmbedding</code>.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Dwell normalization</div>
+        <div class="card-body">Dwell time is compared against your personal reading baseline — average dwell across all your reads — so absolute seconds don't distort signals.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Scheduled updates</div>
+        <div class="card-body">A dedicated <code>ProfileUpdateWorkflow</code> runs at the end of every ingestion run and can be triggered independently for on-demand profile refresh.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">How the feedback loop works</h2>
+    </div>
+    <p>The update runs once per ingestion cycle (attached to the tail of <code>NewsIntelligenceWorkflow</code>) and operates over a 7-day sliding window of interactions. It does not run per-request — the feed ranking always uses the stored profile vector, not a live computation.</p>
+
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot" style="background:var(--accent-amber)"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">frontend — new</div>
+          <div class="pipeline-title">User interacts with an article</div>
+          <div class="pipeline-desc">Opening the detail view starts a dwell timer. Closing sends a <code>read</code> event with dwell seconds. A save button sends a <code>save</code> event. A "Not interested" button sends a <code>dismiss</code> event without deleting the article.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot" style="background:var(--accent-amber)"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">backend — new</div>
+          <div class="pipeline-title">Interaction recorded</div>
+          <div class="pipeline-desc"><code>POST /api/v1/news/interactions</code> calls <code>RecordNewsInteractionCommandHandler</code>. The interaction is stored in <code>NewsInteraction</code> with type, dwell seconds, and timestamp. User identity comes from the authenticated session.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot" style="background:var(--accent-purple)"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">worker — new (end of ingestion run)</div>
+          <div class="pipeline-title">Profile update triggered</div>
+          <div class="pipeline-desc"><code>update_user_news_profile</code> activity calls <code>POST /api/internal/v1/news/profile/update-from-interactions</code>. The backend command reads the last 7 days of interactions and returns <code>"updated"</code>, <code>"no-data"</code>, or <code>"no-profile"</code>.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot" style="background:var(--accent-purple)"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">backend — new (inside the command handler)</div>
+          <div class="pipeline-title">Weighted embedding computed</div>
+          <div class="pipeline-desc">For each interaction that has a stored embedding, a weight is computed based on type and normalized dwell. A weighted sum of article embeddings is calculated, normalized to a unit vector, and blended with the existing long-term profile at 85% / 15%.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot" style="background:var(--accent-teal)"></div><div class="pipeline-line" style="background:transparent"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">backend — updated</div>
+          <div class="pipeline-title">Profile stored, feed re-ranks automatically</div>
+          <div class="pipeline-desc"><code>NewsUserProfile.LongTermEmbedding</code> and <code>UpdatedAt</code> are written. The next call to <code>GET /api/v1/news/feed</code> uses the new vector automatically — <code>NewsVectorSearch</code> reads it on every request.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout key">
+      <span class="callout-icon">↻</span>
+      <span class="callout-text"><strong>All computation stays in the backend.</strong> The worker activity is a thin trigger — it sends a single POST and logs the result. The backend fetches interactions, loads embeddings from the DB, computes the weighted average, and writes the updated vector. This is the same pattern as Phase 2: the worker never handles float arrays.</span>
+    </div>
+  </div>
+
+  <!-- 03 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Interaction weighting model</h2>
+    </div>
+    <p>Three interaction types carry different semantic weight. Saves are the strongest positive signal — they're deliberate. Dwell time is a weaker but continuous signal that scales with how long you stayed on an article relative to your own average. Dismissals are a negative signal: they push the profile slightly away from that article's topic cluster.</p>
+
+    <div class="weight-table-wrap">
+      <div class="weight-table-title">Signal weights — applied to article embeddings</div>
+      <div class="weight-row header">
+        <span>Type</span>
+        <span>Weight</span>
+        <span>Notes</span>
+      </div>
+      <div class="weight-row">
+        <span class="weight-type">save</span>
+        <span class="weight-val pos">1.0</span>
+        <span class="weight-note">Strongest positive signal. Full weight applied to the article's embedding.</span>
+      </div>
+      <div class="weight-row">
+        <span class="weight-type">read (long)</span>
+        <span class="weight-val var">0.2 – 0.8</span>
+        <span class="weight-note">Scales with normalized dwell. At 2× your average read time, weight reaches 0.8.</span>
+      </div>
+      <div class="weight-row">
+        <span class="weight-type">read (short)</span>
+        <span class="weight-val var">0.2</span>
+        <span class="weight-note">Minimum weight for any read. Glancing counts, but barely.</span>
+      </div>
+      <div class="weight-row">
+        <span class="weight-type">dismiss</span>
+        <span class="weight-val neg">−0.3</span>
+        <span class="weight-note">Negative weight. Subtracts a scaled version of the article's embedding from the sum.</span>
+      </div>
+    </div>
+
+    <h3>Dwell normalization formula</h3>
+    <p>To make dwell time comparable across different reading sessions and article lengths, it is normalized against the user's own baseline before weighting. The baseline is the average dwell time across all past <code>read</code> interactions for this user.</p>
+    <pre><span class="comment"># dwell_factor ∈ [0.0, 1.0]</span>
+avg_dwell  = mean(dwell_seconds for all user read interactions)
+dwell_factor = clamp(dwell_seconds / avg_dwell, <span class="num">0.0</span>, <span class="num">2.0</span>) / <span class="num">2.0</span>
+
+<span class="comment"># read_weight ∈ [0.2, 0.8]</span>
+read_weight = <span class="num">0.2</span> + <span class="num">0.6</span> * dwell_factor
+
+<span class="comment"># If no prior reads exist, default avg_dwell = 60 seconds</span></pre>
+
+    <h3>Profile blend formula</h3>
+    <p>A momentum factor ensures the long-term profile doesn't shift abruptly on a single day's behavior. The new profile is a weighted combination of the existing embedding and the behavioral signal from the current window.</p>
+    <pre><span class="comment"># weighted_sum = sum(weight_i * article_embedding_i) for all interactions in window</span>
+<span class="comment"># (negative weights for dismiss type)</span>
+
+behavioral_signal = normalize(weighted_sum)   <span class="comment"># unit vector</span>
+new_profile       = normalize(
+    <span class="num">0.85</span> * current_long_term + <span class="num">0.15</span> * behavioral_signal
+)
+
+<span class="comment"># Skip update if weighted_sum is the zero vector (all weights cancel out)</span>
+<span class="comment"># Skip update if no interactions have stored embeddings</span></pre>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ</span>
+      <span class="callout-text"><strong>Why 0.85 / 0.15?</strong> At 0.15 per run the profile takes roughly 13 runs to shift meaningfully (half-life of ~6 runs). This lets behavior accumulate over several days before changing what you see, rather than reacting to a single afternoon of reading one topic. The ratio can be made configurable in a later phase.</span>
+    </div>
+
+    <div class="callout warn">
+      <span class="callout-icon">!</span>
+      <span class="callout-text"><strong>Articles without stored embeddings are skipped.</strong> If an interaction refers to an article that was ingested before Phase 2 (and therefore has no embedding), it is simply omitted from the weighted sum. The update still runs with whatever interactions do have embeddings. This gracefully handles the backfill gap without crashing.</span>
+    </div>
+  </div>
+
+  <!-- 04 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">New data model — NewsInteraction</h2>
+    </div>
+    <p>One new entity. It stores each discrete interaction event — a row per event, not one aggregated row per article. This means you can always recompute the profile from raw events, adjust the weighting formula retroactively, and query patterns like "articles I always dismiss in the first 5 seconds".</p>
+
+    <pre><span class="comment">// Platform.Domain/Features/News/NewsInteraction.cs</span>
+<span class="kw">public enum</span> <span class="cls">NewsInteractionType</span> { Read, Save, Dismiss }
+
+<span class="kw">public sealed class</span> <span class="cls">NewsInteraction</span>
+{
+    <span class="kw">public long</span>   Id              { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public int</span>    UserId          { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public string</span> NewsItemId      { <span class="kw">get</span>; <span class="kw">set</span>; } = <span class="str">""</span>;  <span class="comment">// FK → NewsItems.Id, no cascade (keep events even if article deleted)</span>
+    <span class="kw">public</span> NewsInteractionType Type { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public int</span>?   DwellSeconds    { <span class="kw">get</span>; <span class="kw">set</span>; }         <span class="comment">// null for Save and Dismiss</span>
+    <span class="kw">public</span> DateTimeOffset RecordedAt { <span class="kw">get</span>; <span class="kw">set</span>; }
+}</pre>
+
+    <h3>EF Core configuration decisions</h3>
+    <p>Table name: <code>news_interactions</code>. The <code>NewsItemId</code> FK is set to <code>NoAction</code> on delete — interaction events are preserved even if the article is later hard-deleted. This is intentional: the profile update command skips interactions without embeddings anyway, so orphaned rows are harmless and historically valuable.</p>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ</span>
+      <span class="callout-text"><strong>No unique constraint on (UserId, NewsItemId, Type).</strong> Multiple reads of the same article are valid — you might return to an article three times. The weighted average naturally handles repetition: a save followed by three reads applies more total weight to that article's embedding than a single save alone.</span>
+    </div>
+
+    <h3>Key indexes</h3>
+    <table>
+      <thead>
+        <tr><th>Index</th><th>Columns</th><th>Purpose</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Primary key</td>
+          <td><code>Id</code> (bigserial)</td>
+          <td>Row identity</td>
+        </tr>
+        <tr>
+          <td>Profile update query</td>
+          <td><code>(UserId, RecordedAt)</code></td>
+          <td>Fetch recent interactions for a user in the sliding window — the hot path for profile updates</td>
+        </tr>
+        <tr>
+          <td>FK index</td>
+          <td><code>NewsItemId</code></td>
+          <td>Join with <code>NewsItemEmbeddings</code> during profile update computation</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="file-list">
+      <div class="file-row"><span class="badge new">new</span> Platform.Domain/Features/News/NewsInteraction.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Abstractions/News/INewsInteractionRepository.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Infrastructure/Features/News/EfNewsInteractionRepository.cs</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Infrastructure/Persistence/PlatformDbContext.cs — add DbSet + entity configuration</div>
+      <div class="file-row"><span class="badge migrate">migrate</span> [timestamp]_NewsInteractionsV1.cs</div>
+    </div>
+  </div>
+
+  <!-- 05 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Backend — two new commands</h2>
+    </div>
+    <p>Phase 3 introduces two command handlers following the same CQRS pattern used throughout the news feature. Both have validators and both are injected via the existing DI registration approach.</p>
+
+    <h3>Command 1 — RecordNewsInteractionCommand</h3>
+    <p>Validates the request and writes a single <code>NewsInteraction</code> row. This is called from the user-facing API route, so the <code>UserId</code> comes from the authenticated session (via <code>IMemoryUserContextResolver</code> or equivalent), not from the request body.</p>
+
+    <pre><span class="comment">// Platform.Application/Features/News/RecordInteraction/RecordNewsInteractionCommand.cs</span>
+<span class="kw">public sealed record</span> <span class="cls">RecordNewsInteractionCommand</span>(
+    <span class="kw">int</span>    UserId,
+    <span class="kw">string</span> NewsItemId,
+    <span class="kw">string</span> Type,          <span class="comment">// "read" | "save" | "dismiss" — validated and parsed to enum</span>
+    <span class="kw">int</span>?   DwellSeconds);  <span class="comment">// required when Type = "read", null otherwise</span></pre>
+
+    <p>Validator rules: <code>UserId</code> must be positive; <code>NewsItemId</code> must be non-empty; <code>Type</code> must be one of the three known strings; <code>DwellSeconds</code> must be present and ≥ 1 when type is <code>"read"</code>; <code>DwellSeconds</code> must be null when type is <code>"save"</code> or <code>"dismiss"</code>.</p>
+
+    <pre><span class="comment">// Platform.Application/Features/News/RecordInteraction/RecordNewsInteractionCommandHandler.cs</span>
+<span class="kw">public sealed class</span> <span class="cls">RecordNewsInteractionCommandHandler</span>(
+    IValidator&lt;RecordNewsInteractionCommand&gt; validator,
+    INewsInteractionRepository interactions)
+{
+    <span class="kw">public async</span> Task <span class="fn">HandleAsync</span>(RecordNewsInteractionCommand cmd, CancellationToken ct)
+    {
+        <span class="kw">await</span> validator.ValidateAndThrowAsync(cmd, ct);
+        <span class="kw">var</span> interaction = <span class="kw">new</span> <span class="cls">NewsInteraction</span>
+        {
+            UserId       = cmd.UserId,
+            NewsItemId   = cmd.NewsItemId,
+            Type         = Enum.Parse&lt;<span class="cls">NewsInteractionType</span>&gt;(cmd.Type, ignoreCase: <span class="kw">true</span>),
+            DwellSeconds = cmd.DwellSeconds,
+            RecordedAt   = DateTimeOffset.UtcNow,
+        };
+        <span class="kw">await</span> interactions.InsertAsync(interaction, ct);
+    }
+}</pre>
+
+    <h3>Command 2 — UpdateNewsProfileFromInteractionsCommand</h3>
+    <p>The more complex handler. It fetches recent interactions, loads the corresponding article embeddings from <code>NewsItemEmbeddings</code>, computes the weighted average, and updates <code>NewsUserProfile.LongTermEmbedding</code>. This handler directly queries the DB (via repositories) rather than going through any service boundary.</p>
+
+    <pre><span class="comment">// Platform.Application/Features/News/Profile/UpdateNewsProfileCommand.cs</span>
+<span class="kw">public sealed record</span> <span class="cls">UpdateNewsProfileCommand</span>(
+    <span class="kw">int</span> UserId,
+    <span class="kw">int</span> WindowDays = <span class="num">7</span>);   <span class="comment">// how far back to look for interactions</span>
+
+<span class="kw">public enum</span> <span class="cls">UpdateNewsProfileResult</span> { Updated, NoData, NoProfile }</pre>
+
+    <p>The handler uses three repository calls: <code>INewsInteractionRepository.GetRecentAsync(userId, since)</code>, <code>INewsEmbeddingRepository.GetByNewsItemIdsAsync(ids, modelKey)</code>, and <code>INewsProfileRepository.UpsertAsync(profile)</code>. All heavy computation (the weighted sum, normalization, blend) happens in C# using the loaded vectors. No EF queries inside the math — load the data, compute in memory, write one row.</p>
+
+    <div class="callout key">
+      <span class="callout-icon">★</span>
+      <span class="callout-text"><strong>Add <code>GetByNewsItemIdsAsync</code> to <code>INewsEmbeddingRepository</code>.</strong> The current interface only has <code>ExistsAsync</code> and <code>UpsertAsync</code>. The profile update command needs to load embeddings for a batch of article IDs in one query. Add this method — it's a simple <code>WHERE NewsItemId IN (...) AND EmbeddingModelKey = modelKey</code> query via EF Core.</span>
+    </div>
+
+    <h3>INewsInteractionRepository interface</h3>
+    <pre><span class="comment">// Platform.Application/Abstractions/News/INewsInteractionRepository.cs</span>
+<span class="kw">public interface</span> <span class="cls">INewsInteractionRepository</span>
+{
+    Task <span class="fn">InsertAsync</span>(NewsInteraction interaction, CancellationToken ct = <span class="kw">default</span>);
+
+    <span class="comment">/// Returns all interactions for a user since a given timestamp, ordered by RecordedAt desc.</span>
+    Task&lt;IReadOnlyList&lt;NewsInteraction&gt;&gt; <span class="fn">GetRecentAsync</span>(
+        <span class="kw">int</span> userId,
+        DateTimeOffset since,
+        CancellationToken ct = <span class="kw">default</span>);
+
+    <span class="comment">/// Returns the mean DwellSeconds across all Read interactions for a user.</span>
+    <span class="comment">/// Returns null when the user has no read interactions yet.</span>
+    Task&lt;<span class="kw">double</span>?&gt; <span class="fn">GetAverageDwellSecondsAsync</span>(<span class="kw">int</span> userId, CancellationToken ct = <span class="kw">default</span>);
+}</pre>
+
+    <h3>API routes</h3>
+    <p>One new public-facing route group. The interaction endpoint is authenticated (requires the standard JWT cookie) so the handler can derive UserId from the session without the client passing it in the body.</p>
+
+    <pre><span class="comment">// Platform.Api/Features/News/NewsInteractionV1Routes.cs</span>
+<span class="kw">public static void</span> <span class="fn">Map</span>(RouteGroupBuilder v1)
+{
+    v1.MapPost(
+        <span class="str">"news/interactions"</span>,
+        <span class="kw">async</span> (RecordNewsInteractionV1Request body, ...) =>
+        {
+            <span class="comment">// UserId resolved from authenticated session, not request body</span>
+            <span class="kw">var</span> userId = workerOptions.Value.PrimaryUserId;  <span class="comment">// single-user for now, same as feed</span>
+            <span class="kw">await</span> handler.HandleAsync(<span class="kw">new</span>(userId, body.NewsItemId, body.Type, body.DwellSeconds), ct);
+            <span class="kw">return</span> Results.NoContent();
+        })
+    .DisableAntiforgery();
+}</pre>
+
+    <p>The internal profile update endpoint is added to the existing <code>InternalNewsV1Routes</code> group:</p>
+
+    <pre><span class="comment">// Platform.Api/Features/News/Internal/InternalNewsV1Routes.cs — addition</span>
+group.MapPost(
+    <span class="str">"profile/update-from-interactions"</span>,
+    <span class="kw">async</span> (UpdateNewsProfileV1Request body, UpdateNewsProfileCommandHandler handler, ...) =>
+    {
+        <span class="kw">var</span> result = <span class="kw">await</span> handler.HandleAsync(<span class="kw">new</span>(body.UserId, body.WindowDays ?? <span class="num">7</span>), ct);
+        <span class="kw">var</span> status = result <span class="kw">switch</span>
+        {
+            UpdateNewsProfileResult.Updated   => <span class="str">"updated"</span>,
+            UpdateNewsProfileResult.NoData    => <span class="str">"no-data"</span>,
+            UpdateNewsProfileResult.NoProfile => <span class="str">"no-profile"</span>,
+            _                                 => <span class="str">"error"</span>,
+        };
+        <span class="kw">return</span> Results.Ok(<span class="kw">new</span> { status });
+    })
+.DisableAntiforgery();</pre>
+
+    <div class="file-list">
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/RecordInteraction/RecordNewsInteractionCommand.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/RecordInteraction/RecordNewsInteractionCommandHandler.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/RecordInteraction/RecordNewsInteractionCommandValidator.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/Profile/UpdateNewsProfileCommand.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/Profile/UpdateNewsProfileCommandHandler.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/Profile/UpdateNewsProfileCommandValidator.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Api/Features/News/NewsInteractionV1Routes.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Contracts/V1/News/RecordNewsInteractionV1Contracts.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Contracts/V1/News/UpdateNewsProfileV1Contracts.cs</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Api/Features/News/Internal/InternalNewsV1Routes.cs — add profile/update-from-interactions route</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Application/Abstractions/News/INewsEmbeddingRepository.cs — add GetByNewsItemIdsAsync</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Infrastructure/Features/News/EfNewsEmbeddingRepository.cs — implement GetByNewsItemIdsAsync</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Infrastructure/DependencyInjection.cs — register INewsInteractionRepository + two new command handlers</div>
+    </div>
+  </div>
+
+  <!-- 06 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Worker — new activity and workflow</h2>
+    </div>
+    <p>A single new Temporal activity triggers the backend profile update. It lives in <code>activities.py</code> alongside the existing embedding and seed activities, following the exact same pattern. A thin wrapper workflow wraps it so the update can be triggered standalone (manually or on a schedule) as well as from the tail of <code>NewsIntelligenceWorkflow</code>.</p>
+
+    <div class="activity-block">
+      <div class="activity-header">
+        <span class="activity-num">act 1</span>
+        <span class="activity-lang">Python</span>
+        <span class="activity-name">update_user_news_profile</span>
+        <span class="activity-timeout">timeout 30s</span>
+      </div>
+      <div class="activity-body">
+        <p>Calls the internal profile update endpoint. All computation happens on the backend. The activity handles the three result states cleanly without raising on <code>"no-data"</code> — if there have been no interactions in the last 7 days, the profile simply isn't updated that run.</p>
+        <ul>
+          <li>Accepts <code>user_id: int</code> and optional <code>window_days: int = 7</code></li>
+          <li>POSTs to <code>/api/internal/v1/news/profile/update-from-interactions</code></li>
+          <li>Logs outcome: <code>"updated"</code>, <code>"no-data"</code> (no interactions), or <code>"no-profile"</code> (Phase 2 seeding hasn't run yet)</li>
+          <li>Never raises on <code>"no-data"</code> or <code>"no-profile"</code> — these are expected states, not errors</li>
+        </ul>
+        <pre><span class="comment"># workers-platform/app/workflows/news_intelligence/activities.py — addition</span>
+@activity.defn
+<span class="kw">async def</span> <span class="fn">update_user_news_profile</span>(user_id: <span class="kw">int</span>, window_days: <span class="kw">int</span> = <span class="num">7</span>) -> <span class="kw">dict</span>:
+    settings = get_settings()
+    base    = settings.platform_api_base_url.rstrip(<span class="str">"/"</span>)
+    headers = {<span class="str">"Authorization"</span>: f<span class="str">"Bearer {settings.platform_internal_service_token}"</span>}
+    <span class="kw">try</span>:
+        <span class="kw">async with</span> httpx.AsyncClient(timeout=<span class="num">25.0</span>) <span class="kw">as</span> client:
+            r = <span class="kw">await</span> client.post(
+                f<span class="str">"{base}/api/internal/v1/news/profile/update-from-interactions"</span>,
+                json={<span class="str">"userId"</span>: user_id, <span class="str">"windowDays"</span>: window_days},
+                headers=headers,
+            )
+            r.raise_for_status()
+            status = r.json().get(<span class="str">"status"</span>, <span class="str">"error"</span>)
+    <span class="kw">except</span> Exception:
+        logger.exception(<span class="str">"update_user_news_profile failed user_id=%s"</span>, user_id)
+        status = <span class="str">"error"</span>
+    logger.info(<span class="str">"update_user_news_profile user_id=%s status=%s"</span>, user_id, status)
+    <span class="kw">return</span> {<span class="str">"status"</span>: status}</pre>
+      </div>
+    </div>
+
+    <h3>ProfileUpdateWorkflow</h3>
+    <p>A thin standalone workflow that wraps <code>update_user_news_profile</code>. It exists so the update can be triggered via Temporal's UI or API without running a full ingestion cycle. In normal operation it's also called at the tail of <code>NewsIntelligenceWorkflow</code> — one activity call added after <code>ensure_user_news_profile</code>.</p>
+
+    <pre><span class="comment"># workers-platform/app/workflows/news_intelligence/profile_update_workflow.py</span>
+<span class="kw">from</span> temporalio <span class="kw">import</span> workflow
+<span class="kw">from</span> app.schemas.workflow_contracts <span class="kw">import</span> WorkflowRunRequest, WorkflowRunResult
+
+@workflow.defn
+<span class="kw">class</span> <span class="cls">NewsProfileUpdateWorkflow</span>:
+    <span class="str">"""Standalone wrapper — triggers profile update from interactions.
+    Also called at the tail of NewsIntelligenceWorkflow after each ingest run."""</span>
+
+    @workflow.run
+    <span class="kw">async def</span> <span class="fn">run</span>(<span class="kw">self</span>, payload: <span class="kw">str</span>) -> WorkflowRunResult:
+        request = WorkflowRunRequest.model_validate_json(payload)
+
+        result = <span class="kw">await</span> workflow.execute_activity(
+            <span class="str">"update_user_news_profile"</span>,
+            args=[<span class="num">1</span>, <span class="num">7</span>],   <span class="comment"># primary user, 7-day window</span>
+            start_to_close_timeout=timedelta(seconds=<span class="num">30</span>),
+        )
+
+        <span class="kw">return</span> WorkflowRunResult(
+            workflow_type=request.workflow_type,
+            workflow_run_id=request.workflow_run_id,
+            status=<span class="str">"completed"</span>,
+            artifact_refs=[str(result)],
+        )</pre>
+
+    <h3>Main workflow update</h3>
+    <p>One additional activity call is appended to the existing <code>NewsIntelligenceWorkflow.run</code> method, after the <code>ensure_user_news_profile</code> call. This means every ingestion run opportunistically refreshes the profile if there is new behavioral data.</p>
+
+    <pre><span class="comment"># workers-platform/app/workflows/news_intelligence/workflow.py — addition at end of run()</span>
+<span class="kw">await</span> workflow.execute_activity(
+    <span class="str">"update_user_news_profile"</span>,
+    args=[<span class="num">1</span>, <span class="num">7</span>],   <span class="comment"># primary user, 7-day window</span>
+    start_to_close_timeout=timedelta(seconds=<span class="num">30</span>),
+)</pre>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ</span>
+      <span class="callout-text"><strong>Register the new workflow and activity.</strong> Add <code>NewsProfileUpdateWorkflow</code> to the Temporal worker's workflow registry and <code>update_user_news_profile</code> to the activity registry — the same place <code>ensure_user_news_profile</code> was registered in Phase 2.</span>
+    </div>
+
+    <div class="file-list">
+      <div class="file-row"><span class="badge new">new</span> workers-platform/app/workflows/news_intelligence/profile_update_workflow.py</div>
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/workflows/news_intelligence/activities.py — add update_user_news_profile</div>
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/workflows/news_intelligence/workflow.py — call update activity at run tail</div>
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/runtime/registry/definitions.py — register new workflow + activity</div>
+    </div>
+  </div>
+
+  <!-- 07 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Frontend — dwell tracking, save, dismiss</h2>
+    </div>
+    <p>Three pieces of UI are added to <code>NewsView.tsx</code>. The existing article list and detail view are extended in-place — no new component files are needed for Phase 3. A new API adapter file handles the interaction POST.</p>
+
+    <h3>1. Dwell time tracking</h3>
+    <p>When the user opens an article (transitions to the detail view), record the timestamp. When they close it (tap "Back to feed" or select a different article), compute the elapsed time in seconds and send a <code>read</code> interaction. Use a <code>useRef</code> for the start timestamp so the value is captured at mount without causing re-renders.</p>
+
+    <pre><span class="comment">// Inside NewsView.tsx — detail view branch</span>
+<span class="kw">const</span> dwellStartRef = useRef&lt;<span class="kw">number</span> | <span class="kw">null</span>&gt;(<span class="kw">null</span>);
+
+useEffect(() => {
+  <span class="kw">if</span> (!selected) <span class="kw">return</span>;
+  dwellStartRef.current = Date.now();
+  <span class="kw">return</span> () => {
+    <span class="kw">const</span> start = dwellStartRef.current;
+    <span class="kw">if</span> (start === <span class="kw">null</span> || !selected) <span class="kw">return</span>;
+    <span class="kw">const</span> dwellSeconds = Math.round((Date.now() - start) / <span class="num">1000</span>);
+    <span class="kw">if</span> (dwellSeconds &gt;= <span class="num">2</span>)  <span class="comment">// ignore accidental taps (under 2 seconds)</span>
+      void postNewsInteraction(selected.id, <span class="str">"read"</span>, dwellSeconds);
+  };
+}, [selected?.id]);  <span class="comment">// re-runs when the selected article changes</span></pre>
+
+    <div class="callout warn">
+      <span class="callout-icon">!</span>
+      <span class="callout-text"><strong>Dwell under 2 seconds is ignored.</strong> If the user opens an article and immediately closes it, that's probably a mis-tap, not a read. The 2-second threshold prevents noisy low-weight reads from accumulating. This threshold can be raised later if the signal proves too noisy.</span>
+    </div>
+
+    <h3>2. Save button</h3>
+    <p>Added to the detail view card, alongside the back button. Sends a <code>save</code> interaction and shows a brief "Saved" confirmation state. This is not a full bookmarking system — Phase 3 only records the signal. Saved items as a browsable feature is a separate concern for a later phase.</p>
+
+    <pre><span class="comment">// Inside NewsView.tsx — detail view</span>
+<span class="kw">const</span> [saved, setSaved] = useState(<span class="kw">false</span>);
+
+<span class="kw">const</span> handleSave = () => {
+  <span class="kw">if</span> (saved || !selected) <span class="kw">return</span>;
+  setSaved(<span class="kw">true</span>);
+  void postNewsInteraction(selected.id, <span class="str">"save"</span>);
+};
+
+<span class="comment">// Render: show "Save" button in detail header, toggle to "Saved ✓" after click</span></pre>
+
+    <h3>3. Dismiss — "Not interested"</h3>
+    <p>Distinct from the existing "Delete selected" functionality. Delete is a hard permanent removal of the article from the database. Dismiss is a soft interest signal that hides the article from the current view client-side and records a negative-weight event — the article stays in the database for other purposes.</p>
+    <p>Add a small "Not interested" button on each article card in the list view (visible on hover or as a secondary action). When clicked: record a <code>dismiss</code> interaction, and add the article ID to a local <code>dismissedIds</code> set in component state so it disappears from the list without a full page reload.</p>
+
+    <pre><span class="comment">// Inside NewsView.tsx — list view</span>
+<span class="kw">const</span> [dismissedIds, setDismissedIds] = useState&lt;Set&lt;<span class="kw">string</span>&gt;&gt;(() => <span class="kw">new</span> Set());
+
+<span class="kw">const</span> handleDismiss = (id: <span class="kw">string</span>) => {
+  setDismissedIds(prev => <span class="kw">new</span> Set([...prev, id]));
+  void postNewsInteraction(id, <span class="str">"dismiss"</span>);
+};
+
+<span class="comment">// Filter dismissed articles out of the rendered list</span>
+<span class="kw">const</span> visible = filtered.filter(a => !dismissedIds.has(a.id));</pre>
+
+    <h3>API adapter</h3>
+    <pre><span class="comment">// frontend-platform/src/modules/news/api/post-news-interaction.ts</span>
+<span class="kw">import</span> { apiRequest } <span class="kw">from</span> <span class="str">"@/lib/api/client"</span>;
+
+<span class="kw">export async function</span> <span class="fn">postNewsInteraction</span>(
+  newsItemId: <span class="kw">string</span>,
+  type: <span class="str">"read"</span> | <span class="str">"save"</span> | <span class="str">"dismiss"</span>,
+  dwellSeconds?: <span class="kw">number</span>,
+): Promise&lt;<span class="kw">void</span>&gt; {
+  <span class="kw">await</span> apiRequest(<span class="str">"/api/v1/news/interactions"</span>, {
+    method: <span class="str">"POST"</span>,
+    body: { newsItemId, type, dwellSeconds: dwellSeconds ?? <span class="kw">null</span> },
+    cache: <span class="str">"no-store"</span>,
+  });
+}</pre>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ</span>
+      <span class="callout-text"><strong>Interaction POSTs are fire-and-forget on the frontend.</strong> The <code>void</code> prefix on each call is intentional — interaction tracking should never block the UI or show an error to the user if it fails. If the API is unreachable, the user's session still works. Signal loss on network hiccups is acceptable.</span>
+    </div>
+
+    <div class="file-list">
+      <div class="file-row"><span class="badge extend">extend</span> frontend-platform/src/modules/news/NewsView.tsx — dwell ref/effect, save button, dismiss button + dismissedIds state</div>
+      <div class="file-row"><span class="badge new">new</span> frontend-platform/src/modules/news/api/post-news-interaction.ts</div>
+      <div class="file-row"><span class="badge extend">extend</span> frontend-platform/src/lib/api/adapters/news.ts — re-export postNewsInteraction if needed by other modules</div>
+    </div>
+  </div>
+
+  <!-- 08 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">Tests</h2>
+    </div>
+    <p>Phase 3 adds unit tests for both new command handlers and an integration test for the interaction endpoint. The testing patterns follow those established in Phase 1 and 2 exactly: stub repositories in unit tests, <code>DeterministicEmbeddingWebApplicationFactory</code> in integration tests.</p>
+
+    <h3>Unit — RecordNewsInteractionCommandHandlerTests</h3>
+    <p>Stub out <code>INewsInteractionRepository</code>. Verify that a valid <code>read</code> command inserts a row with the correct type and dwell seconds. Verify that validation rejects missing <code>DwellSeconds</code> on a <code>read</code> type, rejects <code>DwellSeconds</code> present on a <code>save</code> type, and rejects an unknown type string.</p>
+
+    <h3>Unit — UpdateNewsProfileCommandHandlerTests</h3>
+    <p>Use stub repositories. Provide three interactions (one save, one read, one dismiss) and three matching embeddings. Assert that the resulting <code>NewsUserProfile</code> passed to <code>UpsertAsync</code> is non-null and has a non-zero vector. Assert that <code>NoData</code> is returned when no interactions exist. Assert that <code>NoProfile</code> is returned when <code>INewsProfileRepository.ExistsAsync</code> returns false.</p>
+
+    <h3>Integration — NewsInteractionV1Tests</h3>
+    <p>Use <code>DeterministicEmbeddingWebApplicationFactory</code>. POST a valid <code>read</code> interaction for an existing article, assert 204. POST with a missing <code>NewsItemId</code>, assert 400. POST with an unknown type, assert 400. POST with <code>DwellSeconds</code> on a <code>save</code> type, assert 400. Verify that the interaction endpoint is only reachable from the public API (no internal auth required, but standard session required).</p>
+
+    <div class="file-list">
+      <div class="file-row"><span class="badge test">test</span> Platform.UnitTests/RecordNewsInteractionCommandHandlerTests.cs</div>
+      <div class="file-row"><span class="badge test">test</span> Platform.UnitTests/UpdateNewsProfileCommandHandlerTests.cs</div>
+      <div class="file-row"><span class="badge test">test</span> Platform.IntegrationTests/NewsInteractionV1Tests.cs</div>
+    </div>
+  </div>
+
+  <!-- 09 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2 class="section-title">Complete file list</h2>
+    </div>
+    <p>Every file that is created or modified in Phase 3. Nothing from Phase 1 or Phase 2 is deleted or structurally changed — this is purely additive except for the three <code>extend</code> entries on existing files.</p>
+
+    <h4>Domain</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge new">new</span> Platform.Domain/Features/News/NewsInteraction.cs</div>
+    </div>
+
+    <h4>Application abstractions</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Abstractions/News/INewsInteractionRepository.cs</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Application/Abstractions/News/INewsEmbeddingRepository.cs — add GetByNewsItemIdsAsync</div>
+    </div>
+
+    <h4>Application features</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/RecordInteraction/RecordNewsInteractionCommand.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/RecordInteraction/RecordNewsInteractionCommandHandler.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/RecordInteraction/RecordNewsInteractionCommandValidator.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/Profile/UpdateNewsProfileCommand.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/Profile/UpdateNewsProfileCommandHandler.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/Profile/UpdateNewsProfileCommandValidator.cs</div>
+    </div>
+
+    <h4>Infrastructure</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge new">new</span> Platform.Infrastructure/Features/News/EfNewsInteractionRepository.cs</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Infrastructure/Features/News/EfNewsEmbeddingRepository.cs — implement GetByNewsItemIdsAsync</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Infrastructure/Persistence/PlatformDbContext.cs — DbSet + EF config for NewsInteraction</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Infrastructure/DependencyInjection.cs — register INewsInteractionRepository + two command handlers</div>
+      <div class="file-row"><span class="badge migrate">migrate</span> Platform.Infrastructure/Persistence/Migrations/[timestamp]_NewsInteractionsV1.cs</div>
+    </div>
+
+    <h4>API</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge new">new</span> Platform.Api/Features/News/NewsInteractionV1Routes.cs</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Api/Features/News/Internal/InternalNewsV1Routes.cs — add profile/update-from-interactions</div>
+    </div>
+
+    <h4>Contracts</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge new">new</span> Platform.Contracts/V1/News/RecordNewsInteractionV1Contracts.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Contracts/V1/News/UpdateNewsProfileV1Contracts.cs</div>
+    </div>
+
+    <h4>Worker</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge new">new</span> workers-platform/app/workflows/news_intelligence/profile_update_workflow.py</div>
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/workflows/news_intelligence/activities.py — add update_user_news_profile</div>
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/workflows/news_intelligence/workflow.py — call update activity at run tail</div>
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/runtime/registry/definitions.py — register NewsProfileUpdateWorkflow + update_user_news_profile</div>
+    </div>
+
+    <h4>Frontend</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge extend">extend</span> frontend-platform/src/modules/news/NewsView.tsx — dwell tracking, save button, dismiss action</div>
+      <div class="file-row"><span class="badge new">new</span> frontend-platform/src/modules/news/api/post-news-interaction.ts</div>
+      <div class="file-row"><span class="badge extend">extend</span> frontend-platform/src/lib/api/adapters/news.ts — re-export if needed</div>
+    </div>
+
+    <h4>Tests</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge test">test</span> Platform.UnitTests/RecordNewsInteractionCommandHandlerTests.cs</div>
+      <div class="file-row"><span class="badge test">test</span> Platform.UnitTests/UpdateNewsProfileCommandHandlerTests.cs</div>
+      <div class="file-row"><span class="badge test">test</span> Platform.IntegrationTests/NewsInteractionV1Tests.cs</div>
+    </div>
+  </div>
+
+  <!-- 10 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2 class="section-title">Decisions to make before starting</h2>
+    </div>
+    <p>Most of Phase 3 is straightforward given the Phase 2 foundation. Two decisions are worth confirming before implementation starts.</p>
+
+    <div class="callout warn">
+      <span class="callout-icon">!</span>
+      <span class="callout-text"><strong>Decision 1 — interaction endpoint auth.</strong> The current feed route uses <code>PlatformWorkerOptions.PrimaryUserId</code> to identify the user (single-user system). The interaction endpoint follows the same pattern. If you later add multi-user support, the interaction handler needs to read from the JWT instead. For now, hardcoding <code>PrimaryUserId</code> is fine and consistent with the rest of the news feature.</span>
+    </div>
+
+    <div class="callout warn">
+      <span class="callout-icon">!</span>
+      <span class="callout-text"><strong>Decision 2 — blend factor configurability.</strong> The 0.85 / 0.15 split is hardcoded in the command handler. If you want to tune it without redeploying (e.g., make the profile respond faster to new behavior during testing), make the alpha a backend config value. For Phase 3, hardcoding is fine — add configurability in Phase 4 if needed.</span>
+    </div>
+
+    <div class="callout key">
+      <span class="callout-icon">→</span>
+      <span class="callout-text"><strong>Build order within Phase 3.</strong> Start with the domain entity and migration so the DB is ready. Then the command handlers (they can be unit-tested immediately). Then the API routes. Then the worker activity. The frontend changes are independent and can be done in parallel with the backend once the API contract is settled.</span>
+    </div>
+  </div>
+
+</div>
+
+<footer style="border-top: 1px solid var(--border); padding: 2.5rem; max-width: 900px; margin: 0 auto;">
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <div>
+      <p style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 0.75rem;">Start here</p>
+      <p style="font-size: 0.875rem; color: var(--ink-2); line-height: 1.6; margin-bottom: 0;">Create <code>NewsInteraction.cs</code>, add <code>INewsInteractionRepository</code>, run the migration. Then implement both command handlers and their validators. That's the core — everything else wires on top of it.</p>
+    </div>
+    <div>
+      <p style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 0.75rem;">What Phase 4 builds on</p>
+      <p style="font-size: 0.875rem; color: var(--ink-2); line-height: 1.6; margin-bottom: 0;">Phase 4 introduces a dual interest model — a separate short-term embedding (14-day window, no momentum) blended with the long-term at read time. The <code>NewsInteraction</code> table built here feeds both. Phase 4 only adds a new field to <code>NewsUserProfile</code> and updates <code>NewsVectorSearch</code> to blend the two.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
