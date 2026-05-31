@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News Feature — Phase 4 Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0f;
+    --ink-2: #3a3a3a;
+    --ink-3: #6b6b6b;
+    --ink-4: #9b9b9b;
+    --surface: #fafaf8;
+    --surface-2: #f2f1ed;
+    --surface-3: #e8e6e0;
+    --border: #dddad2;
+    --accent-blue: #1a4f9e;
+    --accent-blue-light: #e8eef9;
+    --accent-teal: #0f6e56;
+    --accent-teal-light: #e1f5ee;
+    --accent-amber: #8a4e0a;
+    --accent-amber-light: #faeeda;
+    --accent-coral: #993c1d;
+    --accent-coral-light: #faece7;
+    --accent-purple: #3c3489;
+    --accent-purple-light: #eeedfe;
+    --accent-green: #3b6d11;
+    --accent-green-light: #eaf3de;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--surface);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+    font-weight: 300;
+  }
+
+  .masthead {
+    background: var(--ink);
+    color: var(--surface);
+    padding: 5rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 59px,
+      rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px
+    );
+  }
+  .masthead-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+    position: relative;
+  }
+  .masthead-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 1.5rem;
+  }
+  .masthead h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    line-height: 1.1;
+    font-weight: 400;
+    margin-bottom: 1.25rem;
+  }
+  .masthead h1 em {
+    font-style: italic;
+    color: rgba(255,255,255,0.6);
+  }
+  .masthead-sub {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.55);
+    max-width: 560px;
+    line-height: 1.6;
+  }
+  .masthead-stats {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    flex-wrap: wrap;
+  }
+  .stat { display: flex; flex-direction: column; gap: 0.2rem; }
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    line-height: 1;
+    color: #fff;
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem 2.5rem;
+  }
+
+  .section {
+    margin-bottom: 5rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--ink-4);
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.7rem;
+    font-weight: 400;
+  }
+
+  p { margin-bottom: 1rem; color: var(--ink-2); }
+  p:last-child { margin-bottom: 0; }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 1.75rem 0 0.6rem;
+    letter-spacing: -0.01em;
+  }
+  h4 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--ink-3);
+    margin: 1.25rem 0 0.4rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82em;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.1em 0.35em;
+    color: var(--ink);
+  }
+
+  pre {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    background: #0f0f0f;
+    color: #e8e6e0;
+    border-radius: 6px;
+    padding: 1.4rem 1.6rem;
+    overflow-x: auto;
+    line-height: 1.6;
+    margin: 1.25rem 0;
+  }
+  pre .comment { color: #6b7280; }
+  pre .kw { color: #93c5fd; }
+  pre .str { color: #86efac; }
+  pre .num { color: #fca5a5; }
+  pre .cls { color: #fde68a; }
+  pre .fn { color: #c4b5fd; }
+  pre .op { color: #d1d5db; }
+
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 2rem 0;
+  }
+  .pipeline-step {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 0 1.25rem;
+  }
+  .pipeline-spine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .pipeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--ink);
+    flex-shrink: 0;
+    margin-top: 0.35rem;
+  }
+  .pipeline-line {
+    width: 2px;
+    flex: 1;
+    background: var(--border);
+    min-height: 1.5rem;
+  }
+  .pipeline-body {
+    padding-bottom: 1.75rem;
+  }
+  .pipeline-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    margin-bottom: 0.2rem;
+  }
+  .pipeline-title {
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+  }
+  .pipeline-desc {
+    font-size: 0.9rem;
+    color: var(--ink-3);
+  }
+
+  .callout {
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+    font-size: 0.9rem;
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    gap: 0 0.75rem;
+    align-items: start;
+  }
+  .callout-icon { font-size: 0.85rem; padding-top: 0.05rem; }
+  .callout-text { color: var(--ink-2); line-height: 1.55; }
+  .callout-text strong { color: var(--ink); font-weight: 500; }
+  .callout.info { background: var(--accent-blue-light); border-left: 3px solid var(--accent-blue); }
+  .callout.warn { background: var(--accent-amber-light); border-left: 3px solid var(--accent-amber); }
+  .callout.key  { background: var(--accent-teal-light);  border-left: 3px solid var(--accent-teal); }
+  .callout.new  { background: var(--accent-purple-light); border-left: 3px solid var(--accent-purple); }
+  .callout.danger { background: var(--accent-coral-light); border-left: 3px solid var(--accent-coral); }
+
+  .file-list {
+    margin: 1.25rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .file-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--ink-2);
+  }
+  .badge {
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.1em 0.45em;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .badge.new     { background: var(--accent-purple-light); color: var(--accent-purple); }
+  .badge.extend  { background: var(--accent-blue-light);   color: var(--accent-blue); }
+  .badge.reuse   { background: var(--accent-teal-light);   color: var(--accent-teal); }
+  .badge.migrate { background: var(--accent-amber-light);  color: var(--accent-amber); }
+  .badge.test    { background: var(--surface-3);           color: var(--ink-3); }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.1rem 1.25rem;
+  }
+  .card-title {
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 0.35rem;
+    color: var(--ink);
+  }
+  .card-body {
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    line-height: 1.5;
+    margin-bottom: 0;
+  }
+
+  .activity-block {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    overflow: hidden;
+  }
+  .activity-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .activity-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    background: var(--ink);
+    color: var(--surface);
+    padding: 0.2em 0.5em;
+    border-radius: 3px;
+    letter-spacing: 0.06em;
+  }
+  .activity-lang {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--ink-4);
+  }
+  .activity-name {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--ink);
+    flex: 1;
+  }
+  .activity-timeout {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--ink-4);
+  }
+  .activity-body {
+    padding: 1.25rem;
+  }
+  .activity-body p { font-size: 0.9rem; }
+  .activity-body ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 1rem;
+  }
+  .activity-body ul li {
+    font-size: 0.9rem;
+    color: var(--ink-2);
+    padding: 0.25rem 0 0.25rem 1.25rem;
+    position: relative;
+  }
+  .activity-body ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--ink-4);
+    font-size: 0.8rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    margin: 1.25rem 0;
+  }
+  th {
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    padding: 0.6rem 0.75rem;
+    border-bottom: 2px solid var(--border);
+    font-weight: 400;
+  }
+  td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--surface-3);
+    color: var(--ink-2);
+    vertical-align: top;
+  }
+  td code { font-size: 0.78em; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface-2); }
+
+  .phase-complete {
+    background: var(--accent-green-light);
+    border: 1px solid #c3e6a3;
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .phase-complete-title {
+    font-weight: 500;
+    color: var(--accent-green);
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+  }
+  .phase-complete-body {
+    font-size: 0.875rem;
+    color: var(--ink-2);
+    line-height: 1.55;
+    margin-bottom: 0;
+  }
+
+  .weight-table-wrap {
+    background: var(--ink);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+  }
+  .weight-table-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 1rem;
+  }
+  .weight-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
+    gap: 0 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    align-items: center;
+  }
+  .weight-row:last-child { border-bottom: none; }
+  .weight-row.header {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+  .weight-type {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.85);
+  }
+  .weight-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .weight-val.pos { color: #86efac; }
+  .weight-val.neg { color: #fca5a5; }
+  .weight-val.var { color: #fde68a; }
+  .weight-note {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .blend-diagram {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .blend-row {
+    display: grid;
+    grid-template-columns: 1.5rem 9rem 3rem 1fr;
+    gap: 0 0.75rem;
+    align-items: center;
+    font-size: 0.875rem;
+  }
+  .blend-weight {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .blend-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--ink-2);
+  }
+  .blend-bar-wrap {
+    height: 6px;
+    background: var(--surface-3);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .blend-bar {
+    height: 100%;
+    border-radius: 3px;
+  }
+  .blend-note {
+    font-size: 0.8rem;
+    color: var(--ink-4);
+  }
+
+  @media (max-width: 640px) {
+    .card-grid { grid-template-columns: 1fr; }
+    .weight-row { grid-template-columns: 1fr 1fr; }
+    .weight-note { display: none; }
+    .masthead-stats { gap: 1.5rem; }
+    .blend-row { grid-template-columns: 1.5rem 8rem 2.5rem 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-label">Deep Dive · Phase 4 of 5 · News Intelligence Feature · May 2026</div>
+    <h1>Phase 4 —<br><em>Dual interest model</em><br>&amp; active contexts</h1>
+    <p class="masthead-sub">Split the user profile into a long-term identity and a short-term behavioral signal. Inject active project context as a third ranking dimension. The feed now understands not just who you are, but what you are working on right now.</p>
+    <div class="masthead-stats">
+      <div class="stat"><span class="stat-num">4</span><span class="stat-label">new profile fields</span></div>
+      <div class="stat"><span class="stat-num">3</span><span class="stat-label">vector blend</span></div>
+      <div class="stat"><span class="stat-num">1</span><span class="stat-label">new command</span></div>
+      <div class="stat"><span class="stat-num">1</span><span class="stat-label">new activity</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="phase-complete">
+    <div class="phase-complete-title">✓ Phase 3 is complete</div>
+    <div class="phase-complete-body">
+      <code>NewsInteraction</code> records dwell time, saves, and dismissals. <code>UpdateNewsProfileCommandHandler</code> computes a weighted average of article embeddings and blends it into <code>NewsUserProfile.LongTermEmbedding</code> with a 0.85 momentum factor. The <code>update_user_news_profile</code> worker activity triggers this at the end of every ingestion run. Phase 4 builds entirely on top of Phase 3 — the interaction table, weighting model, and momentum math are untouched.
+    </div>
+  </div>
+
+  <!-- 01 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">What Phase 4 delivers</h2>
+    </div>
+    <p>After Phase 3 the system has one interest vector — a long-term profile that shifts slowly under momentum. This is good for stability but blind to two things: what you have been reading <em>lately</em>, and what you are actively working on right now.</p>
+    <p>Phase 4 adds two more dimensions to the ranking query. A <strong>short-term embedding</strong> — a raw snapshot of the last 14 days of behavior, no momentum — captures your current reading direction more aggressively than the long-term can. An <strong>active context embedding</strong> — derived from the projects and interests you have declared in your profile — injects deliberate signal about what is relevant to your current work. At feed time, all three are blended into a single query vector. The user does not change anything to benefit from this: active context is read directly from the existing profile fields.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">Long-term (existing)</div>
+        <div class="card-body">7-day interaction window, 0.85 momentum blend. Changes gradually across many runs. Represents your stable, durable interests. Untouched by Phase 4.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Short-term (new)</div>
+        <div class="card-body">14-day interaction window, no momentum. Replaces itself completely on each run. Captures recent reading direction — a week of AI papers shifts this immediately.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Active context (new)</div>
+        <div class="card-body">Embedding of declared interests and active project names from the user profile. Updated whenever the ingestion run fires. No interactions required.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">How the blending works</h2>
+    </div>
+    <p>All blending happens at read time inside <code>NewsVectorSearch.RankByRelevanceAsync</code>. Nothing changes about how profiles are <em>written</em> — each component is computed and stored independently. At the moment the feed is requested, the three stored vectors are combined into a single query vector and the existing cosine distance ranking runs unchanged.</p>
+
+    <h3>The query vector formula</h3>
+    <p>Weights are applied to whichever components are available. When a component is missing (no interactions yet, or no profile seeded) its weight is redistributed to the others proportionally so the result always sums to 1.0 before normalization.</p>
+
+    <div class="blend-diagram">
+      <div class="blend-row">
+        <span class="blend-weight">70%</span>
+        <span class="blend-label">long_term</span>
+        <span></span>
+        <div>
+          <div class="blend-bar-wrap"><div class="blend-bar" style="width:70%;background:#1a4f9e;"></div></div>
+        </div>
+      </div>
+      <div class="blend-row">
+        <span class="blend-weight">20%</span>
+        <span class="blend-label">short_term</span>
+        <span></span>
+        <div>
+          <div class="blend-bar-wrap"><div class="blend-bar" style="width:20%;background:#3c3489;"></div></div>
+        </div>
+      </div>
+      <div class="blend-row">
+        <span class="blend-weight">10%</span>
+        <span class="blend-label">active_context</span>
+        <span></span>
+        <div>
+          <div class="blend-bar-wrap"><div class="blend-bar" style="width:10%;background:#0f6e56;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <pre><span class="comment"># Pseudocode — actual implementation is in C# in NewsVectorSearch</span>
+
+<span class="comment"># Start with long-term (always present once profile is seeded)</span>
+query = <span class="num">0.70</span> * long_term
+
+<span class="comment"># Add short-term if available (14-day behavioral snapshot)</span>
+<span class="kw">if</span> short_term <span class="kw">is not</span> None:
+    query += <span class="num">0.20</span> * short_term
+<span class="kw">else</span>:
+    query += <span class="num">0.20</span> * long_term  <span class="comment"># fall back to long-term</span>
+
+<span class="comment"># Add active context if available (declared interests + projects)</span>
+<span class="kw">if</span> active_context <span class="kw">is not</span> None:
+    query += <span class="num">0.10</span> * active_context
+<span class="kw">else</span>:
+    query += <span class="num">0.10</span> * long_term  <span class="comment"># fall back to long-term</span>
+
+<span class="comment"># Normalize to unit vector — then pass to cosine distance ranking</span>
+query = normalize(query)</pre>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ</span>
+      <div class="callout-text"><strong>Graceful fallback.</strong> If neither short-term nor active context exists yet (e.g. first run, no interactions recorded), the query vector collapses to the long-term embedding. Phase 2 and Phase 3 behavior is preserved exactly. There is no error path for a missing component.</div>
+    </div>
+
+    <h3>Short-term computation</h3>
+    <p>The short-term uses the same weighting model as the long-term (dwell normalization, save weight 1.0, dismiss weight −0.3) but over a 14-day window and without the momentum blend. The result is the raw normalized weighted sum — it replaces the previous short-term value entirely on each run.</p>
+
+    <pre><span class="comment"># Short-term — no momentum, raw weighted average of 14-day interactions</span>
+interactions = <span class="fn">GetRecentAsync</span>(userId, since=now - <span class="num">14</span> days)
+weighted_sum  = <span class="fn">sum</span>(weight_i * embedding_i)
+short_term    = <span class="fn">normalize</span>(weighted_sum)   <span class="comment"># stored directly, no blend</span></pre>
+
+    <h3>Active context computation</h3>
+    <p>The active context is derived from the user's declared interests and active project names, read via the existing <code>IUserInterestProvider</code>. The same text-building logic used in <code>SeedNewsProfileCommandHandler</code> is reused — core interests, secondary interests, goals, and active project names are joined into a single text blob and embedded. This runs as a separate backend command triggered by a new worker activity on each ingestion cycle.</p>
+
+    <pre><span class="comment">// Active context seed text — same structure as profile seeding</span>
+<span class="str">"Core interests: software engineering, AI systems\n"</span>
+<span class="str">"Secondary interests: embedded systems, distributed systems\n"</span>
+<span class="str">"Goals: backend internship, production-quality projects\n"</span>
+<span class="str">"Active projects: Platform, news feature"</span>
+
+<span class="comment">// Embed → store as NewsUserProfile.ActiveContextEmbedding</span>
+<span class="comment">// Updated every ingestion run — always fresh, no momentum</span></pre>
+
+    <div class="callout key">
+      <span class="callout-icon">★</span>
+      <div class="callout-text"><strong>No new frontend work required.</strong> Active context reads from profile fields that already exist: <code>CoreInterests</code>, <code>SecondaryInterests</code>, <code>Goals</code>, and <code>ActiveProjectsJson</code>. If you later add per-project topic lists, the active context embedding automatically becomes more specific — Phase 4 is already wired for it.</div>
+    </div>
+  </div>
+
+  <!-- 03 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Domain changes — NewsUserProfile</h2>
+    </div>
+    <p>Four new nullable columns are added to <code>NewsUserProfile</code>. All four are nullable so existing profiles remain valid with no data migration — they gain the new columns on the next ingestion run. The long-term fields are untouched.</p>
+
+    <pre><span class="kw">public sealed class</span> <span class="cls">NewsUserProfile</span>
+{
+    <span class="comment">// ── Existing (unchanged) ─────────────────────────────────────────</span>
+    <span class="kw">public int</span>            UserId             { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public</span> <span class="cls">Vector</span>         LongTermEmbedding  { <span class="kw">get</span>; <span class="kw">set</span>; } = <span class="kw">null</span>!;
+    <span class="kw">public string</span>         SeedText           { <span class="kw">get</span>; <span class="kw">set</span>; } = <span class="str">""</span>;
+    <span class="kw">public</span> <span class="cls">DateTimeOffset</span> SeededAt           { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public</span> <span class="cls">DateTimeOffset</span> UpdatedAt          { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="comment">// ── New in Phase 4 ───────────────────────────────────────────────</span>
+    <span class="comment">/// &lt;summary&gt;14-day behavioral snapshot, no momentum. Null until first update.&lt;/summary&gt;</span>
+    <span class="kw">public</span> <span class="cls">Vector</span>?        ShortTermEmbedding     { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public</span> <span class="cls">DateTimeOffset</span>? ShortTermUpdatedAt     { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="comment">/// &lt;summary&gt;Embedding of declared interests + active projects. Null until first update.&lt;/summary&gt;</span>
+    <span class="kw">public</span> <span class="cls">Vector</span>?        ActiveContextEmbedding { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public</span> <span class="cls">DateTimeOffset</span>? ActiveContextUpdatedAt { <span class="kw">get</span>; <span class="kw">set</span>; }
+}</pre>
+
+    <h4>EF Core configuration</h4>
+    <p>Both new vector columns are configured with <code>HasColumnType("vector(1536)")</code> and <code>IsRequired(false)</code> in <code>MemoryV1EfConfiguration</code> (or the news-specific configuration block in <code>PlatformDbContext</code>). The timestamp columns are plain nullable <code>DateTimeOffset</code> with no special config needed.</p>
+
+    <h4>Migration</h4>
+    <p>One migration adds the four columns. No data migration is needed — existing rows get <code>NULL</code> in all four columns, which is the correct starting state. The profile update and active context activities will populate them on the next ingestion run.</p>
+
+    <pre><span class="comment">-- Generated migration (EF Core will produce this automatically)</span>
+ALTER TABLE news_user_profiles
+  ADD COLUMN short_term_embedding       vector(<span class="num">1536</span>),
+  ADD COLUMN short_term_updated_at      timestamptz,
+  ADD COLUMN active_context_embedding   vector(<span class="num">1536</span>),
+  ADD COLUMN active_context_updated_at  timestamptz;</pre>
+  </div>
+
+  <!-- 04 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Backend changes</h2>
+    </div>
+
+    <h3>1. Extend UpdateNewsProfileCommandHandler — compute short-term in one pass</h3>
+    <p>The handler already reads interactions and computes the long-term blend. Phase 4 adds a second computation in the same method: fetch 14 days of interactions (a superset of the existing 7-day window), compute the raw weighted average over the full 14 days, normalize it, and store it as <code>ShortTermEmbedding</code>. One DB round-trip for interactions, two outputs.</p>
+
+    <pre><span class="kw">public async</span> <span class="cls">Task</span>&lt;<span class="cls">UpdateNewsProfileResult</span>&gt; <span class="fn">HandleAsync</span>(
+    <span class="cls">UpdateNewsProfileCommand</span> command, <span class="cls">CancellationToken</span> ct)
+{
+    <span class="comment">// Fetch 14-day window — superset that covers both long-term (7d) and short-term (14d)</span>
+    <span class="kw">var</span> since14 = <span class="cls">DateTimeOffset</span>.UtcNow.AddDays(-<span class="num">14</span>);
+    <span class="kw">var</span> all14   = <span class="kw">await</span> interactions.<span class="fn">GetRecentAsync</span>(command.UserId, since14, ct);
+
+    <span class="kw">if</span> (all14.Count == <span class="num">0</span>)
+        <span class="kw">return</span> <span class="cls">UpdateNewsProfileResult</span>.NoData;
+
+    <span class="kw">var</span> ids      = all14.<span class="fn">Select</span>(i => i.NewsItemId).<span class="fn">Distinct</span>().<span class="fn">ToArray</span>();
+    <span class="kw">var</span> stored   = <span class="kw">await</span> embeddings.<span class="fn">GetByNewsItemIdsAsync</span>(ids, embeddingGenerator.ModelKey, ct);
+    <span class="kw">var</span> embMap   = stored.<span class="fn">ToDictionary</span>(e => e.NewsItemId, e => e.Embedding.<span class="fn">ToArray</span>());
+    <span class="kw">var</span> avgDwell = <span class="kw">await</span> interactions.<span class="fn">GetAverageDwellSecondsAsync</span>(command.UserId, ct)
+                   ?? DefaultAverageDwellSeconds;
+
+    <span class="comment">// Long-term: blend 7-day interactions with momentum (existing logic)</span>
+    <span class="kw">var</span> recent7 = all14.<span class="fn">Where</span>(i => i.RecordedAt >= <span class="cls">DateTimeOffset</span>.UtcNow.AddDays(-<span class="num">7</span>)).<span class="fn">ToList</span>();
+    <span class="kw">var</span> longSignal = <span class="fn">ComputeWeightedSum</span>(recent7, embMap, avgDwell);
+    <span class="kw">if</span> (longSignal <span class="kw">is not null</span>)
+    {
+        <span class="kw">var</span> current = profile.LongTermEmbedding.<span class="fn">ToArray</span>();
+        <span class="kw">var</span> blended = <span class="fn">Normalize</span>(<span class="fn">Blend</span>(Alpha, current, longSignal));
+        <span class="kw">if</span> (blended <span class="kw">is not null</span>)
+        {
+            profile.LongTermEmbedding = <span class="kw">new</span> <span class="cls">Vector</span>(blended.<span class="fn">Select</span>(d => (<span class="kw">float</span>)d).<span class="fn">ToArray</span>());
+            profile.UpdatedAt = <span class="cls">DateTimeOffset</span>.UtcNow;
+        }
+    }
+
+    <span class="comment">// Short-term: raw weighted average of all 14 days, no momentum</span>
+    <span class="kw">var</span> shortSignal = <span class="fn">ComputeWeightedSum</span>(all14, embMap, avgDwell);
+    <span class="kw">if</span> (shortSignal <span class="kw">is not null</span>)
+    {
+        <span class="kw">var</span> normalized = <span class="fn">Normalize</span>(shortSignal);
+        <span class="kw">if</span> (normalized <span class="kw">is not null</span>)
+        {
+            profile.ShortTermEmbedding   = <span class="kw">new</span> <span class="cls">Vector</span>(normalized.<span class="fn">Select</span>(d => (<span class="kw">float</span>)d).<span class="fn">ToArray</span>());
+            profile.ShortTermUpdatedAt   = <span class="cls">DateTimeOffset</span>.UtcNow;
+        }
+    }
+
+    <span class="kw">await</span> profiles.<span class="fn">UpsertAsync</span>(profile, ct);
+    <span class="kw">return</span> <span class="cls">UpdateNewsProfileResult</span>.Updated;
+}</pre>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ</span>
+      <div class="callout-text"><strong>One DB read, two outputs.</strong> Fetching 14 days of interactions automatically includes the 7-day subset. The existing <code>ComputeWeightedSum</code> helper is called twice with different lists — no duplication of logic.</div>
+    </div>
+
+    <h3>2. New command — UpdateNewsActiveContextCommand</h3>
+    <p>A separate command reads the user's declared interests via <code>IUserInterestProvider</code>, builds the same seed text that <code>SeedNewsProfileCommandHandler</code> uses, embeds it, and writes the result to <code>ActiveContextEmbedding</code>. It runs on every ingestion cycle — if the user has updated their profile since the last run, the active context embedding immediately reflects the change.</p>
+
+    <pre><span class="comment">// Platform.Application/Features/News/Profile/UpdateNewsActiveContextCommand.cs</span>
+<span class="kw">public sealed record</span> <span class="cls">UpdateNewsActiveContextCommand</span>(<span class="kw">int</span> UserId);
+
+<span class="kw">public enum</span> <span class="cls">UpdateNewsActiveContextResult</span> { Updated, NoProfile, Error }
+
+<span class="comment">// Platform.Application/Features/News/Profile/UpdateNewsActiveContextCommandHandler.cs</span>
+<span class="kw">public sealed class</span> <span class="cls">UpdateNewsActiveContextCommandHandler</span>(
+    <span class="cls">IValidator</span>&lt;<span class="cls">UpdateNewsActiveContextCommand</span>&gt; validator,
+    <span class="cls">IUserInterestProvider</span>    interestProvider,
+    <span class="cls">INewsProfileRepository</span>   profiles,
+    <span class="cls">IMemoryEmbeddingGenerator</span> embeddingGenerator)
+{
+    <span class="kw">public async</span> <span class="cls">Task</span>&lt;<span class="cls">UpdateNewsActiveContextResult</span>&gt; <span class="fn">HandleAsync</span>(
+        <span class="cls">UpdateNewsActiveContextCommand</span> cmd, <span class="cls">CancellationToken</span> ct)
+    {
+        <span class="kw">await</span> validator.<span class="fn">ValidateAndThrowAsync</span>(cmd, ct);
+
+        <span class="kw">var</span> profile = <span class="kw">await</span> profiles.<span class="fn">GetAsync</span>(cmd.UserId, ct);
+        <span class="kw">if</span> (profile <span class="kw">is null</span>) <span class="kw">return</span> <span class="cls">UpdateNewsActiveContextResult</span>.NoProfile;
+
+        <span class="kw">var</span> snapshot = <span class="kw">await</span> interestProvider.<span class="fn">GetInterestsAsync</span>(cmd.UserId, ct);
+        <span class="kw">var</span> text     = <span class="fn">BuildContextText</span>(snapshot);
+
+        <span class="kw">var</span> vector = <span class="kw">await</span> embeddingGenerator.<span class="fn">TryEmbedRecallQueryAsync</span>(text, ct);
+        <span class="kw">if</span> (vector <span class="kw">is null</span>) <span class="kw">return</span> <span class="cls">UpdateNewsActiveContextResult</span>.Error;
+
+        profile.ActiveContextEmbedding  = <span class="kw">new</span> <span class="cls">Vector</span>(vector);
+        profile.ActiveContextUpdatedAt  = <span class="cls">DateTimeOffset</span>.UtcNow;
+
+        <span class="kw">await</span> profiles.<span class="fn">UpsertAsync</span>(profile, ct);
+        <span class="kw">return</span> <span class="cls">UpdateNewsActiveContextResult</span>.Updated;
+    }
+}</pre>
+
+    <h3>3. Update NewsVectorSearch — blend at read time</h3>
+    <p>The only change to <code>NewsVectorSearch</code> is in how the query vector is built before the cosine distance ordering. The ranking query itself is unchanged — it still does a single <code>ORDER BY e.Embedding.CosineDistance(qv)</code>.</p>
+
+    <pre><span class="kw">public async</span> <span class="cls">Task</span>&lt;<span class="cls">IReadOnlyList</span>&lt;<span class="cls">NewsVectorHit</span>&gt;&gt; <span class="fn">RankByRelevanceAsync</span>(
+    <span class="kw">int</span> userId, <span class="kw">int</span> limit, <span class="cls">CancellationToken</span> ct)
+{
+    <span class="kw">var</span> profile = <span class="kw">await</span> db.NewsUserProfiles
+        .<span class="fn">AsNoTracking</span>()
+        .<span class="fn">FirstOrDefaultAsync</span>(p => p.UserId == userId, ct);
+
+    <span class="kw">if</span> (profile <span class="kw">is null</span>) <span class="kw">return</span> [];
+
+    <span class="kw">var</span> lt  = profile.LongTermEmbedding.<span class="fn">ToArray</span>();
+    <span class="kw">var</span> st  = profile.ShortTermEmbedding?.<span class="fn">ToArray</span>();
+    <span class="kw">var</span> ac  = profile.ActiveContextEmbedding?.<span class="fn">ToArray</span>();
+    <span class="kw">var</span> dim = embeddingGenerator.Dimensions;
+
+    <span class="kw">var</span> q = <span class="kw">new double</span>[dim];
+    <span class="kw">for</span> (<span class="kw">var</span> i = <span class="num">0</span>; i &lt; dim; i++)
+    {
+        q[i]  = <span class="num">0.70</span> * lt[i];
+        q[i] += <span class="num">0.20</span> * (st  != <span class="kw">null</span> ? st[i]  : lt[i]);
+        q[i] += <span class="num">0.10</span> * (ac  != <span class="kw">null</span> ? ac[i]  : lt[i]);
+    }
+    <span class="kw">var</span> magnitude = Math.<span class="fn">Sqrt</span>(q.<span class="fn">Sum</span>(x => x * x));
+    <span class="kw">if</span> (magnitude &lt; <span class="num">1e-10</span>) <span class="kw">return</span> [];
+    <span class="kw">for</span> (<span class="kw">var</span> i = <span class="num">0</span>; i &lt; dim; i++) q[i] /= magnitude;
+
+    <span class="kw">var</span> qv = <span class="kw">new</span> <span class="cls">Vector</span>(q.<span class="fn">Select</span>(d => (<span class="kw">float</span>)d).<span class="fn">ToArray</span>());
+    <span class="kw">var</span> modelKey = embeddingGenerator.ModelKey;
+
+    <span class="kw">return await</span> db.NewsItemEmbeddings
+        .<span class="fn">AsNoTracking</span>()
+        .<span class="fn">Where</span>(e => e.EmbeddingModelKey == modelKey)
+        .<span class="fn">OrderBy</span>(e => e.Embedding.<span class="fn">CosineDistance</span>(qv))
+        .<span class="fn">Take</span>(limit)
+        .<span class="fn">Select</span>(e => <span class="kw">new</span> <span class="cls">NewsVectorHit</span>(
+            e.NewsItemId,
+            <span class="num">1.0</span> - (<span class="kw">double</span>)e.Embedding.<span class="fn">CosineDistance</span>(qv)))
+        .<span class="fn">ToListAsync</span>(ct);
+}</pre>
+
+    <h3>4. New internal API endpoint</h3>
+    <p>One new route is added to <code>InternalNewsV1Routes</code>, following the exact same pattern as <code>profile/update-from-interactions</code>. The worker activity calls this.</p>
+
+    <pre><span class="comment">// InternalNewsV1Routes.cs — addition</span>
+group.<span class="fn">MapPost</span>(
+    <span class="str">"profile/update-active-context"</span>,
+    <span class="kw">async</span> (<span class="cls">UpdateNewsActiveContextV1Request</span> body,
+           <span class="cls">UpdateNewsActiveContextCommandHandler</span> handler,
+           <span class="cls">CancellationToken</span> ct) =>
+    {
+        <span class="kw">var</span> result = <span class="kw">await</span> handler.<span class="fn">HandleAsync</span>(<span class="kw">new</span>(body.UserId), ct);
+        <span class="kw">var</span> status = result <span class="kw">switch</span>
+        {
+            <span class="cls">UpdateNewsActiveContextResult</span>.Updated   => <span class="str">"updated"</span>,
+            <span class="cls">UpdateNewsActiveContextResult</span>.NoProfile => <span class="str">"no-profile"</span>,
+            _                                         => <span class="str">"error"</span>,
+        };
+        <span class="kw">return</span> Results.<span class="fn">Ok</span>(<span class="kw">new</span> { status });
+    })
+.<span class="fn">DisableAntiforgery</span>();</pre>
+  </div>
+
+  <!-- 05 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Worker — new activity and workflow tail</h2>
+    </div>
+
+    <div class="activity-block">
+      <div class="activity-header">
+        <span class="activity-num">act 1</span>
+        <span class="activity-lang">Python</span>
+        <span class="activity-name">update_user_news_active_context</span>
+        <span class="activity-timeout">timeout 30s</span>
+      </div>
+      <div class="activity-body">
+        <p>Calls the new <code>/api/internal/v1/news/profile/update-active-context</code> endpoint. Follows the exact same pattern as the existing <code>update_user_news_profile</code> activity. The backend reads the user's interest snapshot, embeds it, and stores the result. All computation is on the backend side.</p>
+        <ul>
+          <li>Accepts <code>user_id: int</code></li>
+          <li>POSTs to <code>/api/internal/v1/news/profile/update-active-context</code></li>
+          <li>Logs outcome: <code>"updated"</code>, <code>"no-profile"</code>, or <code>"error"</code></li>
+          <li>Never raises on <code>"no-profile"</code> — expected state on first run before seeding</li>
+        </ul>
+        <pre><span class="comment"># workers-platform/app/workflows/news_intelligence/activities.py — addition</span>
+<span class="kw">@activity.defn</span>
+<span class="kw">async def</span> <span class="fn">update_user_news_active_context</span>(user_id: <span class="cls">int</span>) -> <span class="cls">dict</span>:
+    settings = <span class="fn">get_settings</span>()
+    base     = settings.platform_api_base_url.<span class="fn">rstrip</span>(<span class="str">"/"</span>)
+    headers  = {<span class="str">"Authorization"</span>: <span class="kw">f</span><span class="str">"Bearer {settings.platform_internal_service_token}"</span>}
+    <span class="kw">try</span>:
+        <span class="kw">async with</span> httpx.<span class="cls">AsyncClient</span>(timeout=<span class="num">25.0</span>) <span class="kw">as</span> client:
+            r = <span class="kw">await</span> client.<span class="fn">post</span>(
+                <span class="kw">f</span><span class="str">"{base}/api/internal/v1/news/profile/update-active-context"</span>,
+                json={<span class="str">"userId"</span>: user_id},
+                headers=headers,
+            )
+            r.<span class="fn">raise_for_status</span>()
+            status = r.<span class="fn">json</span>().<span class="fn">get</span>(<span class="str">"status"</span>, <span class="str">"error"</span>)
+    <span class="kw">except</span> <span class="cls">Exception</span>:
+        logger.<span class="fn">exception</span>(<span class="str">"update_user_news_active_context failed user_id=%s"</span>, user_id)
+        status = <span class="str">"error"</span>
+    logger.<span class="fn">info</span>(<span class="str">"update_user_news_active_context user_id=%s status=%s"</span>, user_id, status)
+    <span class="kw">return</span> {<span class="str">"status"</span>: status}</pre>
+      </div>
+    </div>
+
+    <h3>Workflow tail — two activities, not one</h3>
+    <p>The existing tail of <code>NewsIntelligenceWorkflow.run()</code> already calls <code>update_user_news_profile</code>. Phase 4 adds <code>update_user_news_active_context</code> immediately after, following the same sequential pattern. Both are cheap backend calls — combined they add at most a few seconds to the ingestion run.</p>
+
+    <pre><span class="comment"># workers-platform/app/workflows/news_intelligence/workflow.py — tail (after Phase 3 activity)</span>
+
+<span class="comment"># Phase 3 — behavioral profile update (unchanged)</span>
+<span class="kw">await</span> workflow.<span class="fn">execute_activity</span>(
+    <span class="str">"update_user_news_profile"</span>,
+    <span class="num">1</span>,  <span class="comment"># primary user</span>
+    start_to_close_timeout=timedelta(seconds=<span class="num">30</span>),
+)
+
+<span class="comment"># Phase 4 — active context update (new)</span>
+<span class="kw">await</span> workflow.<span class="fn">execute_activity</span>(
+    <span class="str">"update_user_news_active_context"</span>,
+    <span class="num">1</span>,  <span class="comment"># primary user</span>
+    start_to_close_timeout=timedelta(seconds=<span class="num">30</span>),
+)</pre>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ</span>
+      <div class="callout-text"><strong>Register the new activity.</strong> Add <code>update_user_news_active_context</code> to the activity list in <code>app/runtime/registry/definitions.py</code> alongside the other news intelligence activities. The workflow name does not change — no new workflow class is needed.</div>
+    </div>
+  </div>
+
+  <!-- 06 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Complete file list</h2>
+    </div>
+    <p>Every file created or modified in Phase 4. Nothing from Phases 1–3 is deleted. The only structural change to existing files is the extension of <code>UpdateNewsProfileCommandHandler</code> and <code>NewsVectorSearch</code>.</p>
+
+    <h4>Domain</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Domain/Features/News/NewsUserProfile.cs — add ShortTermEmbedding, ShortTermUpdatedAt, ActiveContextEmbedding, ActiveContextUpdatedAt</div>
+    </div>
+
+    <h4>Application</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Application/Features/News/Profile/UpdateNewsProfileCommandHandler.cs — compute short-term in one pass alongside long-term</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/Profile/UpdateNewsActiveContextCommand.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/Profile/UpdateNewsActiveContextCommandHandler.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/Profile/UpdateNewsActiveContextCommandValidator.cs</div>
+    </div>
+
+    <h4>Infrastructure</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Infrastructure/Features/News/NewsVectorSearch.cs — blend long-term, short-term, and active context at read time</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Infrastructure/Persistence/PlatformDbContext.cs — configure four new nullable columns on NewsUserProfile</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Infrastructure/DependencyInjection.cs — register UpdateNewsActiveContextCommandHandler</div>
+      <div class="file-row"><span class="badge migrate">migrate</span> Platform.Infrastructure/Persistence/Migrations/[timestamp]_NewsUserProfileDualModelV1.cs</div>
+    </div>
+
+    <h4>API</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Api/Features/News/Internal/InternalNewsV1Routes.cs — add profile/update-active-context route</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Contracts/V1/News/UpdateNewsActiveContextV1Contracts.cs — request and response records</div>
+    </div>
+
+    <h4>Worker</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/workflows/news_intelligence/activities.py — add update_user_news_active_context</div>
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/workflows/news_intelligence/workflow.py — call new activity at run tail</div>
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/runtime/registry/definitions.py — register update_user_news_active_context</div>
+    </div>
+  </div>
+
+  <!-- 07 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Build order and decisions</h2>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">Step 1</div>
+          <div class="pipeline-title">Domain + migration</div>
+          <div class="pipeline-desc">Add the four fields to <code>NewsUserProfile</code>, configure them in <code>PlatformDbContext</code>, run the EF migration. The DB is ready before any handler touches it.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">Step 2</div>
+          <div class="pipeline-title">Extend UpdateNewsProfileCommandHandler</div>
+          <div class="pipeline-desc">Add short-term computation alongside the existing long-term logic. No new files — extend the existing handler. Validate by calling the existing <code>profile/update-from-interactions</code> endpoint and checking that <code>ShortTermEmbedding</code> is now populated.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">Step 3</div>
+          <div class="pipeline-title">UpdateNewsActiveContextCommandHandler + route</div>
+          <div class="pipeline-desc">Create the new command, handler, validator. Add the <code>profile/update-active-context</code> internal route and the contract types. Register in DI. Validate by calling the endpoint directly and checking the column.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">Step 4</div>
+          <div class="pipeline-title">NewsVectorSearch blend</div>
+          <div class="pipeline-desc">Update the query vector construction in <code>RankByRelevanceAsync</code>. After steps 2 and 3 have populated the new columns, the feed should immediately reflect the 3-way blend without any further wiring.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">Step 5</div>
+          <div class="pipeline-title">Worker activity + registry</div>
+          <div class="pipeline-desc">Add <code>update_user_news_active_context</code> to <code>activities.py</code>, call it at the workflow tail in <code>workflow.py</code>, register it in <code>definitions.py</code>. From this point every ingestion run automatically refreshes all three profile components.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <span class="callout-icon">!</span>
+      <div class="callout-text"><strong>Decision — blend weights.</strong> The 70 / 20 / 10 split is a reasonable starting point but not validated. Short-term at 20% means a week of reading one topic noticeably shifts the feed even when long-term differs. If the feed feels too reactive after testing, reduce short-term to 15% and redistribute to long-term. The weights are constants in <code>NewsVectorSearch</code> — easy to tune without touching the data model.</div>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ</span>
+      <div class="callout-text"><strong>What Phase 5 builds on.</strong> Phase 5 adds LLM re-ranking on top of the cosine-ranked candidates Phase 4 produces. The query vector improvements here make the candidate set cleaner — the LLM in Phase 5 starts from better material. No Phase 4 code changes when Phase 5 is added.</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
