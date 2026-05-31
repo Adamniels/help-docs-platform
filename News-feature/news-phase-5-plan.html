@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News Feature — Phase 5 Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0f;
+    --ink-2: #3a3a3a;
+    --ink-3: #6b6b6b;
+    --ink-4: #9b9b9b;
+    --surface: #fafaf8;
+    --surface-2: #f2f1ed;
+    --surface-3: #e8e6e0;
+    --border: #dddad2;
+    --accent-blue: #1a4f9e;
+    --accent-blue-light: #e8eef9;
+    --accent-teal: #0f6e56;
+    --accent-teal-light: #e1f5ee;
+    --accent-amber: #8a4e0a;
+    --accent-amber-light: #faeeda;
+    --accent-coral: #993c1d;
+    --accent-coral-light: #faece7;
+    --accent-purple: #3c3489;
+    --accent-purple-light: #eeedfe;
+    --accent-green: #3b6d11;
+    --accent-green-light: #eaf3de;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--surface);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+    font-weight: 300;
+  }
+
+  .masthead {
+    background: var(--ink);
+    color: var(--surface);
+    padding: 5rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 59px,
+      rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px
+    );
+  }
+  .masthead-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+    position: relative;
+  }
+  .masthead-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 1.5rem;
+  }
+  .masthead h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    line-height: 1.1;
+    font-weight: 400;
+    margin-bottom: 1.25rem;
+  }
+  .masthead h1 em {
+    font-style: italic;
+    color: rgba(255,255,255,0.6);
+  }
+  .masthead-sub {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.55);
+    max-width: 560px;
+    line-height: 1.6;
+  }
+  .masthead-stats {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    flex-wrap: wrap;
+  }
+  .stat { display: flex; flex-direction: column; gap: 0.2rem; }
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    line-height: 1;
+    color: #fff;
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem 2.5rem;
+  }
+
+  .section { margin-bottom: 5rem; }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--ink-4);
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.7rem;
+    font-weight: 400;
+  }
+
+  p { margin-bottom: 1rem; color: var(--ink-2); }
+  p:last-child { margin-bottom: 0; }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 1.75rem 0 0.6rem;
+    letter-spacing: -0.01em;
+  }
+  h4 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--ink-3);
+    margin: 1.25rem 0 0.4rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82em;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.1em 0.35em;
+    color: var(--ink);
+  }
+
+  pre {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    background: #0f0f0f;
+    color: #e8e6e0;
+    border-radius: 6px;
+    padding: 1.4rem 1.6rem;
+    overflow-x: auto;
+    line-height: 1.6;
+    margin: 1.25rem 0;
+  }
+  pre .comment { color: #6b7280; }
+  pre .kw { color: #93c5fd; }
+  pre .str { color: #86efac; }
+  pre .num { color: #fca5a5; }
+  pre .cls { color: #fde68a; }
+  pre .fn { color: #c4b5fd; }
+  pre .op { color: #d1d5db; }
+
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 2rem 0;
+  }
+  .pipeline-step {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 0 1.25rem;
+  }
+  .pipeline-spine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .pipeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--ink);
+    flex-shrink: 0;
+    margin-top: 0.35rem;
+  }
+  .pipeline-line {
+    width: 2px;
+    flex: 1;
+    background: var(--border);
+    min-height: 1.5rem;
+  }
+  .pipeline-body { padding-bottom: 1.75rem; }
+  .pipeline-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    margin-bottom: 0.2rem;
+  }
+  .pipeline-title { font-weight: 500; color: var(--ink); margin-bottom: 0.3rem; }
+  .pipeline-desc { font-size: 0.9rem; color: var(--ink-3); }
+
+  .callout {
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+    font-size: 0.9rem;
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    gap: 0 0.75rem;
+    align-items: start;
+  }
+  .callout-icon { font-size: 0.85rem; padding-top: 0.05rem; }
+  .callout-text { color: var(--ink-2); line-height: 1.55; }
+  .callout-text strong { color: var(--ink); font-weight: 500; }
+  .callout.info  { background: var(--accent-blue-light);   border-left: 3px solid var(--accent-blue); }
+  .callout.warn  { background: var(--accent-amber-light);  border-left: 3px solid var(--accent-amber); }
+  .callout.key   { background: var(--accent-teal-light);   border-left: 3px solid var(--accent-teal); }
+  .callout.new   { background: var(--accent-purple-light); border-left: 3px solid var(--accent-purple); }
+  .callout.danger { background: var(--accent-coral-light); border-left: 3px solid var(--accent-coral); }
+
+  .file-list {
+    margin: 1.25rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .file-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--ink-2);
+  }
+  .badge {
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.1em 0.45em;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .badge.new     { background: var(--accent-purple-light); color: var(--accent-purple); }
+  .badge.extend  { background: var(--accent-blue-light);   color: var(--accent-blue); }
+  .badge.migrate { background: var(--accent-amber-light);  color: var(--accent-amber); }
+  .badge.test    { background: var(--surface-3);           color: var(--ink-3); }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.1rem 1.25rem;
+  }
+  .card-title { font-weight: 500; font-size: 0.9rem; margin-bottom: 0.35rem; color: var(--ink); }
+  .card-body  { font-size: 0.85rem; color: var(--ink-3); line-height: 1.5; margin-bottom: 0; }
+
+  .activity-block {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    overflow: hidden;
+  }
+  .activity-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .activity-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    background: var(--ink);
+    color: var(--surface);
+    padding: 0.2em 0.5em;
+    border-radius: 3px;
+    letter-spacing: 0.06em;
+  }
+  .activity-lang { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--ink-4); }
+  .activity-name { font-family: 'DM Mono', monospace; font-weight: 500; font-size: 0.9rem; color: var(--ink); flex: 1; }
+  .activity-timeout { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--ink-4); }
+  .activity-body { padding: 1.25rem; }
+  .activity-body p { font-size: 0.9rem; }
+  .activity-body ul { list-style: none; padding: 0; margin: 0.5rem 0 1rem; }
+  .activity-body ul li {
+    font-size: 0.9rem;
+    color: var(--ink-2);
+    padding: 0.25rem 0 0.25rem 1.25rem;
+    position: relative;
+  }
+  .activity-body ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--ink-4);
+    font-size: 0.8rem;
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin: 1.25rem 0; }
+  th {
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    padding: 0.6rem 0.75rem;
+    border-bottom: 2px solid var(--border);
+    font-weight: 400;
+  }
+  td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--surface-3);
+    color: var(--ink-2);
+    vertical-align: top;
+  }
+  td code { font-size: 0.78em; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface-2); }
+
+  .phase-complete {
+    background: var(--accent-green-light);
+    border: 1px solid #c3e6a3;
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .phase-complete-title { font-weight: 500; color: var(--accent-green); margin-bottom: 0.4rem; font-size: 0.95rem; }
+  .phase-complete-body { font-size: 0.875rem; color: var(--ink-2); line-height: 1.55; margin-bottom: 0; }
+
+  .prompt-box {
+    background: #0f0f0f;
+    border-radius: 8px;
+    margin: 1.25rem 0;
+    overflow: hidden;
+  }
+  .prompt-role {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.6rem 1.25rem;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .prompt-role.system { color: #c4b5fd; background: rgba(196,181,253,0.08); }
+  .prompt-role.user   { color: #86efac; background: rgba(134,239,172,0.06); }
+  .prompt-content {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: #e8e6e0;
+    padding: 1rem 1.25rem;
+    line-height: 1.65;
+    white-space: pre-wrap;
+  }
+  .prompt-content .dim { color: #6b7280; }
+  .prompt-content .hi  { color: #fde68a; }
+
+  .flow-diagram {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+  }
+  .flow-node {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.65rem 1rem;
+    font-size: 0.8rem;
+    font-family: 'DM Mono', monospace;
+    color: var(--ink-2);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .flow-node.highlight {
+    background: var(--accent-purple-light);
+    border-color: var(--accent-purple);
+    color: var(--accent-purple);
+    font-weight: 500;
+  }
+  .flow-arrow {
+    color: var(--ink-4);
+    font-size: 1.1rem;
+    padding: 0 0.5rem;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 640px) {
+    .card-grid { grid-template-columns: 1fr; }
+    .masthead-stats { gap: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-label">Deep Dive · Phase 5 of 5 · News Intelligence Feature · May 2026</div>
+    <h1>Phase 5 —<br><em>LLM re-ranking</em><br>&amp; explanations</h1>
+    <p class="masthead-sub">Claude re-ranks the top candidates from your interest profile and writes a one-sentence explanation for each article. The feed stops feeling like a ranked list and starts feeling like something that understands what you are working on.</p>
+    <div class="masthead-stats">
+      <div class="stat"><span class="stat-num">1</span><span class="stat-label">new table</span></div>
+      <div class="stat"><span class="stat-num">1</span><span class="stat-label">new activity</span></div>
+      <div class="stat"><span class="stat-num">20</span><span class="stat-label">articles re-ranked</span></div>
+      <div class="stat"><span class="stat-num">0ms</span><span class="stat-label">feed latency added</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="phase-complete">
+    <div class="phase-complete-title">✓ Phase 4 is complete</div>
+    <div class="phase-complete-body">
+      <code>NewsUserProfile</code> now carries three vectors: <code>LongTermEmbedding</code> (7-day momentum), <code>ShortTermEmbedding</code> (14-day raw snapshot), and <code>ActiveContextEmbedding</code> (declared interests and projects). <code>NewsVectorSearch</code> blends all three at 70/20/10 at read time. The <code>update_user_news_active_context</code> activity refreshes the active context on every ingestion run. Phase 5 takes the candidate set that Phase 4 produces and passes it through a language model.
+    </div>
+  </div>
+
+  <!-- 01 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">What Phase 5 delivers</h2>
+    </div>
+    <p>Cosine similarity is fast and effective, but it is fundamentally a measure of geometric closeness between vectors. It cannot reason. It does not know that an article about Temporal workflow architecture is relevant because <em>you are building a Temporal-based worker system right now</em>. It just knows the embeddings are close.</p>
+    <p>Phase 5 adds a reasoning layer. After the Phase 4 vector ranking produces a candidate set of 50 articles, Claude reads them alongside your full user context and re-ranks the top 20 with a relevance score and a one-sentence explanation written specifically to you. The result is stored in the database before you ever open the feed, so there is no added latency at read time.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">Pre-computed, instant loading</div>
+        <div class="card-body">Re-ranking happens in the worker at ingestion time, not when you open the feed. The ranked list is stored in the DB and served immediately — zero LLM latency on the feed request.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Explanation per article</div>
+        <div class="card-body">Each article gets a one-sentence "why this matters to you" written by Claude, referencing your actual projects or interests. Not generic — specific to your context at the time of ranking.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Graceful fallback</div>
+        <div class="card-body">If no pre-computed ranking exists (first run, or LLM call failed), the feed falls back to the Phase 4 vector search result exactly as before. Nothing breaks.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">How re-ranking works</h2>
+    </div>
+
+    <p>The pipeline runs at the tail of <code>NewsIntelligenceWorkflow</code>, after profile updates. The worker fetches candidates and user context from the backend, calls the Anthropic API, and posts the ranked results back. The backend only stores data — the LLM call itself stays in Python, consistent with how all other AI calls in the system work.</p>
+
+    <div class="flow-diagram">
+      <div class="flow-node">vector search<br>top 50</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node highlight">Claude<br>re-rank top 20</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">store in<br>NewsRankedFeed</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">feed endpoint<br>reads pre-computed</div>
+    </div>
+
+    <h3>The LLM call</h3>
+    <p>The system prompt frames Claude as a relevance judge for a specific reader. The user prompt passes the full interest context and the 50 candidate articles with their titles and body snippets. Claude selects the top 20, assigns a relevance score, and writes one sentence per article explaining the relevance in terms of the reader's actual situation.</p>
+
+    <div class="prompt-box">
+      <div class="prompt-role system">system</div>
+      <div class="prompt-content">You are ranking news articles for a specific reader based on their declared interests, goals, and active projects.
+Your job is to identify which articles are genuinely most valuable to this person right now and explain the relevance directly to them.
+Be specific — reference their actual projects and goals in the explanation, not generic interest labels.
+Return strict JSON only, no markdown outside of the JSON.</div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-role user">user</div>
+      <div class="prompt-content"><span class="hi">## Reader profile</span>
+<span class="dim">Core interests:</span> software engineering, AI systems, distributed systems
+<span class="dim">Secondary interests:</span> embedded systems, career development
+<span class="dim">Goals:</span> backend engineering internship, production-quality projects
+<span class="dim">Active projects:</span> Platform, news feature
+
+<span class="hi">## Candidate articles (50, pre-ranked by vector similarity)</span>
+<span class="dim">[1] id="abc123"</span>
+Title: "Building reliable distributed workflows with Temporal"
+Source: Engineering at Meta | Published: 2026-05-30
+Snippet: Temporal's workflow engine provides durable execution guarantees...
+
+<span class="dim">[2] id="def456"</span>
+Title: "How embedding models encode semantic meaning"
+Source: Towards Data Science | Published: 2026-05-29
+Snippet: When you embed a sentence, the model maps it to a point in...
+
+<span class="dim">... up to 50 articles</span>
+
+<span class="hi">## Task</span>
+Select the 20 articles that are most genuinely relevant to this reader right now.
+Rank them from most to least relevant.
+For each, provide:
+- score: integer 0–100 (higher = more relevant)
+- explanation: one sentence written directly to the reader, referencing their specific projects or goals
+
+Return JSON: {"rankings": [{"newsItemId": "...", "score": 94, "explanation": "..."}, ...]}</div>
+    </div>
+
+    <div class="callout key">
+      <span class="callout-icon">★</span>
+      <div class="callout-text"><strong>Specificity is the whole point.</strong> A generic explanation ("relevant to your interest in AI") adds no value. The prompt explicitly instructs Claude to reference the reader's actual projects and goals. An explanation like "Directly relevant to your news feature — the same embedding approach you are using for feed ranking" is what makes Phase 5 feel different from a scored list.</div>
+    </div>
+
+    <h3>Candidate fetch</h3>
+    <p>A new backend endpoint — <code>GET /api/internal/v1/news/feed/candidates</code> — runs the Phase 4 vector search internally to get the top 50 articles, then packages them with the user's interest context into a single response. The worker calls this once and gets everything it needs for the LLM prompt.</p>
+
+    <pre><span class="comment"># Response shape — what the worker receives</span>
+{
+  <span class="str">"userContext"</span>: {
+    <span class="str">"coreInterests"</span>:     [<span class="str">"software engineering"</span>, <span class="str">"AI systems"</span>],
+    <span class="str">"secondaryInterests"</span>: [<span class="str">"embedded systems"</span>],
+    <span class="str">"goals"</span>:             [<span class="str">"backend internship"</span>],
+    <span class="str">"activeProjects"</span>:    [<span class="str">"Platform"</span>, <span class="str">"news feature"</span>]
+  },
+  <span class="str">"candidates"</span>: [
+    {
+      <span class="str">"newsItemId"</span>:  <span class="str">"abc123"</span>,
+      <span class="str">"title"</span>:       <span class="str">"Building reliable distributed workflows with Temporal"</span>,
+      <span class="str">"source"</span>:      <span class="str">"Engineering at Meta"</span>,
+      <span class="str">"publishedAt"</span>: <span class="str">"2026-05-30T08:00:00Z"</span>,
+      <span class="str">"bodySnippet"</span>: <span class="str">"Temporal's workflow engine provides durable execution..."</span>
+    },
+    <span class="comment">... up to 50</span>
+  ]
+}</pre>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ</span>
+      <div class="callout-text"><strong>Body snippet length.</strong> Each article body is truncated to 300 characters in the candidate response. This keeps the total prompt size manageable (50 articles × ~400 chars ≈ 20k chars, well within Claude's context window) while giving enough signal to judge relevance. The full body is not needed for ranking — the title plus a snippet is sufficient.</div>
+    </div>
+  </div>
+
+  <!-- 03 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Domain — NewsRankedFeed</h2>
+    </div>
+    <p>One new entity stores the pre-computed ranked list per user. One row per user, completely replaced on each ingestion run. Using JSONB for the entries avoids a join table and keeps the feed read to a single row lookup.</p>
+
+    <pre><span class="comment">// Platform.Domain/Features/News/NewsRankedFeed.cs</span>
+<span class="kw">public sealed class</span> <span class="cls">NewsRankedFeed</span>
+{
+    <span class="comment">/// &lt;summary&gt;PK — one ranked feed per user.&lt;/summary&gt;</span>
+    <span class="kw">public int</span>            UserId     { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="comment">/// &lt;summary&gt;
+    /// Ordered JSON array of ranked entries. Each entry:
+    /// { newsItemId, score, explanation }
+    /// Stored as JSONB and deserialized in the query handler.
+    /// &lt;/summary&gt;</span>
+    <span class="kw">public string</span>         EntriesJson { <span class="kw">get</span>; <span class="kw">set</span>; } = <span class="str">"[]"</span>;
+
+    <span class="comment">/// &lt;summary&gt;The Anthropic model that produced this ranking.&lt;/summary&gt;</span>
+    <span class="kw">public string</span>         ModelUsed  { <span class="kw">get</span>; <span class="kw">set</span>; } = <span class="str">""</span>;
+
+    <span class="kw">public</span> <span class="cls">DateTimeOffset</span> RankedAt   { <span class="kw">get</span>; <span class="kw">set</span>; }
+}</pre>
+
+    <h4>EF Core configuration</h4>
+    <p>Table name: <code>news_ranked_feeds</code>. <code>EntriesJson</code> mapped as <code>jsonb</code>. <code>ModelUsed</code> max length 128. <code>UserId</code> is the primary key — no identity column, since the row is always upserted by user.</p>
+
+    <h4>Migration</h4>
+    <p>One migration adds the table. Run <code>dotnet ef migrations add NewsRankedFeedV1 --project src/Platform.Infrastructure --startup-project src/Platform.Api</code> after adding the domain entity and EF configuration, then <code>dotnet ef database update</code>.</p>
+  </div>
+
+  <!-- 04 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Backend changes</h2>
+    </div>
+
+    <h3>1. INewsRankedFeedRepository</h3>
+    <p>A minimal interface: get the stored ranking for a user, upsert a new one. Used by the command handler (write path) and the feed query handler (read path).</p>
+
+    <pre><span class="comment">// Platform.Application/Abstractions/News/INewsRankedFeedRepository.cs</span>
+<span class="kw">public interface</span> <span class="cls">INewsRankedFeedRepository</span>
+{
+    <span class="cls">Task</span>&lt;<span class="cls">NewsRankedFeed</span>?&gt; <span class="fn">GetAsync</span>(<span class="kw">int</span> userId, <span class="cls">CancellationToken</span> ct = <span class="kw">default</span>);
+    <span class="cls">Task</span> <span class="fn">UpsertAsync</span>(<span class="cls">NewsRankedFeed</span> feed, <span class="cls">CancellationToken</span> ct = <span class="kw">default</span>);
+}</pre>
+
+    <h3>2. StoreRankedNewsFeedCommand + Handler</h3>
+    <p>The command receives the ranked entries from the worker and writes them to the database. It is called from the new <code>POST /api/internal/v1/news/feed/ranked-results</code> internal endpoint.</p>
+
+    <pre><span class="comment">// Platform.Application/Features/News/RankedFeed/StoreRankedNewsFeedCommand.cs</span>
+<span class="kw">public sealed record</span> <span class="cls">RankedFeedEntry</span>(
+    <span class="kw">string</span> NewsItemId,
+    <span class="kw">int</span>    Score,
+    <span class="kw">string</span> Explanation);
+
+<span class="kw">public sealed record</span> <span class="cls">StoreRankedNewsFeedCommand</span>(
+    <span class="kw">int</span>                            UserId,
+    <span class="kw">string</span>                         ModelUsed,
+    IReadOnlyList&lt;<span class="cls">RankedFeedEntry</span>&gt; Rankings);
+
+<span class="comment">// Handler: serialize Rankings to JSON, upsert NewsRankedFeed row</span>
+<span class="comment">// No complex logic — just validate, serialize, write.</span></pre>
+
+    <h3>3. GetNewsFeedCandidatesQuery + Handler</h3>
+    <p>This is the read side that the worker calls before the LLM step. It runs the Phase 4 vector search internally, fetches the article metadata, and loads the user interest context — all in one backend call so the worker only makes one HTTP request before the LLM call.</p>
+
+    <pre><span class="comment">// Platform.Application/Features/News/RankedFeed/GetNewsFeedCandidatesQueryHandler.cs</span>
+<span class="kw">public sealed class</span> <span class="cls">GetNewsFeedCandidatesQueryHandler</span>(
+    <span class="cls">INewsVectorSearch</span>   vectorSearch,
+    <span class="cls">INewsReadRepository</span> newsRepo,
+    <span class="cls">IUserInterestProvider</span> interests)
+{
+    <span class="kw">public async</span> <span class="cls">Task</span>&lt;<span class="cls">NewsFeedCandidatesDto</span>&gt; <span class="fn">HandleAsync</span>(
+        <span class="cls">GetNewsFeedCandidatesQuery</span> query, <span class="cls">CancellationToken</span> ct)
+    {
+        <span class="comment">// Run the Phase 4 vector search for a larger candidate pool</span>
+        <span class="kw">var</span> hits  = <span class="kw">await</span> vectorSearch.<span class="fn">RankByRelevanceAsync</span>(query.UserId, query.Limit, ct);
+        <span class="kw">var</span> items = <span class="kw">await</span> newsRepo.<span class="fn">GetByIdsAsync</span>(hits.<span class="fn">Select</span>(h => h.NewsItemId), ct);
+
+        <span class="comment">// Package user context alongside candidates</span>
+        <span class="kw">var</span> snapshot = <span class="kw">await</span> interests.<span class="fn">GetInterestsAsync</span>(query.UserId, ct);
+
+        <span class="kw">return new</span> <span class="cls">NewsFeedCandidatesDto</span>(
+            UserContext:  <span class="fn">BuildContext</span>(snapshot),
+            Candidates:   items.<span class="fn">Select</span>(x => <span class="fn">ToCandidate</span>(x)).<span class="fn">ToList</span>());
+    }
+}</pre>
+
+    <h3>4. Update ListNewsFeedQueryHandler — check pre-computed ranking first</h3>
+    <p>The feed endpoint gains awareness of the pre-computed ranking. If one exists, it fetches the ranked articles by ID in order and attaches the stored explanations. If not, it falls back to the Phase 4 vector search path. The fallback means the feed is never broken — Phase 5 only ever adds to it.</p>
+
+    <pre><span class="kw">public async</span> <span class="cls">Task</span>&lt;<span class="cls">IReadOnlyList</span>&lt;<span class="cls">NewsItemSummaryDto</span>&gt;&gt; <span class="fn">HandleAsync</span>(
+    <span class="cls">ListNewsFeedQuery</span> query, <span class="cls">CancellationToken</span> ct)
+{
+    <span class="comment">// Phase 5: use pre-computed LLM ranking when available</span>
+    <span class="kw">var</span> ranked = <span class="kw">await</span> rankedFeedRepo.<span class="fn">GetAsync</span>(query.UserId, ct);
+    <span class="kw">if</span> (ranked <span class="kw">is not null</span>)
+    {
+        <span class="kw">var</span> entries   = JsonSerializer.<span class="fn">Deserialize</span>&lt;<span class="cls">List</span>&lt;<span class="cls">RankedFeedEntry</span>&gt;&gt;(ranked.EntriesJson)!;
+        <span class="kw">var</span> ids       = entries.<span class="fn">Select</span>(e => e.NewsItemId);
+        <span class="kw">var</span> items     = <span class="kw">await</span> news.<span class="fn">GetByIdsAsync</span>(ids, ct);
+        <span class="kw">var</span> itemMap   = items.<span class="fn">ToDictionary</span>(x => x.Id);
+        <span class="kw">var</span> scoreMap  = entries.<span class="fn">ToDictionary</span>(e => e.NewsItemId, e => e.Score / <span class="num">100.0</span>);
+        <span class="kw">var</span> exMap     = entries.<span class="fn">ToDictionary</span>(e => e.NewsItemId, e => e.Explanation);
+
+        <span class="kw">return</span> entries
+            .<span class="fn">Where</span>(e => itemMap.<span class="fn">ContainsKey</span>(e.NewsItemId))
+            .<span class="fn">Select</span>(e => itemMap[e.NewsItemId] <span class="kw">with</span>
+            {
+                RelevanceScore      = scoreMap.<span class="fn">GetValueOrDefault</span>(e.NewsItemId),
+                RelevanceExplanation = exMap.<span class="fn">GetValueOrDefault</span>(e.NewsItemId),
+            })
+            .<span class="fn">ToList</span>();
+    }
+
+    <span class="comment">// Phase 2–4 fallback — vector search, no explanations</span>
+    <span class="kw">var</span> hits = <span class="kw">await</span> vectorSearch.<span class="fn">RankByRelevanceAsync</span>(query.UserId, FeedLimit, ct);
+    <span class="comment">// ... existing fallback logic unchanged</span>
+}</pre>
+
+    <h3>5. Update NewsItemSummaryDto — add explanation field</h3>
+    <p>One new optional field. Because it is nullable, no existing serialization breaks — the field is simply absent when Phase 5 has not run yet.</p>
+
+    <pre><span class="kw">public sealed record</span> <span class="cls">NewsItemSummaryDto</span>(
+    <span class="kw">string</span>  Id,
+    <span class="kw">string</span>  Title,
+    <span class="kw">string</span>  Source,
+    <span class="kw">string</span>  PublishedAt,
+    <span class="kw">string</span>? Url,
+    <span class="kw">string</span>? Body,
+    <span class="kw">double</span>? RelevanceScore,
+    <span class="kw">string</span>? RelevanceExplanation = <span class="kw">null</span>);  <span class="comment">// ← new in Phase 5</span></pre>
+
+    <h3>6. New internal routes</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>Path</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>GET</code></td>
+          <td><code>/api/internal/v1/news/feed/candidates</code></td>
+          <td>Returns top 50 articles by vector ranking + user context. Worker calls this before the LLM step.</td>
+        </tr>
+        <tr>
+          <td><code>POST</code></td>
+          <td><code>/api/internal/v1/news/feed/ranked-results</code></td>
+          <td>Receives LLM-ranked entries with explanations. Worker calls this after the LLM step to store results.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 05 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Worker — new activity</h2>
+    </div>
+
+    <h3>New dependency: anthropic</h3>
+    <p>The Anthropic Python SDK is added to <code>pyproject.toml</code>. The worker already uses <code>httpx</code> for all other HTTP calls, but the Anthropic SDK handles auth, retries, and response parsing cleanly. A new <code>ANTHROPIC_API_KEY</code> environment variable is required.</p>
+
+    <pre><span class="comment"># pyproject.toml — add to dependencies</span>
+<span class="str">"anthropic>=0.28.0"</span></pre>
+
+    <div class="activity-block">
+      <div class="activity-header">
+        <span class="activity-num">act 1</span>
+        <span class="activity-lang">Python</span>
+        <span class="activity-name">rank_news_feed_with_llm</span>
+        <span class="activity-timeout">timeout 120s</span>
+      </div>
+      <div class="activity-body">
+        <p>Fetches candidates from the backend, calls Claude to re-rank, posts results back. The longer timeout (120s vs 30s for other activities) accounts for the LLM call latency. The activity never raises on a graceful failure — if the Anthropic call fails or returns unparseable JSON, it logs and returns <code>"error"</code> so the workflow continues and the feed falls back to vector search.</p>
+        <ul>
+          <li>Accepts <code>user_id: int</code>, <code>candidate_limit: int = 50</code>, <code>final_limit: int = 20</code></li>
+          <li>GETs <code>/api/internal/v1/news/feed/candidates?userId=1&amp;limit=50</code></li>
+          <li>Builds prompt from user context + candidate articles</li>
+          <li>Calls <code>anthropic.messages.create(model="claude-sonnet-4-6", ...)</code></li>
+          <li>Parses JSON response: <code>{"rankings": [{newsItemId, score, explanation}, ...]}</code></li>
+          <li>POSTs to <code>/api/internal/v1/news/feed/ranked-results</code></li>
+          <li>Returns <code>{"status": "ranked"}</code> or <code>{"status": "error"}</code></li>
+        </ul>
+        <pre><span class="kw">@activity.defn</span>
+<span class="kw">async def</span> <span class="fn">rank_news_feed_with_llm</span>(
+    user_id: <span class="cls">int</span>,
+    candidate_limit: <span class="cls">int</span> = <span class="num">50</span>,
+    final_limit: <span class="cls">int</span> = <span class="num">20</span>,
+) -> <span class="cls">dict</span>:
+    settings = <span class="fn">get_settings</span>()
+    base     = settings.platform_api_base_url.<span class="fn">rstrip</span>(<span class="str">"/"</span>)
+    headers  = {<span class="str">"Authorization"</span>: <span class="kw">f</span><span class="str">"Bearer {settings.platform_internal_service_token}"</span>}
+
+    <span class="comment"># 1. Fetch candidates + user context</span>
+    <span class="kw">async with</span> httpx.<span class="cls">AsyncClient</span>(timeout=<span class="num">30.0</span>) <span class="kw">as</span> client:
+        r = <span class="kw">await</span> client.<span class="fn">get</span>(
+            <span class="kw">f</span><span class="str">"{base}/api/internal/v1/news/feed/candidates"</span>,
+            params={<span class="str">"userId"</span>: user_id, <span class="str">"limit"</span>: candidate_limit},
+            headers=headers,
+        )
+        r.<span class="fn">raise_for_status</span>()
+        data = r.<span class="fn">json</span>()
+
+    candidates = data.<span class="fn">get</span>(<span class="str">"candidates"</span>, [])
+    user_ctx   = data.<span class="fn">get</span>(<span class="str">"userContext"</span>, {})
+
+    <span class="kw">if not</span> candidates:
+        logger.<span class="fn">info</span>(<span class="str">"rank_news_feed_with_llm: no candidates, skipping"</span>)
+        <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"no-candidates"</span>}
+
+    <span class="comment"># 2. Call Claude</span>
+    system_prompt = <span class="fn">_build_system_prompt</span>()
+    user_prompt   = <span class="fn">_build_user_prompt</span>(user_ctx, candidates, final_limit)
+
+    <span class="kw">try</span>:
+        client = anthropic.<span class="cls">AsyncAnthropic</span>(api_key=settings.anthropic_api_key)
+        message = <span class="kw">await</span> client.messages.<span class="fn">create</span>(
+            model=<span class="str">"claude-sonnet-4-6"</span>,
+            max_tokens=<span class="num">4096</span>,
+            system=system_prompt,
+            messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: user_prompt}],
+        )
+        raw      = message.content[<span class="num">0</span>].text
+        rankings = json.<span class="fn">loads</span>(raw)[<span class="str">"rankings"</span>]
+    <span class="kw">except</span> <span class="cls">Exception</span>:
+        logger.<span class="fn">exception</span>(<span class="str">"rank_news_feed_with_llm LLM call failed"</span>)
+        <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"error"</span>}
+
+    <span class="comment"># 3. Store ranked results</span>
+    <span class="kw">async with</span> httpx.<span class="cls">AsyncClient</span>(timeout=<span class="num">30.0</span>) <span class="kw">as</span> client:
+        r = <span class="kw">await</span> client.<span class="fn">post</span>(
+            <span class="kw">f</span><span class="str">"{base}/api/internal/v1/news/feed/ranked-results"</span>,
+            json={
+                <span class="str">"userId"</span>:   user_id,
+                <span class="str">"modelUsed"</span>: <span class="str">"claude-sonnet-4-6"</span>,
+                <span class="str">"rankings"</span>: rankings,
+            },
+            headers=headers,
+        )
+        r.<span class="fn">raise_for_status</span>()
+
+    logger.<span class="fn">info</span>(<span class="str">"rank_news_feed_with_llm ranked %d articles"</span>, len(rankings))
+    <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"ranked"</span>, <span class="str">"count"</span>: len(rankings)}</pre>
+      </div>
+    </div>
+
+    <h3>Workflow tail — final step</h3>
+    <p>Added after the Phase 4 active context activity. This is the last thing the ingestion workflow does.</p>
+
+    <pre><span class="comment"># workers-platform/app/workflows/news_intelligence/workflow.py — tail</span>
+
+<span class="comment"># Phase 4 — active context update</span>
+<span class="kw">await</span> workflow.<span class="fn">execute_activity</span>(
+    <span class="str">"update_user_news_active_context"</span>, <span class="num">1</span>,
+    start_to_close_timeout=timedelta(seconds=<span class="num">30</span>),
+)
+
+<span class="comment"># Phase 5 — LLM re-ranking with explanations</span>
+<span class="kw">await</span> workflow.<span class="fn">execute_activity</span>(
+    <span class="str">"rank_news_feed_with_llm"</span>, <span class="num">1</span>,
+    start_to_close_timeout=timedelta(seconds=<span class="num">120</span>),
+)</pre>
+
+    <h3>New settings field</h3>
+    <p>One new field in <code>app/runtime/config/settings.py</code>. The existing settings class uses Pydantic; add one line and set the env var.</p>
+
+    <pre><span class="comment"># app/runtime/config/settings.py — addition</span>
+anthropic_api_key: <span class="cls">str</span> = <span class="str">""</span>  <span class="comment"># ANTHROPIC_API_KEY in .env</span></pre>
+  </div>
+
+  <!-- 06 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Frontend — show explanations</h2>
+    </div>
+    <p>The only frontend change is displaying <code>relevanceExplanation</code> when it is present in the API response. The field is already threaded through <code>NewsItemSummaryDto</code> — it just needs to be rendered.</p>
+    <p>The explanation should appear as a small line of text below the article title, visually distinct from the body snippet — think of it as a personal annotation, not a description. A muted font size and the accent colour work well here. No new component is needed; it is a conditional render inside the existing article card.</p>
+
+    <pre><span class="comment">// Inside the article card in NewsView.tsx — conditional explanation line</span>
+{article.relevanceExplanation &amp;&amp; (
+  &lt;<span class="cls">p</span> className={styles.explanation}&gt;
+    {article.relevanceExplanation}
+  &lt;/<span class="cls">p</span>&gt;
+)}</pre>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ</span>
+      <div class="callout-text"><strong>No loading state needed.</strong> The explanation is either in the API response or it is not. There is no async fetch per article. If the ranked feed exists, every card has an explanation. If the feed falls back to vector search, no cards have explanations. The UI should handle both states without branching logic beyond the conditional render.</div>
+    </div>
+  </div>
+
+  <!-- 07 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Complete file list</h2>
+    </div>
+
+    <h4>Domain</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge new">new</span> Platform.Domain/Features/News/NewsRankedFeed.cs</div>
+    </div>
+
+    <h4>Application abstractions</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Abstractions/News/INewsRankedFeedRepository.cs</div>
+    </div>
+
+    <h4>Application features</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/RankedFeed/StoreRankedNewsFeedCommand.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/RankedFeed/StoreRankedNewsFeedCommandHandler.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/RankedFeed/StoreRankedNewsFeedCommandValidator.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/RankedFeed/GetNewsFeedCandidatesQuery.cs</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Application/Features/News/RankedFeed/GetNewsFeedCandidatesQueryHandler.cs</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Application/Features/News/ListFeed/ListNewsFeedQueryHandler.cs — check ranked feed first, fall back to vector search</div>
+    </div>
+
+    <h4>Infrastructure</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge new">new</span> Platform.Infrastructure/Features/News/EfNewsRankedFeedRepository.cs</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Infrastructure/Persistence/PlatformDbContext.cs — add DbSet + entity config for NewsRankedFeed</div>
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Infrastructure/DependencyInjection.cs — register INewsRankedFeedRepository + two new handlers</div>
+      <div class="file-row"><span class="badge migrate">migrate</span> Platform.Infrastructure/Persistence/Migrations/[timestamp]_NewsRankedFeedV1.cs — run dotnet ef migrations add</div>
+    </div>
+
+    <h4>Contracts</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Contracts/V1/NewsItemSummaryDto.cs — add RelevanceExplanation string? field</div>
+      <div class="file-row"><span class="badge new">new</span> Platform.Contracts/V1/News/NewsFeedCandidatesV1Contracts.cs — request/response records for both new endpoints</div>
+    </div>
+
+    <h4>API</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge extend">extend</span> Platform.Api/Features/News/Internal/InternalNewsV1Routes.cs — add GET feed/candidates + POST feed/ranked-results</div>
+    </div>
+
+    <h4>Worker</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/pyproject.toml — add anthropic dependency</div>
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/runtime/config/settings.py — add anthropic_api_key field</div>
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/workflows/news_intelligence/activities.py — add rank_news_feed_with_llm + prompt builders</div>
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/workflows/news_intelligence/workflow.py — call rank activity at run tail</div>
+      <div class="file-row"><span class="badge extend">extend</span> workers-platform/app/runtime/registry/definitions.py — register rank_news_feed_with_llm</div>
+    </div>
+
+    <h4>Frontend</h4>
+    <div class="file-list">
+      <div class="file-row"><span class="badge extend">extend</span> frontend-platform/src/modules/news/NewsView.tsx — render explanation when present</div>
+    </div>
+  </div>
+
+  <!-- 08 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">Build order and decisions</h2>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">Step 1</div>
+          <div class="pipeline-title">Domain + migration</div>
+          <div class="pipeline-desc">Add <code>NewsRankedFeed.cs</code>, configure in <code>PlatformDbContext</code>, run <code>dotnet ef migrations add NewsRankedFeedV1</code>, then <code>dotnet ef database update</code>. DB is ready before any handler touches it.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">Step 2</div>
+          <div class="pipeline-title">Repository, command, and candidate query</div>
+          <div class="pipeline-desc">Implement <code>EfNewsRankedFeedRepository</code>, <code>StoreRankedNewsFeedCommandHandler</code>, and <code>GetNewsFeedCandidatesQueryHandler</code>. Register all three in DI. These can be tested by calling the endpoints directly once the routes are in place.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">Step 3</div>
+          <div class="pipeline-title">Internal API routes + contracts</div>
+          <div class="pipeline-desc">Add the two new routes to <code>InternalNewsV1Routes</code> and the contract records. Extend <code>NewsItemSummaryDto</code> with the optional explanation field.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">Step 4</div>
+          <div class="pipeline-title">Update ListNewsFeedQueryHandler</div>
+          <div class="pipeline-desc">Add <code>INewsRankedFeedRepository</code> dependency and the pre-computed ranking check at the top of <code>HandleAsync</code>. Validate by confirming the feed still works when no ranked feed exists yet (fallback path).</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">Step 5</div>
+          <div class="pipeline-title">Worker: dependency, settings, activity</div>
+          <div class="pipeline-desc">Add <code>anthropic</code> to <code>pyproject.toml</code>, add <code>ANTHROPIC_API_KEY</code> to <code>.env</code> and settings. Implement <code>rank_news_feed_with_llm</code> in <code>activities.py</code> with the prompt builders. Add to workflow tail and registry.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-spine"><div class="pipeline-dot"></div><div class="pipeline-line"></div></div>
+        <div class="pipeline-body">
+          <div class="pipeline-label">Step 6</div>
+          <div class="pipeline-title">Frontend explanation render</div>
+          <div class="pipeline-desc">Add the conditional explanation line to the article card in <code>NewsView.tsx</code>. Trigger an ingestion run to populate <code>news_ranked_feeds</code>, then verify explanations appear in the feed.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <span class="callout-icon">!</span>
+      <div class="callout-text"><strong>Decision — candidate limit vs final limit.</strong> The plan uses 50 candidates re-ranked to 20. Raising the candidate limit gives Claude more material to choose from but increases prompt size and cost. Lowering the final limit keeps the feed tight but may miss good articles. Both are constants passed to the activity — easy to tune without code changes once you see the quality of results.</div>
+    </div>
+
+    <div class="callout warn">
+      <span class="callout-icon">!</span>
+      <div class="callout-text"><strong>Decision — staleness of the ranked feed.</strong> The ranked list is computed once per ingestion run (currently weekly). Articles from the previous run remain in the ranked feed until the next run. This is acceptable because the underlying article pool also only changes on ingestion runs — you are never showing a ranking for a set of articles that no longer matches what is in the DB. If you move to twice-weekly ingestion, the ranking refreshes twice as often automatically.</div>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ</span>
+      <div class="callout-text"><strong>This is the final phase.</strong> Phase 5 completes the news intelligence feature as originally designed. The full pipeline is: fetch (Phase 1) → embed + rank by similarity (Phase 2) → behavioral feedback (Phase 3) → dual interest model + active context (Phase 4) → LLM re-ranking + explanations (Phase 5). Post-Phase 5 extensions from the original plan (novelty scoring, multi-armed bandit, Neo4j knowledge graph) are additive and do not require changes to any Phase 1–5 infrastructure.</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

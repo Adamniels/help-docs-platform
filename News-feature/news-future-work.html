@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News Feature — Future Work</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0f;
+    --ink-2: #3a3a3a;
+    --ink-3: #6b6b6b;
+    --ink-4: #9b9b9b;
+    --surface: #fafaf8;
+    --surface-2: #f2f1ed;
+    --surface-3: #e8e6e0;
+    --border: #dddad2;
+    --accent-blue: #1a4f9e;
+    --accent-blue-light: #e8eef9;
+    --accent-teal: #0f6e56;
+    --accent-teal-light: #e1f5ee;
+    --accent-amber: #8a4e0a;
+    --accent-amber-light: #faeeda;
+    --accent-coral: #993c1d;
+    --accent-coral-light: #faece7;
+    --accent-purple: #3c3489;
+    --accent-purple-light: #eeedfe;
+    --accent-green: #3b6d11;
+    --accent-green-light: #eaf3de;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--surface);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+    font-weight: 300;
+  }
+
+  .masthead {
+    background: var(--ink);
+    color: var(--surface);
+    padding: 5rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 59px,
+      rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px
+    );
+  }
+  .masthead-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+    position: relative;
+  }
+  .masthead-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 1.5rem;
+  }
+  .masthead h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    line-height: 1.1;
+    font-weight: 400;
+    margin-bottom: 1.25rem;
+  }
+  .masthead h1 em {
+    font-style: italic;
+    color: rgba(255,255,255,0.6);
+  }
+  .masthead-sub {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.55);
+    max-width: 580px;
+    line-height: 1.6;
+  }
+
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem 2.5rem;
+  }
+
+  .section { margin-bottom: 4.5rem; }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.7rem;
+    font-weight: 400;
+  }
+
+  p { margin-bottom: 1rem; color: var(--ink-2); }
+  p:last-child { margin-bottom: 0; }
+
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82em;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.1em 0.35em;
+    color: var(--ink);
+  }
+
+  .idea-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .idea {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .idea-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .idea-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.15em 0.55em;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .idea-tag.intelligence { background: var(--accent-purple-light); color: var(--accent-purple); }
+  .idea-tag.quality      { background: var(--accent-blue-light);   color: var(--accent-blue); }
+  .idea-tag.ux           { background: var(--accent-teal-light);   color: var(--accent-teal); }
+  .idea-tag.infra        { background: var(--accent-amber-light);  color: var(--accent-amber); }
+
+  .idea-title {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--ink);
+  }
+
+  .idea-effort {
+    margin-left: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--ink-4);
+    letter-spacing: 0.05em;
+  }
+
+  .idea-body {
+    padding: 1.25rem;
+  }
+  .idea-body p {
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+  }
+  .idea-body p:last-child { margin-bottom: 0; }
+
+  .idea-body .what {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    margin-bottom: 0.3rem;
+  }
+
+  .callout {
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+    font-size: 0.9rem;
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    gap: 0 0.75rem;
+    align-items: start;
+  }
+  .callout-icon { font-size: 0.85rem; padding-top: 0.05rem; }
+  .callout-text { color: var(--ink-2); line-height: 1.55; }
+  .callout-text strong { color: var(--ink); font-weight: 500; }
+  .callout.info { background: var(--accent-blue-light); border-left: 3px solid var(--accent-blue); }
+  .callout.key  { background: var(--accent-teal-light); border-left: 3px solid var(--accent-teal); }
+
+  .phase-complete {
+    background: var(--accent-green-light);
+    border: 1px solid #c3e6a3;
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .phase-complete-title { font-weight: 500; color: var(--accent-green); margin-bottom: 0.4rem; font-size: 0.95rem; }
+  .phase-complete-body { font-size: 0.875rem; color: var(--ink-2); line-height: 1.55; margin-bottom: 0; }
+
+  @media (max-width: 640px) {
+    .masthead-stats { gap: 1.5rem; }
+    .idea-effort { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-label">Post-Phase 5 · News Intelligence Feature · Future Work</div>
+    <h1>News —<br><em>what comes</em><br>after Phase 5</h1>
+    <p class="masthead-sub">The 5-phase build is complete. Everything below is additive — none of it requires touching the Phase 1–5 infrastructure, and none of it blocks anything else in the system.</p>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="phase-complete">
+    <div class="phase-complete-title">✓ Phases 1–5 complete</div>
+    <div class="phase-complete-body">
+      Ingestion (Phase 1), semantic embeddings (Phase 2), behavioral feedback loop (Phase 3), dual interest model and active contexts (Phase 4), and LLM re-ranking with per-article explanations (Phase 5) are all shipped and working. What follows are ideas for making the feed smarter, the data cleaner, and the experience better — in no particular priority order.
+    </div>
+  </div>
+
+  <!-- Ranking intelligence -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Ranking intelligence</h2>
+    </div>
+    <p>Ideas that make the ranking itself smarter — going beyond cosine similarity and LLM scoring toward a feed that is aware of what you already know, what you have already seen, and which sources deserve more trust.</p>
+
+    <div class="idea-list">
+
+      <div class="idea">
+        <div class="idea-header">
+          <span class="idea-tag intelligence">intelligence</span>
+          <span class="idea-title">Novelty scoring — penalise articles about things you already know well</span>
+          <span class="idea-effort">medium effort</span>
+        </div>
+        <div class="idea-body">
+          <p>Right now the feed surfaces articles that are close to your interests. That means if you are a software engineer, software engineering articles always score high — even if you know the topic cold. A novelty signal would deprioritise articles on topics already covered heavily in your semantic memory and boost articles that introduce something genuinely new to you.</p>
+          <p>The implementation approach: before the LLM re-ranking step, compare each candidate article's embedding against the user's existing semantic memory embeddings. Articles with high similarity to stored memories get a novelty penalty applied to their score. Articles on topics not well represented in memory get a boost. This gives Claude better-quality candidates to re-rank.</p>
+        </div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-header">
+          <span class="idea-tag intelligence">intelligence</span>
+          <span class="idea-title">Multi-armed bandit for source exploration</span>
+          <span class="idea-effort">high effort</span>
+        </div>
+        <div class="idea-body">
+          <p>The current feed always exploits known good sources — if Hacker News articles consistently score well, they will dominate. A multi-armed bandit approach introduces deliberate exploration: occasionally surfacing articles from sources or topics that have not performed well recently, to give them a chance to prove their value.</p>
+          <p>The classic formulation is epsilon-greedy or Thompson sampling applied per source. Track a running engagement rate (saves and long reads divided by impressions) per source. Periodically allocate a small fraction of feed slots to sources below their expected performance, and adjust their allocation upward if engagement improves. This prevents the feed from converging to a narrow set of sources.</p>
+        </div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-header">
+          <span class="idea-tag intelligence">intelligence</span>
+          <span class="idea-title">Knowledge graph for entity-level understanding (Neo4j + GraphRAG)</span>
+          <span class="idea-effort">high effort</span>
+        </div>
+        <div class="idea-body">
+          <p>Vector similarity captures topical closeness but misses structure. A knowledge graph would represent the entities in your reading history — people, projects, technologies, companies — and the relationships between them. GraphRAG (retrieval augmented generation over a graph) can then answer questions like "surface articles that are adjacent to what I already know but one hop away" or "find articles that connect two of my active interests in a non-obvious way."</p>
+          <p>This is the highest-effort idea on this list. The right approach is additive: Neo4j alongside the existing Postgres stack, populated incrementally as articles are ingested and as you interact with them. The vector search path remains unchanged; the graph adds a second retrieval path that can be blended in.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Data quality -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Data quality</h2>
+    </div>
+    <p>Ideas that make the underlying article data cleaner before it reaches ranking.</p>
+
+    <div class="idea-list">
+
+      <div class="idea">
+        <div class="idea-header">
+          <span class="idea-tag quality">quality</span>
+          <span class="idea-title">Semantic deduplication — one story, not ten versions of it</span>
+          <span class="idea-effort">low effort</span>
+        </div>
+        <div class="idea-body">
+          <p>Currently deduplication is by URL hash. When the same news story is covered by Hacker News, GNews, and an RSS feed, all three versions are ingested and all three appear in the candidate pool. The LLM re-ranking ends up choosing between near-identical articles, wasting candidate slots.</p>
+          <p>The fix: after embedding but before the candidate fetch, cluster articles by embedding similarity within a sliding time window (say, articles published within 24 hours of each other with cosine similarity above 0.92 are considered the same story). Keep the highest-quality version (longest body, most reputable source, or highest interaction rate) and drop the rest. This is a pure backend change in the ingest pipeline and does not touch any Phase 1–5 code.</p>
+        </div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-header">
+          <span class="idea-tag quality">quality</span>
+          <span class="idea-title">Source quality scoring</span>
+          <span class="idea-effort">low effort</span>
+        </div>
+        <div class="idea-body">
+          <p>Not all sources produce articles of equal depth. A 200-word news brief from a wire service ranks the same as a 3000-word technical deep dive from a domain expert. A source quality score — based on average article length, average dwell time across all users, and save rate — could be applied as a lightweight pre-filter or as an additional signal in the LLM re-ranking prompt.</p>
+          <p>This is straightforward to compute from existing interaction data once enough interactions have accumulated. Store a rolling quality score per source domain in a small config table and pass it alongside the article metadata in the candidate fetch response.</p>
+        </div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-header">
+          <span class="idea-tag quality">quality</span>
+          <span class="idea-title">Per-project topic lists for active context</span>
+          <span class="idea-effort">low effort</span>
+        </div>
+        <div class="idea-body">
+          <p>Right now active projects are stored as plain name strings (e.g. "Platform", "news feature"). The active context embedding is built from those names, which is coarse. A richer model: each project has an associated list of topics it covers. For example, "news feature" maps to ["recommendation systems", "embeddings", "Temporal workflows", "vector search"].</p>
+          <p>This was mentioned in the Phase 4 plan as a natural extension. The <code>ActiveProjectsJson</code> column in <code>ExplicitUserProfile</code> already stores projects as JSON — extending the schema to include a topics array is a small frontend and backend change. The active context embedding immediately becomes more specific without any changes to the Phase 4 embedding logic.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- UX and product -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">UX and product</h2>
+    </div>
+    <p>Improvements to how the feed feels and how you interact with it.</p>
+
+    <div class="idea-list">
+
+      <div class="idea">
+        <div class="idea-header">
+          <span class="idea-tag ux">ux</span>
+          <span class="idea-title">Saved items as a browsable feed</span>
+          <span class="idea-effort">low effort</span>
+        </div>
+        <div class="idea-body">
+          <p>The save interaction is recorded and influences the profile but the saved articles are not browsable. A simple saved items view — already stubbed in the frontend navigation — would let you return to articles you marked. The interaction data and the article data are already in the DB; this is purely a read query and a frontend page.</p>
+        </div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-header">
+          <span class="idea-tag ux">ux</span>
+          <span class="idea-title">Digest email</span>
+          <span class="idea-effort">low effort</span>
+        </div>
+        <div class="idea-body">
+          <p>The <code>PlatformUserSettings</code> entity already has a <code>DigestEmail</code> boolean field — it was included when the settings model was built. The infrastructure to send a weekly digest of the top-ranked articles (with their LLM explanations) is not yet wired up. A scheduled Temporal workflow that reads the current <code>news_ranked_feeds</code> row and formats it into an email is a natural next step.</p>
+        </div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-header">
+          <span class="idea-tag ux">ux</span>
+          <span class="idea-title">Configurable blend weights</span>
+          <span class="idea-effort">low effort</span>
+        </div>
+        <div class="idea-body">
+          <p>The 70/20/10 long-term/short-term/active-context blend and the 0.85 momentum factor are hardcoded constants. Making them configurable in <code>PlatformUserSettings</code> or a dedicated news settings section would let you tune how quickly the feed responds to new behaviour (raise short-term weight) versus how strongly it reflects your declared projects (raise active context weight) without a code change.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Infrastructure -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Infrastructure</h2>
+    </div>
+    <p>Things that make the system more robust or flexible without changing the user-facing behaviour.</p>
+
+    <div class="idea-list">
+
+      <div class="idea">
+        <div class="idea-header">
+          <span class="idea-tag infra">infra</span>
+          <span class="idea-title">Decouple profile update from ingestion schedule</span>
+          <span class="idea-effort">low effort</span>
+        </div>
+        <div class="idea-body">
+          <p>Right now the profile update and LLM re-ranking activities run at the tail of <code>NewsIntelligenceWorkflow</code>, meaning they only run when new articles are ingested. If you want to run ingestion twice a week but update the profile at a different cadence, or trigger re-ranking on demand after you have been reading heavily, the current design makes that awkward.</p>
+          <p>The clean split: move <code>update_user_news_profile</code>, <code>update_user_news_active_context</code>, and <code>rank_news_feed_with_llm</code> into a dedicated <code>NewsProfileUpdateWorkflow</code> that runs on its own schedule. <code>NewsIntelligenceWorkflow</code> just calls it at the tail as a child workflow. Both can also be triggered independently via the internal API.</p>
+        </div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-header">
+          <span class="idea-tag infra">infra</span>
+          <span class="idea-title">Multi-user support</span>
+          <span class="idea-effort">medium effort</span>
+        </div>
+        <div class="idea-body">
+          <p>The entire news feature is currently hardcoded to <code>user_id = 1</code> in the worker activities and uses <code>PlatformWorkerOptions.PrimaryUserId</code> on the backend API routes. The data model already supports multiple users — every table has a <code>UserId</code> column and there are no singletons in the news schema. Extending to multiple users is mostly a matter of removing the hardcoded <code>1</code> from worker activities and reading the user ID from the JWT on the interaction and feed endpoints instead.</p>
+        </div>
+      </div>
+
+      <div class="idea">
+        <div class="idea-header">
+          <span class="idea-tag infra">infra</span>
+          <span class="idea-title">LLM output validation at write time</span>
+          <span class="idea-effort">low effort</span>
+        </div>
+        <div class="idea-body">
+          <p>Claude occasionally produces duplicate article IDs in the rankings. Currently this is handled defensively at read time in <code>ListNewsFeedQueryHandler</code> with a <code>GroupBy</code>. A cleaner fix is to catch it at write time: add a uniqueness check to <code>StoreRankedNewsFeedCommandValidator</code> that rejects any rankings list containing duplicate <code>NewsItemId</code> values. The worker can then retry or log a warning rather than storing bad data in the first place.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="callout key">
+    <span class="callout-icon">★</span>
+    <div class="callout-text"><strong>Where to start.</strong> Semantic deduplication and per-project topic lists are the highest-value, lowest-effort items on this list. Deduplication improves candidate quality for every subsequent phase immediately. Topic lists make the active context embedding significantly more specific. Both are purely additive and take an afternoon each. Everything else can wait.</div>
+  </div>
+
+</div>
+</body>
+</html>
